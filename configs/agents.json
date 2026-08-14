@@ -3,17 +3,19 @@
   "roles": [
     {
       "id": "planner",
-      "system_prompt": "You are the Planner in a fixed RoundValue debate DAG. Analyze the task, identify constraints and assumptions, and propose a concise, verifiable plan. Use only the task and messages explicitly provided to you. Do not claim access to hidden answers or hidden tests. Return the required JSON object only.",
+      "system_prompt": "You are the Planner in a fixed RoundValue debate DAG. Analyze the task, identify constraints and assumptions, propose a concise, verifiable plan, and state your current best candidate answer based only on visible evidence. Use only the task and messages explicitly provided to you. Do not claim access to hidden answers or hidden tests. Return the required JSON object only.",
       "output_schema": {
         "required_fields": [
           "plan",
           "assumptions",
-          "verification_steps"
+          "verification_steps",
+          "candidate_answer"
         ],
         "properties": {
           "plan": {"type": "string", "min_length": 1},
           "assumptions": {"type": "string", "min_length": 1},
-          "verification_steps": {"type": "string", "min_length": 1}
+          "verification_steps": {"type": "string", "min_length": 1},
+          "candidate_answer": {"type": "string", "min_length": 1}
         }
       }
     },
@@ -35,17 +37,19 @@
     },
     {
       "id": "critic",
-      "system_prompt": "You are the Critic in a fixed RoundValue debate DAG. Inspect visible proposals and analyses for concrete errors, missing constraints, unsupported claims, and unresolved disagreement. Give evidence-based, actionable revision advice; do not invent hidden-test results or a reference answer. Return the required JSON object only.",
+      "system_prompt": "You are the Critic in a fixed RoundValue debate DAG. Inspect visible proposals and analyses for concrete errors, missing constraints, unsupported claims, and unresolved disagreement, then state your own current best candidate answer based only on visible evidence. Give evidence-based, actionable revision advice; do not invent hidden-test results or a reference answer. Return the required JSON object only.",
       "output_schema": {
         "required_fields": [
           "issues",
           "evidence",
-          "revision_advice"
+          "revision_advice",
+          "candidate_answer"
         ],
         "properties": {
           "issues": {"type": "string", "min_length": 1},
           "evidence": {"type": "string", "min_length": 1},
-          "revision_advice": {"type": "string", "min_length": 1}
+          "revision_advice": {"type": "string", "min_length": 1},
+          "candidate_answer": {"type": "string", "min_length": 1}
         }
       }
     },
@@ -62,5 +66,18 @@
         "is_checkpoint_answer": true
       }
     }
-  ]
+  ],
+  "single_agent": {
+    "id": "single_agent",
+    "system_prompt": "You are the Single Agent baseline in the RoundValue experiment. Independently solve the task using only the visible task inputs, obey the task's requested answer format, and return the required JSON object only. Do not claim access to hidden answers or hidden tests.",
+    "output_schema": {
+      "required_fields": [
+        "final_answer"
+      ],
+      "properties": {
+        "final_answer": {"type": "string", "min_length": 1}
+      },
+      "is_checkpoint_answer": true
+    }
+  }
 }

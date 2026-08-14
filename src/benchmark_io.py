@@ -38,6 +38,20 @@ PUBLIC_OPTIONAL_TASK_FIELDS = {
     "public_verifier",
 }
 
+# Metadata keys that identify one benchmark task or reveal the size of the
+# hidden test suite.  They are available to offline scoring but must never
+# reach an Agent, otherwise a model can recall the pinned benchmark entry or
+# tune itself against the number of hidden tests.
+PUBLIC_METADATA_HIDDEN_KEYS = frozenset(
+    {
+        "source_task_id",
+        "base_input_count",
+        "plus_input_count",
+        "input_count",
+        "test_count",
+    }
+)
+
 
 def _safe_project_path(root: Path, supplied: str | Path) -> Path:
     root = root.resolve()
@@ -177,17 +191,40 @@ def load_benchmark(root: Path, supplied_path: str | Path) -> tuple[Path, dict[st
     return path, document, tasks
 
 
+def _public_task_id(task_id: str) -> str:
+    """Derive a stable opaque identifier for the Agent-facing task view.
+
+    Benchmark task IDs such as ``humanevalplus::HumanEval_0`` name the exact
+    upstream entry and can trigger memorized solutions.  The public view
+    therefore uses a deterministic hash while all on-disk records keep the
+    original ID.
+    """
+
+    digest = hashlib.sha256(
+        f"roundvalue-public-task-id-v1:{task_id}".encode("utf-8")
+    ).hexdigest()
+    return f"task_{digest[:16]}"
+
+
 def public_task(task: dict[str, Any]) -> dict[str, Any]:
     """Return the exact information an Agent may see; offline labels stay on disk only."""
 
     visible: dict[str, Any] = {
-        "task_id": task["task_id"],
+        "task_id": _public_task_id(task["task_id"]),
         "domain": task["domain"],
         "prompt": task["prompt"],
     }
     for key in PUBLIC_OPTIONAL_TASK_FIELDS:
         if key in task and key not in PRIVATE_TASK_FIELDS:
-            visible[key] = task[key]
+            value = task[key]
+            if key == "public_metadata" and isinstance(value, dict):
+                value = {
+                    metadata_key: metadata_value
+                    for metadata_key, metadata_value in value.items()
+                    if metadata_key not in PUBLIC_METADATA_HIDDEN_KEYS
+                    and metadata_key not in PRIVATE_TASK_FIELDS
+                }
+            visible[key] = value
     return visible
 
 

@@ -331,28 +331,18 @@ def _node_agreement(checkpoint: Mapping[str, Any]) -> float:
     return max(answers.count(value) for value in set(answers)) / len(answers)
 
 
-def _explicit_consensus(checkpoint: Mapping[str, Any]) -> bool | None:
-    for container in (checkpoint, _mapping(checkpoint.get("metadata")) or {}):
-        value = container.get("consensus")
-        if isinstance(value, bool):
-            return value
-        if isinstance(value, Mapping):
-            for key in ("reached", "is_consensus", "agreed"):
-                if isinstance(value.get(key), bool):
-                    return bool(value[key])
-        if isinstance(container.get("consensus_reached"), bool):
-            return bool(container["consensus_reached"])
-    return None
-
-
 def consensus_signal(
     checkpoint: Mapping[str, Any], previous_checkpoint: Mapping[str, Any] | None = None
 ) -> tuple[bool, str]:
-    """Return a public, prefix-only consensus signal and its audit reason."""
+    """Return a public, prefix-only consensus signal and its audit reason.
 
-    explicit = _explicit_consensus(checkpoint)
-    if explicit is not None:
-        return explicit, "explicit_consensus" if explicit else "explicit_no_consensus"
+    The six Planner/Analyst/Critic outputs in a round each carry a
+    ``candidate_answer`` under the frozen agent contract, so agreement is the
+    largest fraction of those six answers that are identical, requiring at
+    least 2/3 for consensus.  Older saved trajectories whose Planner/Critic
+    nodes lack that field degrade gracefully to Analyst-only agreement.
+    """
+
     if _node_agreement(checkpoint) >= 2.0 / 3.0:
         return True, "node_answer_agreement"
     if previous_checkpoint is not None:

@@ -32,6 +32,7 @@ from policy import fit_policy_models, replay_policies  # noqa: E402
 from provider import build_provider  # noqa: E402
 from report import summarize_collection  # noqa: E402
 from scorer import score_trajectory  # noqa: E402
+from single_agent_runner import SingleAgentRunner  # noqa: E402
 from storage import (  # noqa: E402
     create_run,
     open_run,
@@ -66,8 +67,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--mode",
         required=True,
-        choices=("smoke", "collect", "fit", "evaluate", "reproduce"),
-        help="smoke/collect make real API calls; all other modes are offline only.",
+        choices=("smoke", "collect", "single", "fit", "evaluate", "reproduce"),
+        help="smoke/collect/single make real API calls; all other modes are offline only.",
     )
     parser.add_argument(
         "--benchmark",
@@ -83,11 +84,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--model-id",
-        help="Model profile ID from configs/model_config.json (smoke/collect only).",
+        help="Model profile ID from configs/model_config.json (smoke/collect/single only).",
     )
     parser.add_argument(
         "--topology-id",
-        help="Topology ID from configs/topology.json (smoke/collect only).",
+        help="Topology ID from configs/topology.json (smoke/collect/single only).",
     )
     parser.add_argument(
         "--allow-local-code-evaluation",
@@ -265,6 +266,19 @@ def _collect_task(
     )
 
 
+def _write_frozen_splits(
+    manifest: Mapping[str, Any], split_by_task: Mapping[str, str]
+) -> None:
+    write_json(
+        Path(manifest["trajectory_dir"]) / "frozen_splits.json",
+        {
+            "schema_version": "1.0",
+            "split_seed": SPLIT_SEED,
+            "splits": split_by_task,
+        },
+    )
+
+
 def _run_smoke(
     args: argparse.Namespace,
     experiment: Mapping[str, Any],
@@ -383,14 +397,7 @@ def _run_collect(
         )
     manifest = _create_run(args, experiment, state)
     _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
-    write_json(
-        Path(manifest["trajectory_dir"]) / "frozen_splits.json",
-        {
-            "schema_version": "1.0",
-            "split_seed": split_seed,
-            "splits": split_by_task,
-        },
-    )
+    _write_frozen_splits(manifest, split_by_task)
     provider = build_provider(dict(experiment))
     records: list[dict[str, Any]] = []
     try:
@@ -431,6 +438,92 @@ def _run_collect(
         {
             "status": status,
             "mode": "collect",
+            "run_id": updated["run_id"],
+            "task_count": len(records),
+            "failed_task_count": len(failed),
+            "trajectory_dir": updated["trajectory_dir"],
+            "result_dir": updated["result_dir"],
+        }
+    )
+    return 0 if not failed else 1
+
+
+def _run_single(
+    args: argparse.Namespace,
+    experiment: Mapping[str, Any],
+    state: dict[str, Any],
+) -> int:
+    """Collect the independent one-call Single Agent baseline."""
+
+    if not args.benchmark:
+        raise ValueError(
+            "single requires --benchmark <project-relative-benchmark.json>"
+        )
+    benchmark_path, benchmark_document, tasks = load_benchmark(
+        PROJECT_ROOT, args.benchmark
+    )
+    split_by_task = freeze_splits(tasks, seed=SPLIT_SEED)
+    split_counts = {
+        split: sum(value == split for value in split_by_task.values())
+        for split in VALID_SPLITS
+    }
+    absent_splits = [split for split, count in split_counts.items() if count == 0]
+    if absent_splits:
+        raise ValueError(
+            "frozen benchmark has no "
+            + ", ".join(sorted(absent_splits))
+            + " tasks; single requires train, validation, and test coverage"
+        )
+    if not args.allow_local_code_evaluation and any(
+        task.get("domain") == "code" for task in tasks
+    ):
+        raise ValueError(
+            "benchmark includes code tasks; pass --allow-local-code-evaluation "
+            "only after reviewing the local-execution risk"
+        )
+    manifest = _create_run(args, experiment, state)
+    _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
+    _write_frozen_splits(manifest, split_by_task)
+    provider = build_provider(dict(experiment))
+    records: list[dict[str, Any]] = []
+    try:
+        runner = SingleAgentRunner(dict(experiment), provider)
+        for task in tasks:
+            split = split_by_task[task["task_id"]]
+            trajectory = runner.run_trajectory(
+                task=dict(task), run_id=str(manifest["run_id"])
+            )
+            record = _task_record(
+                task,
+                split,
+                trajectory,
+                allow_local_code_evaluation=args.allow_local_code_evaluation,
+            )
+            records.append(record)
+            write_task_record(manifest, record)
+    finally:
+        provider.close()
+    summary = _summary(records)
+    write_result(manifest, "collection_summary", summary)
+    failed = [
+        record
+        for record in records
+        if record["trajectory"].get("status") != "complete"
+        or record.get("scoring_error")
+    ]
+    status = "single_complete" if not failed else "single_failed"
+    updated = update_run_status(
+        manifest,
+        status,
+        task_count=len(records),
+        complete_task_count=len(records) - len(failed),
+        failed_task_ids=[record["task"].get("task_id") for record in failed],
+    )
+    state["manifest"] = updated
+    _emit(
+        {
+            "status": status,
+            "mode": "single",
             "run_id": updated["run_id"],
             "task_count": len(records),
             "failed_task_count": len(failed),
@@ -811,7 +904,7 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     state: dict[str, Any] = {"manifest": None}
     try:
-        if args.mode in {"smoke", "collect"}:
+        if args.mode in {"smoke", "collect", "single"}:
             experiment = load_experiment_config(
                 PROJECT_ROOT,
                 model_id=args.model_id,
@@ -832,6 +925,7 @@ def main(argv: list[str] | None = None) -> int:
         ] = {
             "smoke": _run_smoke,
             "collect": _run_collect,
+            "single": _run_single,
             "fit": _run_fit,
             "evaluate": _run_evaluate,
             "reproduce": _run_reproduce,

@@ -21,7 +21,11 @@ SOURCE_DIRECTORY = PROJECT_ROOT / "src"
 if str(SOURCE_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SOURCE_DIRECTORY))
 
-from benchmark_io import load_benchmark, public_task  # noqa: E402
+from benchmark_io import (  # noqa: E402
+    PUBLIC_METADATA_HIDDEN_KEYS,
+    load_benchmark,
+    public_task,
+)
 from scorer import score_code  # noqa: E402
 
 from build_real_benchmarks import KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS  # noqa: E402
@@ -104,6 +108,19 @@ def verify(*, all_code: bool) -> dict[str, Any]:
         leaked = PRIVATE_EVALPLUS_FIELDS & set(visible)
         if leaked:
             raise AssertionError(f"EvalPlus private fields leaked into public task {task['task_id']}: {sorted(leaked)}")
+        public_metadata = visible.get("public_metadata") or {}
+        leaked_metadata = PUBLIC_METADATA_HIDDEN_KEYS & set(public_metadata)
+        if leaked_metadata:
+            raise AssertionError(
+                f"identifying metadata leaked into public task {task['task_id']}: "
+                f"{sorted(leaked_metadata)}"
+            )
+        visible_task_id = str(visible.get("task_id", ""))
+        if visible_task_id == str(task["task_id"]) or "::" in visible_task_id:
+            raise AssertionError(
+                f"public task {task['task_id']} exposes a recallable task identifier: "
+                f"{visible_task_id}"
+            )
 
     known_exceptions = set(KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS)
     selected = code_tasks if all_code else [

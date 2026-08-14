@@ -118,6 +118,26 @@ def parse_json_object(text: str) -> dict[str, Any] | None:
     return value if isinstance(value, dict) else None
 
 
+def validate_output_contract(
+    output: dict[str, Any], schema: Mapping[str, Any], label: str
+) -> str | None:
+    """Return the first schema violation for a parsed role output, or ``None``."""
+
+    required = schema["required_fields"]
+    missing = [field for field in required if field not in output]
+    if missing:
+        return f"{label} missing required JSON field(s): {', '.join(missing)}"
+    for field in required:
+        specification = schema["properties"][field]
+        value = output.get(field)
+        if specification["type"] == "string":
+            if not isinstance(value, str) or len(value.strip()) < specification["min_length"]:
+                return f"{label} {field} must be a non-empty string"
+        else:
+            return f"unsupported configured output type for {label}.{field}"
+    return None
+
+
 @dataclass(frozen=True)
 class ModelRequest:
     messages: list[dict[str, str]]

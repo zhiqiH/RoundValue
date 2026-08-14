@@ -49,7 +49,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 | 文件 | 作用 |
 |---|---|
-| `configs/agents.json` | 四个角色的内嵌提示词与输出字段 |
+| `configs/agents.json` | 四个 Debate 角色的内嵌提示词与输出字段，以及 Single Agent 基线的独立提示词 |
 | `configs/model_config.json` | Provider、模型、采样、重试、价格和密钥位置 |
 | `configs/topology.json` | 拓扑注册表：选择当前拓扑，并定义其节点、边、packet 与轮数 |
 
@@ -59,11 +59,12 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 角色提示词保存在 `agents.json`，不使用散落的 prompt 文件。模型价格采用服务端返回的 token 明细计算；缺失 token、缓存计数、成本或延迟时保存为“未知”，绝不按零处理。
 
-## 五种运行模式
+## 六种运行模式
 
 ```powershell
 roundvalue --mode smoke
 roundvalue --mode collect --benchmark benchmark/your_paper_tasks.json
+roundvalue --mode single --benchmark benchmark/your_paper_tasks.json
 roundvalue --mode fit --run-id <RUN_ID>
 roundvalue --mode evaluate --run-id <RUN_ID>
 roundvalue --mode reproduce --run-id <RUN_ID>
@@ -71,11 +72,20 @@ roundvalue --mode reproduce --run-id <RUN_ID>
 
 - `smoke`：对 `benchmark/test/` 中的全部数学验收题执行一轮完整 DAG、评分并落盘；每题必须得到预期分数 1。
 - `collect`：必须显式给出含 Train/Validation/Test 三个冻结 split 的 JSON 基准，收集完整的至多三轮轨迹。
+- `single`：收集独立的 Single Agent 基线：每题只做一次模型调用，直接产出 `final_answer`；它不是第 0 轮辩论，也不会伪装成任何固定轮次。
 - `fit`：只用 Train 轨迹训练；仅用 Validation 冻结阈值与偏好。
 - `evaluate`：只重放冻结的 Test 轨迹，不调用模型 API。
 - `reproduce`：从已保存 JSON 重新派生标签、汇总与结果，不调用模型 API。
 
 `collect` 输出的 `run_id` 是后续阶段唯一接受的实验标识。不要混用不同 run 的轨迹。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
+
+### 防泄漏与 Agent 可见信息
+
+Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的公开元数据。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
+
+### 本地代码执行
+
+所有本地代码评测路径对模型生成的候选代码施加同一套防护：受限 builtins（`eval` 仅限算术表达式，`exec`/`compile`/`open`/`__import__` 不可达）、禁止下划线属性访问、受限语法与模块白名单（`sys` 通过只读代理暴露）；官方 canonical oracle 和受信测试程序不受该白名单限制。候选进程仍使用去除密钥的环境和临时工作目录，但这只是纵深防御，不是操作系统级沙箱。
 
 ## Benchmark 边界
 
@@ -126,4 +136,4 @@ RoundValue/
 
 每个 run 冻结三份配置、基准来源与哈希、命令行、模型 profile、Git 状态、源代码快照、调用尝试、原始响应、checkpoint、评分、特征和标签。`trajectories/` 保存任务级完整记录；`results/` 保存汇总指标、置信区间、策略结果和 manifest。二者是可追溯的实验产物，默认可纳入 Git；提交前仍应确认不含密钥、个人数据或不应公开的模型输出。
 
-正式报告应比较 Single Agent、Fixed-1/2/3、启发式、task-only、RoundValue、one-step Oracle 与 trajectory Oracle，并报告质量—成本 Pareto、任务级置信区间、Oracle regret、Repair/Neutral/Harm/Recovery。Oracle 仅用于诊断上界，绝不用于部署策略。
+正式报告应比较 Single Agent、Fixed-1/2/3、启发式（共识）、task-only、RoundValue、one-step Oracle 与 trajectory Oracle，并报告质量—成本 Pareto、任务级置信区间、Oracle regret、Repair/Neutral/Harm/Recovery。共识信号要求 Planner/Analyst/Critic 六条输出中至少 2/3 的 `candidate_answer` 完全一致，或 Writer 答案跨轮稳定。Oracle 仅用于诊断上界，绝不用于部署策略。

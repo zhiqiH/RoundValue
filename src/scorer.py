@@ -407,76 +407,201 @@ def score_math(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]:
     return _result(task, domain="math", answer=answer, quality=0.0, reason="not_equivalent")
 
 
-_CODE_WORKER = r"""
+_SIMPLE_FIXTURE_ALLOWED_MODULES = (
+    "collections",
+    "functools",
+    "itertools",
+    "math",
+    "re",
+    "string",
+)
+
+# Candidate code for the formal EvalPlus runs may import only these modules.
+# The set covers every module used by the pinned canonical solutions and a
+# few benign standard-library additions.  ``sys`` is exposed through a
+# read-only facade that blocks its module/loader/tracing attributes.
+# Deliberately excluded: ``os``, ``io``, ``subprocess``, ``socket``,
+# ``pathlib``, ``importlib``, ``ctypes``, ``pickle``, ``numpy``, and similar
+# process/file/loader surfaces.  Reference oracles and trusted test programs
+# do not use this allowlist.
+_CANDIDATE_ALLOWED_MODULES = (
+    "bisect",
+    "cmath",
+    "collections",
+    "copy",
+    "dataclasses",
+    "datetime",
+    "decimal",
+    "enum",
+    "fractions",
+    "functools",
+    "hashlib",
+    "heapq",
+    "itertools",
+    "math",
+    "operator",
+    "random",
+    "re",
+    "statistics",
+    "string",
+    "sys",
+    "typing",
+)
+
+# Shared restricted-execution prologue embedded in every code-evaluator
+# child process.  Candidate source is parsed, rejected on forbidden syntax or
+# unapproved imports, and executed with a reduced builtins namespace plus a
+# dunder-attribute ban.  ``eval`` is replaced by an arithmetic-only evaluator;
+# ``exec``/``compile``/``open``/``__import__`` are unreachable.  This is
+# defense-in-depth for untrusted model output, not an OS security boundary;
+# callers must keep the explicit local-execution opt-in and run untrusted code
+# in a real sandbox when that is required.
+_CODE_GUARD_TEMPLATE = r"""
 import ast
-import collections
-import functools
-import itertools
-import json
-import math
-import re
-import string
-import sys
+
 
 FORBIDDEN_NODES = (
-    ast.ClassDef, ast.AsyncFunctionDef,
-    ast.With, ast.AsyncWith, ast.Global, ast.Nonlocal, ast.Delete,
-    ast.Lambda, ast.Yield, ast.YieldFrom, ast.Await,
+    ast.AsyncFunctionDef,
+    ast.AsyncWith,
+    ast.Await,
+    ast.ClassDef,
+    ast.Delete,
+    ast.Global,
+    ast.Nonlocal,
+    ast.With,
 )
-FORBIDDEN_NAMES = {
-    "__builtins__", "__import__", "breakpoint", "compile", "eval", "exec",
-    "exit", "getattr", "globals", "help", "input", "locals", "open",
-    "quit", "setattr", "delattr", "vars",
-}
-SAFE_MODULES = {
-    "collections": collections,
-    "functools": functools,
-    "itertools": itertools,
-    "math": math,
-    "re": re,
-    "string": string,
+FORBIDDEN_ATTRIBUTES = {
+    "modules", "settrace", "setprofile", "addaudithook", "monitoring",
 }
 
-def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
-    if level != 0 or name not in SAFE_MODULES:
-        raise ImportError("only approved standard-library modules may be imported")
-    return SAFE_MODULES[name]
 
-class Guard(ast.NodeVisitor):
-    def visit(self, node):
-        if isinstance(node, FORBIDDEN_NODES):
-            raise ValueError("forbidden syntax: " + type(node).__name__)
-        return super().visit(node)
+def load_candidate(source, entry_point, allowed_modules):
+    import importlib as _importlib
+    import sys as _worker_sys
 
-    def visit_Name(self, node):
-        if node.id in FORBIDDEN_NAMES or node.id.startswith("__"):
-            raise ValueError("forbidden name")
-        self.generic_visit(node)
+    safe_modules = {}
+    for name in allowed_modules:
+        safe_modules[name] = _importlib.import_module(name)
 
-    def visit_Attribute(self, node):
-        if node.attr.startswith("_"):
-            raise ValueError("forbidden attribute")
-        self.generic_visit(node)
+    class _SafeSys:
+        __slots__ = ()
 
-    def visit_Import(self, node):
-        if any(alias.name not in SAFE_MODULES for alias in node.names):
-            raise ValueError("unapproved import")
-        self.generic_visit(node)
+        def __getattr__(self, name):
+            if name in FORBIDDEN_ATTRIBUTES:
+                raise AttributeError("forbidden attribute: sys." + name)
+            return getattr(_worker_sys, name)
 
-    def visit_ImportFrom(self, node):
-        if node.level != 0 or node.module not in SAFE_MODULES:
-            raise ValueError("unapproved import")
-        self.generic_visit(node)
+        def __setattr__(self, name, value):
+            raise AttributeError("sys attributes are read-only in candidate code")
 
-SAFE_BUILTINS = {
-    "abs": abs, "all": all, "any": any, "bool": bool, "dict": dict,
-    "enumerate": enumerate, "Exception": Exception, "float": float,
-    "int": int, "isinstance": isinstance, "len": len, "list": list,
-    "map": map, "max": max, "min": min, "pow": pow, "range": range,
-    "reversed": reversed, "round": round, "set": set, "sorted": sorted,
-    "str": str, "sum": sum, "tuple": tuple, "TypeError": TypeError,
-    "ValueError": ValueError, "zip": zip, "__import__": safe_import,
-}
+    _safe_sys = _SafeSys()
+
+    def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
+        root = name.split(".", 1)[0]
+        if level != 0 or root not in safe_modules:
+            raise ImportError("only approved modules may be imported")
+        if root == "sys":
+            return _safe_sys
+        return __import__(name, globals, locals, fromlist, level)
+
+    def safe_eval(source):
+        # Evaluate only numeric literals and arithmetic operators.
+        tree = ast.parse(source, mode="eval")
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant):
+                if isinstance(node.value, bool) or not isinstance(
+                    node.value, (int, float, complex)
+                ):
+                    raise ValueError("unsupported numeric literal")
+            elif not isinstance(
+                node,
+                (
+                    ast.Expression,
+                    ast.BinOp,
+                    ast.UnaryOp,
+                    ast.operator,
+                    ast.unaryop,
+                    ast.Load,
+                ),
+            ):
+                raise ValueError("unsupported eval expression")
+        return eval(compile(tree, "<safe-eval>", "eval"), {"__builtins__": {}})
+
+    safe_builtins = {
+        "abs": abs, "all": all, "any": any, "AssertionError": AssertionError,
+        "ascii": ascii, "bin": bin, "bool": bool, "bytes": bytes, "bytearray": bytearray,
+        "callable": callable, "chr": chr, "complex": complex, "dict": dict,
+        "dir": dir, "divmod": divmod, "enumerate": enumerate, "Exception": Exception,
+        "eval": safe_eval, "filter": filter, "float": float, "format": format,
+        "frozenset": frozenset, "hash": hash, "hex": hex, "int": int,
+        "hasattr": hasattr, "id": id, "isinstance": isinstance, "iter": iter,
+        "len": len, "list": list,
+        "map": map, "max": max, "min": min, "next": next, "object": object,
+        "oct": oct, "ord": ord, "pow": pow, "print": print, "range": range, "repr": repr,
+        "reversed": reversed, "round": round, "set": set, "slice": slice,
+        "sorted": sorted, "str": str, "sum": sum, "tuple": tuple,
+        "type": type, "TypeError": TypeError, "ValueError": ValueError,
+        "zip": zip, "__import__": safe_import,
+    }
+
+    class Guard(ast.NodeVisitor):
+        def visit(self, node):
+            if isinstance(node, FORBIDDEN_NODES):
+                raise ValueError("forbidden syntax: " + type(node).__name__)
+            return super().visit(node)
+
+        def visit_Name(self, node):
+            if node.id.startswith("__"):
+                raise ValueError("forbidden name")
+            self.generic_visit(node)
+
+        def visit_Attribute(self, node):
+            if node.attr.startswith("_") or node.attr in FORBIDDEN_ATTRIBUTES:
+                raise ValueError("forbidden attribute")
+            self.generic_visit(node)
+
+        def visit_Import(self, node):
+            if any(
+                alias.name.split(".", 1)[0] not in safe_modules
+                or any(segment in FORBIDDEN_ATTRIBUTES for segment in alias.name.split("."))
+                for alias in node.names
+            ):
+                raise ValueError("unapproved import")
+            self.generic_visit(node)
+
+        def visit_ImportFrom(self, node):
+            root = (node.module or "").split(".", 1)[0]
+            if (
+                node.level != 0
+                or root not in safe_modules
+                or any(
+                    segment in FORBIDDEN_ATTRIBUTES
+                    for segment in (node.module or "").split(".")
+                )
+                or any(alias.name in FORBIDDEN_ATTRIBUTES for alias in node.names)
+            ):
+                raise ValueError("unapproved import")
+            self.generic_visit(node)
+
+    tree = ast.parse(source, mode="exec")
+    Guard().visit(tree)
+    namespace = {"__builtins__": safe_builtins, "__name__": "candidate"}
+    exec(compile(tree, "<candidate>", "exec"), namespace, namespace)
+    function = namespace.get(entry_point)
+    if not callable(function):
+        raise ValueError("entry_point_not_callable")
+    return function
+"""
+
+
+_CODE_WORKER = _CODE_GUARD_TEMPLATE + r"""
+import ast
+import contextlib
+import io
+import json
+import math
+import sys
+
 
 def equivalent(actual, expected, abs_tol, rel_tol):
     if isinstance(actual, bool) or isinstance(expected, bool):
@@ -493,17 +618,15 @@ def equivalent(actual, expected, abs_tol, rel_tol):
         )
     return actual == expected
 
+
 def main():
     payload = json.loads(sys.stdin.read())
-    source = payload["source"]
+    sink = io.StringIO()
     try:
-        tree = ast.parse(source, mode="exec")
-        Guard().visit(tree)
-        namespace = {"__builtins__": SAFE_BUILTINS, "__name__": "candidate"}
-        exec(compile(tree, "<candidate>", "exec"), namespace, namespace)
-        function = namespace.get(payload["entry_point"])
-        if not callable(function):
-            raise ValueError("entry_point_not_callable")
+        with contextlib.redirect_stdout(sink), contextlib.redirect_stderr(sink):
+            function = load_candidate(
+                payload["source"], payload["entry_point"], payload.get("allowed_modules", [])
+            )
     except ValueError as error:
         print(json.dumps({"status": "rejected", "detail": str(error)}))
         return
@@ -516,7 +639,8 @@ def main():
         args = test.get("args", [])
         kwargs = test.get("kwargs", {})
         try:
-            actual = function(*args, **kwargs)
+            with contextlib.redirect_stdout(sink), contextlib.redirect_stderr(sink):
+                actual = function(*args, **kwargs)
         except BaseException as error:
             print(json.dumps({
                 "status": "failed", "passed": passed, "total": len(tests),
@@ -532,6 +656,7 @@ def main():
         passed += 1
     print(json.dumps({"status": "passed", "passed": passed, "total": len(tests)}))
 
+
 if __name__ == "__main__":
     main()
 """
@@ -540,121 +665,38 @@ if __name__ == "__main__":
 # EvalPlus ships each task's complete, trusted test program instead of a small
 # JSON args/expected fixture.  Keep the test program intact: flattening it
 # would lose its comparison, mutation, and special-type semantics.  Candidate
-# code still runs in a child process with a stripped environment and a bounded
-# AST policy.  This is deliberately *not* a security sandbox; callers must
-# retain the explicit local-execution opt-in.
-_EVALPLUS_WORKER = r"""
+# code runs through the shared ``load_candidate`` guard; the trusted test
+# program executes in its own namespace with normal builtins.  This is
+# deliberately *not* a security sandbox; callers must retain the explicit
+# local-execution opt-in.
+_EVALPLUS_WORKER = _CODE_GUARD_TEMPLATE + r"""
 import ast
-import cmath
 import contextlib
-import copy
-import datetime
-import decimal
-import functools
-import hashlib
-import heapq
 import io
-import itertools
 import json
-import math
-import random
-import re
-import statistics
-import string
 import sys
-from bisect import bisect, bisect_left, bisect_right, insort
-from collections import Counter, OrderedDict, defaultdict, deque
-from fractions import Fraction
 
 try:
     import numpy
 except BaseException:
     numpy = None
 
-FORBIDDEN_NODES = (
-    ast.AsyncFunctionDef, ast.AsyncWith, ast.Await, ast.Delete,
-    ast.Global, ast.Lambda, ast.Nonlocal, ast.With, ast.Yield, ast.YieldFrom,
-)
-FORBIDDEN_NAMES = {
-    "__builtins__", "__import__", "breakpoint", "compile", "eval", "exec",
-    "exit", "getattr", "globals", "help", "input", "locals", "open",
-    "quit", "setattr", "delattr", "vars",
-}
-SAFE_MODULES = {
-    "bisect", "cmath", "collections", "copy", "datetime", "decimal", "fractions",
-    "functools", "hashlib", "heapq", "itertools", "math", "operator", "random", "re",
-    "statistics", "string", "sys", "typing",
-}
-if numpy is not None:
-    SAFE_MODULES.add("numpy")
-
-def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
-    root = name.split(".", 1)[0]
-    if level != 0 or root not in SAFE_MODULES:
-        raise ImportError("only approved modules may be imported")
-    return __import__(name, globals, locals, fromlist, level)
-
-class CandidateGuard(ast.NodeVisitor):
-    def visit(self, node):
-        if isinstance(node, FORBIDDEN_NODES):
-            raise ValueError("forbidden syntax: " + type(node).__name__)
-        return super().visit(node)
-
-    def visit_Name(self, node):
-        if node.id in FORBIDDEN_NAMES or node.id.startswith("__"):
-            raise ValueError("forbidden name")
-        self.generic_visit(node)
-
-    def visit_Attribute(self, node):
-        if node.attr.startswith("_"):
-            raise ValueError("forbidden attribute")
-        self.generic_visit(node)
-
-    def visit_Import(self, node):
-        if any(alias.name.split(".", 1)[0] not in SAFE_MODULES for alias in node.names):
-            raise ValueError("unapproved import")
-        self.generic_visit(node)
-
-    def visit_ImportFrom(self, node):
-        root = (node.module or "").split(".", 1)[0]
-        if node.level != 0 or root not in SAFE_MODULES:
-            raise ValueError("unapproved import")
-        self.generic_visit(node)
-
-SAFE_BUILTINS = {
-    "abs": abs, "all": all, "any": any, "AssertionError": AssertionError,
-    "bool": bool, "bytes": bytes, "bytearray": bytearray, "callable": callable,
-    "chr": chr, "complex": complex, "dict": dict, "divmod": divmod,
-    "enumerate": enumerate, "Exception": Exception, "filter": filter,
-    "float": float, "format": format, "frozenset": frozenset, "hash": hash,
-    "hex": hex, "int": int, "isinstance": isinstance, "iter": iter, "len": len,
-    "list": list, "map": map, "max": max, "min": min, "next": next,
-    "object": object, "ord": ord, "pow": pow, "range": range, "repr": repr,
-    "reversed": reversed, "round": round, "set": set, "slice": slice,
-    "sorted": sorted, "str": str, "sum": sum, "tuple": tuple, "type": type,
-    "TypeError": TypeError, "ValueError": ValueError, "zip": zip,
-    "__import__": safe_import,
-}
 
 def emit(value):
     sys.stdout.write(json.dumps(value, ensure_ascii=False) + "\n")
+
 
 def main():
     payload = json.loads(sys.stdin.read())
     if numpy is None:
         emit({"status": "error", "detail": "numpy_not_installed"})
         return
-    source = payload["source"]
-    namespace = {"__builtins__": SAFE_BUILTINS, "__name__": "candidate"}
     captured = io.StringIO()
     try:
-        tree = ast.parse(source, mode="exec")
-        CandidateGuard().visit(tree)
         with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
-            exec(compile(tree, "<candidate>", "exec"), namespace, namespace)
-        candidate = namespace.get(payload["entry_point"])
-        if not callable(candidate):
-            raise ValueError("entry_point_not_callable")
+            candidate = load_candidate(
+                payload["source"], payload["entry_point"], payload.get("allowed_modules", [])
+            )
     except ValueError as error:
         emit({"status": "rejected", "detail": str(error)})
         return
@@ -664,11 +706,16 @@ def main():
     try:
         setup = "\n".join(payload.get("test_imports", []))
         test = payload["test"]
+        test_namespace = {
+            "__builtins__": __builtins__,
+            "__name__": "evalplus_test",
+            "candidate": candidate,
+        }
         with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
             if setup:
-                exec(compile(setup, "<evalplus-test-imports>", "exec"), namespace, namespace)
-            exec(compile(test, "<evalplus-test>", "exec"), namespace, namespace)
-            check = namespace.get("check")
+                exec(compile(setup, "<evalplus-test-imports>", "exec"), test_namespace, test_namespace)
+            exec(compile(test, "<evalplus-test>", "exec"), test_namespace, test_namespace)
+            check = test_namespace.get("check")
             if callable(check):
                 check(candidate)
     except AssertionError:
@@ -679,6 +726,7 @@ def main():
         return
     emit({"status": "passed"})
 
+
 if __name__ == "__main__":
     main()
 """
@@ -688,9 +736,12 @@ if __name__ == "__main__":
 # canonical oracle rather than only a fixture with expected JSON values.  This
 # worker mirrors the public v0.3.1 comparison semantics closely enough for the
 # RoundValue protocol while keeping candidate code and the private oracle in
-# distinct namespaces.  It is intentionally a local-execution adapter, not a
-# replacement for EvalPlus's container/leaderboard runner.
-_EVALPLUS_DIFFERENTIAL_WORKER = r"""
+# distinct namespaces.  The trusted oracle executes with normal builtins;
+# model-generated candidate code executes through the shared restricted
+# ``load_candidate`` guard.  It is intentionally a local-execution adapter,
+# not a replacement for EvalPlus's container/leaderboard runner.
+_EVALPLUS_DIFFERENTIAL_WORKER = _CODE_GUARD_TEMPLATE + r"""
+import ast
 import contextlib
 import copy
 import io
@@ -702,6 +753,8 @@ try:
     import numpy as np
 except BaseException:
     np = None
+
+CAPTURED = io.StringIO()
 
 MBPP_OUTPUT_NOT_NONE_TASKS = {"check_str", "text_match_three", "text_starta_endb"}
 MBPP_OUTPUT_SET_EQ_TASKS = {
@@ -789,7 +842,8 @@ def check_outputs(dataset, entry_point, function, inputs, expected, atol):
     effective_atol = atol
     for index, (item_input, expected_output) in enumerate(zip(inputs, expected)):
         try:
-            output = function(*copy.deepcopy(item_input))
+            with contextlib.redirect_stdout(CAPTURED), contextlib.redirect_stderr(CAPTURED):
+                output = function(*copy.deepcopy(item_input))
             exact_match = output == expected_output
             if dataset == "mbpp":
                 if entry_point == "are_equivalent":
@@ -837,8 +891,7 @@ def main():
             base_inputs = mbpp_deserialize_inputs(payload["source_task_id"], base_inputs)
             plus_inputs = mbpp_deserialize_inputs(payload["source_task_id"], plus_inputs)
         reference_namespace = {"__name__": "reference"}
-        captured = io.StringIO()
-        with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
+        with contextlib.redirect_stdout(CAPTURED), contextlib.redirect_stderr(CAPTURED):
             exec(compile(payload["reference_code"], "<evalplus-reference>", "exec"), reference_namespace, reference_namespace)
         reference_function = reference_namespace.get(entry_point)
         if not callable(reference_function):
@@ -850,12 +903,13 @@ def main():
         emit({"status": "error", "detail": "reference_" + type(error).__name__})
         return
     try:
-        candidate_namespace = {"__name__": "candidate"}
-        with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
-            exec(compile(payload["source"], "<candidate>", "exec"), candidate_namespace, candidate_namespace)
-        candidate_function = candidate_namespace.get(entry_point)
-        if not callable(candidate_function):
-            raise ValueError("entry_point_not_callable")
+        with contextlib.redirect_stdout(CAPTURED), contextlib.redirect_stderr(CAPTURED):
+            candidate_function = load_candidate(
+                payload["source"], entry_point, payload.get("allowed_modules", [])
+            )
+    except ValueError as error:
+        emit({"status": "rejected", "detail": str(error)})
+        return
     except BaseException as error:
         emit({"status": "rejected", "detail": "candidate_" + type(error).__name__})
         return
@@ -1078,6 +1132,7 @@ def _score_evalplus_embedded(
         "entry_point": entry_point,
         "test": test,
         "test_imports": test_imports,
+        "allowed_modules": _CANDIDATE_ALLOWED_MODULES,
     }
     try:
         with tempfile.TemporaryDirectory(prefix="roundvalue-evalplus-") as temporary_cwd:
@@ -1180,7 +1235,12 @@ def _score_evalplus_differential(
         )
     scoring = _mapping(task.get("scoring")) or {}
     timeout = _positive_float(scoring.get("timeout_seconds", timeout_seconds), timeout_seconds, 60.0)
-    payload = {"source": code, "entry_point": entry_point, **data}
+    payload = {
+        "source": code,
+        "entry_point": entry_point,
+        "allowed_modules": _CANDIDATE_ALLOWED_MODULES,
+        **data,
+    }
     try:
         with tempfile.TemporaryDirectory(prefix="roundvalue-evalplus-differential-") as temporary_cwd:
             completed = subprocess.run(
@@ -1262,10 +1322,12 @@ def score_code(
 
     Local execution is opt-in because generated code is untrusted input.  When
     enabled, the candidate runs in a temporary working directory with a
-    secret-stripped environment and a wall-clock timeout.  Simple JSON fixture
-    tasks additionally use restricted builtins and an AST check; EvalPlus
-    differential tasks intentionally accept normal Python syntax for protocol
-    compatibility.  Neither mode is an OS/container security sandbox.
+    secret-stripped environment and a wall-clock timeout.  Every evaluator path
+    now applies the same guard to model-generated code: a bounded AST policy,
+    reduced builtins (with an arithmetic-only ``eval``), a dunder-attribute
+    ban, and a curated module allowlist.  Trusted canonical oracles and test
+    programs are exempt from that guard.  This is defense-in-depth, not an
+    OS/container security sandbox.
     """
 
     code = extract_code(final_answer)
@@ -1310,6 +1372,7 @@ def score_code(
         "source": code,
         "entry_point": entry_point,
         "tests": tests,
+        "allowed_modules": _SIMPLE_FIXTURE_ALLOWED_MODULES,
         "abs_tol": _nonnegative_float(scoring.get("abs_tol", task.get("abs_tol", 1e-9)), 1e-9, 1.0),
         "rel_tol": _nonnegative_float(scoring.get("rel_tol", task.get("rel_tol", 1e-9)), 1e-9, 1.0),
     }
