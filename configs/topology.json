@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "default_topology_id": "debate_pac_v1",
+  "topologies": {
+    "debate_pac_v1": {
+      "runner": "two_stage_pac_writer",
+      "max_rounds": 3,
+      "nodes": [
+        {"id": "planner_stage_1", "role": "planner", "stage": 1, "parallel_group": "stage_1"},
+        {"id": "analyst_stage_1", "role": "analyst", "stage": 1, "parallel_group": "stage_1"},
+        {"id": "critic_stage_1", "role": "critic", "stage": 1, "parallel_group": "stage_1"},
+        {"id": "planner_stage_2", "role": "planner", "stage": 2, "parallel_group": "stage_2"},
+        {"id": "analyst_stage_2", "role": "analyst", "stage": 2, "parallel_group": "stage_2"},
+        {"id": "critic_stage_2", "role": "critic", "stage": 2, "parallel_group": "stage_2"},
+        {"id": "writer", "role": "writer", "stage": 3, "parallel_group": null}
+      ],
+      "packets": [
+        {
+          "id": "stage_1_packet",
+          "sources": ["planner_stage_1", "analyst_stage_1", "critic_stage_1"]
+        },
+        {
+          "id": "writer_packet",
+          "sources": ["stage_1_packet", "planner_stage_2", "analyst_stage_2", "critic_stage_2"]
+        }
+      ],
+      "edges": [
+        ["planner_stage_1", "stage_1_packet"],
+        ["analyst_stage_1", "stage_1_packet"],
+        ["critic_stage_1", "stage_1_packet"],
+        ["stage_1_packet", "planner_stage_2"],
+        ["stage_1_packet", "analyst_stage_2"],
+        ["stage_1_packet", "critic_stage_2"],
+        ["stage_1_packet", "writer_packet"],
+        ["planner_stage_2", "writer_packet"],
+        ["analyst_stage_2", "writer_packet"],
+        ["critic_stage_2", "writer_packet"],
+        ["writer_packet", "writer"]
+      ]
+    }
+  }
+}

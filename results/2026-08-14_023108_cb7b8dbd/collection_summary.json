@@ -1,0 +1,79 @@
+{
+  "bootstrap": {
+    "samples": 2000,
+    "seed": 20260813
+  },
+  "cost_status": "configured",
+  "cost_usd": {
+    "ci95_high": 0.0008057504,
+    "ci95_low": 0.0006695304000000001,
+    "mean": 0.0007376404,
+    "n": 2
+  },
+  "input_tokens": {
+    "ci95_high": 4682.0,
+    "ci95_low": 4169.0,
+    "mean": 4425.5,
+    "n": 2
+  },
+  "latency_ms": {
+    "ci95_high": 17458.0,
+    "ci95_low": 15524.0,
+    "mean": 16491.0,
+    "n": 2
+  },
+  "output_tokens": {
+    "ci95_high": 913.0,
+    "ci95_low": 683.0,
+    "mean": 798.0,
+    "n": 2
+  },
+  "quality": {
+    "ci95_high": 1.0,
+    "ci95_low": 1.0,
+    "mean": 1.0,
+    "n": 2
+  },
+  "resource_observation": {
+    "cost_usd": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "input_tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "latency_ms": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "output_tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "quality": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    }
+  },
+  "schema_version": "1.0",
+  "tasks_complete": 2,
+  "tasks_failed": 0,
+  "tasks_total": 2,
+  "tokens": {
+    "ci95_high": 5595.0,
+    "ci95_low": 4852.0,
+    "mean": 5223.5,
+    "n": 2
+  }
+}

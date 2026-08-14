@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.1",
+  "kind": "paper_dataset_registry",
+  "domain": "math",
+  "purpose": "Paper benchmark sources only. This registry is metadata, not a runnable task file.",
+  "datasets": [
+    {
+      "dataset_id": "MATH-100-RoundValue-v1",
+      "task_document": "benchmark/math/MATH100_tasks.json",
+      "scoring": "exact_normalized_answer",
+      "task_count": 300,
+      "split_protocol": {
+        "train": 140,
+        "validation": 60,
+        "test": 100
+      },
+      "test_source": {
+        "dataset": "HuggingFaceH4/MATH-500",
+        "split": "test",
+        "selection": "deterministic stratified MATH-100 subset; seed recorded in formal_experiment_v1.provenance.json"
+      },
+      "development_source": {
+        "dataset": "qwedsacf/competition_math",
+        "split": "train",
+        "leakage_rule": "all MATH-500 problems are excluded before train/validation selection"
+      },
+      "provenance": "benchmark/formal_experiment_v1.provenance.json"
+    }
+  ]
+}

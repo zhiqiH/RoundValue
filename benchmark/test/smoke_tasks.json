@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "benchmark_id": "repository_smoke_v1",
+  "purpose": "Independent repository acceptance test. These public fixtures are not sampled from, derived from, or reported with the paper benchmarks.",
+  "tasks": [
+    {
+      "task_id": "test_math_001",
+      "domain": "math",
+      "prompt": "Compute 17 multiplied by 6. Return only the integer.",
+      "reference_answer": "102"
+    },
+    {
+      "task_id": "test_math_002",
+      "domain": "math",
+      "prompt": "Solve for x: 3x + 5 = 20. Return only x.",
+      "reference_answer": "5"
+    },
+    {
+      "task_id": "test_code_001",
+      "domain": "code",
+      "prompt": "Write a Python function named add_one(x) that returns x plus 1.",
+      "entry_point": "add_one",
+      "test_cases": [
+        {"args": [0], "expected": 1},
+        {"args": [-2], "expected": -1}
+      ]
+    },
+    {
+      "task_id": "test_code_002",
+      "domain": "code",
+      "prompt": "Write a Python function named is_even(n) that returns True exactly when integer n is even.",
+      "entry_point": "is_even",
+      "test_cases": [
+        {"args": [8], "expected": true},
+        {"args": [7], "expected": false}
+      ]
+    }
+  ],
+  "invariants": [
+    "Task identifiers are globally unique within this independent test benchmark.",
+    "All answers and test cases are public repository-test fixtures only.",
+    "No task may be copied from a paper benchmark."
+  ]
+}
