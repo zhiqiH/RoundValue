@@ -12,8 +12,20 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 
-def node_cumulative(nodes: Sequence[Mapping[str, Any]], model: Mapping[str, Any]) -> dict[str, Any]:
-    """Aggregate usage and cost for node records from one or more rounds."""
+def node_cumulative(
+    nodes: Sequence[Mapping[str, Any]],
+    model: Mapping[str, Any],
+    wall_clock_ms: int | float | None = None,
+) -> dict[str, Any]:
+    """Aggregate usage and cost for node records from one or more rounds.
+
+    ``latency_ms`` is the sum of every recorded API attempt's service time.
+    Parallel peers make that sum larger than the real waiting time, so callers
+    that know the elapsed wall clock pass ``wall_clock_ms`` as well.  For new
+    records the honest elapsed time is reported as ``wall_clock_ms`` and the
+    legacy ``latency_ms`` key; ``api_latency_ms`` always keeps the service-time
+    sum for auditing.
+    """
 
     attempts = [attempt for node in nodes for attempt in node.get("attempts", [])]
     successful = [attempt for attempt in attempts if attempt.get("status") == "succeeded"]
@@ -32,7 +44,10 @@ def node_cumulative(nodes: Sequence[Mapping[str, Any]], model: Mapping[str, Any]
     )
     input_tokens = sum(input_values) if input_known else None
     output_tokens = sum(output_values) if output_known else None
-    latency_ms = sum(value for value in latency_values if isinstance(value, int))
+    api_latency_ms = sum(value for value in latency_values if isinstance(value, int))
+    elapsed_wall_clock_ms: int | None = None
+    if wall_clock_ms is not None and isinstance(wall_clock_ms, (int, float)):
+        elapsed_wall_clock_ms = max(0, int(round(float(wall_clock_ms))))
     pricing = model.get("pricing", {})
     pricing_map = pricing if isinstance(pricing, dict) else {}
     input_cache_hit_price = pricing_map.get("input_cache_hit_per_million")
@@ -60,7 +75,11 @@ def node_cumulative(nodes: Sequence[Mapping[str, Any]], model: Mapping[str, Any]
         "api_attempts": len(attempts),
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
-        "latency_ms": latency_ms,
+        "api_latency_ms": api_latency_ms,
+        "wall_clock_ms": elapsed_wall_clock_ms,
+        "latency_ms": elapsed_wall_clock_ms
+        if elapsed_wall_clock_ms is not None
+        else api_latency_ms,
         "cost_usd": cost_usd,
         "input_cache_hit_tokens": cache_hit_tokens,
         "input_cache_miss_tokens": cache_miss_tokens,

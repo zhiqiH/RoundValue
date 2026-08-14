@@ -108,53 +108,6 @@ def _validate_agents(config: dict[str, Any]) -> None:
     for role in roles:
         if role["id"] != "writer" and role["output_schema"].get("is_checkpoint_answer") is True:
             raise ConfigurationError("only Writer may be marked as a checkpoint answer")
-    single_agent = config.get("single_agent")
-    if single_agent is not None:
-        _validate_single_agent(single_agent)
-
-
-def _validate_single_agent(value: Any) -> None:
-    """Validate the optional independent Single Agent baseline contract."""
-
-    role = require_object(value, "agents.json single_agent")
-    if require_string(role.get("id"), "agents.json single_agent.id") != "single_agent":
-        raise ConfigurationError("agents.json single_agent.id must be 'single_agent'")
-    require_string(role.get("system_prompt"), "agents.json single_agent.system_prompt")
-    schema = require_object(
-        role.get("output_schema"), "agents.json single_agent.output_schema"
-    )
-    fields = require_list(
-        schema.get("required_fields"), "agents.json single_agent.required_fields"
-    )
-    if fields != ["final_answer"]:
-        raise ConfigurationError(
-            "agents.json single_agent must require exactly final_answer"
-        )
-    properties = require_object(
-        schema.get("properties"), "agents.json single_agent.output_schema.properties"
-    )
-    if set(properties) != set(fields):
-        raise ConfigurationError(
-            "agents.json single_agent.output_schema.properties must describe final_answer"
-        )
-    final_spec = require_object(
-        properties.get("final_answer"), "agents.json single_agent.final_answer"
-    )
-    if (
-        final_spec.get("type") != "string"
-        or isinstance(final_spec.get("min_length"), bool)
-        or not isinstance(final_spec.get("min_length"), int)
-        or final_spec["min_length"] < 1
-    ):
-        raise ConfigurationError(
-            "agents.json single_agent.final_answer must be a non-empty string contract"
-        )
-    if schema.get("is_checkpoint_answer") is not True:
-        raise ConfigurationError(
-            "agents.json single_agent must be marked as a checkpoint answer"
-        )
-
-
 def _validate_model_config(config: dict[str, Any]) -> None:
     if config.get("schema_version") != "1.0":
         raise ConfigurationError("model_config.json schema_version must be '1.0'")
@@ -315,7 +268,6 @@ def load_experiment_config(
         "topology_id": selected_topology_id,
         "model_id": selected_id,
         "model": model,
-        "single_agent": agents.get("single_agent"),
         "provider_name": model["provider"],
         "provider": provider,
     }

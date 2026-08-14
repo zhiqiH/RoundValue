@@ -6,7 +6,7 @@ cumulative resource counters.  It never calls a model and never reads a gold
 answer itself, which keeps deployment features separate from offline labels.
 
 For a checkpoint at round ``t`` with quality ``Q_t``, cumulative monetary cost
-``C_t``, and cumulative latency ``L_t`` the module defines:
+``C_t``, and cumulative wall-clock latency ``L_t`` the module defines:
 
 ``ΔQ_t = Q_(t+1) - Q_t``
 ``V_t  = ΔQ_t - lambda_cost * ΔC_t - mu_latency * ΔL_t``
@@ -16,12 +16,15 @@ For a checkpoint at round ``t`` with quality ``Q_t``, cumulative monetary cost
 The maximum in ``G`` includes the current checkpoint.  Thus ``G=0`` means
 that stopping now is at least as good as every available continuation; it is a
 finite-horizon oracle target, never an online feature.
+
+``L_t`` is the real elapsed wall-clock time whenever the collecting runner
+recorded it; the summed API service time is retained separately as
+``api_latency_ms`` and used only as a legacy fallback for older trajectories.
 """
 
 from __future__ import annotations
 
 import math
-from collections import Counter
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -176,18 +179,33 @@ def _counter(checkpoint: Mapping[str, Any]) -> dict[str, Any]:
         return (_number(value, "/".join(keys)), True) if present else (None, False)
 
     cost, cost_available = find(("cost_usd", "api_cost_usd", "cumulative_cost_usd", "cost"))
-    latency, latency_available = find(("latency_ms", "cumulative_latency_ms", "latency"))
+    # The latency cost is real elapsed wall clock when it was recorded.  Older
+    # saved records only carried the summed API service time, which remains
+    # the legacy fallback; the explicit API sum is retained alongside it.
+    wall_clock, wall_clock_available = find(("wall_clock_ms", "cumulative_wall_clock_ms"))
+    legacy_latency, legacy_latency_available = find(
+        ("latency_ms", "cumulative_latency_ms", "latency")
+    )
+    latency = wall_clock if wall_clock_available else legacy_latency
+    latency_available = wall_clock_available or legacy_latency_available
+    api_latency, api_latency_available = find(
+        ("api_latency_ms", "cumulative_api_latency_ms")
+    )
     input_tokens, input_available = find(("input_tokens", "cumulative_input_tokens"))
     output_tokens, output_available = find(("output_tokens", "cumulative_output_tokens"))
     logical_calls, calls_available = find(("logical_calls", "cumulative_logical_calls", "calls"))
     return {
         "cost_usd": cost,
         "latency_ms": latency,
+        "wall_clock_ms": wall_clock,
+        "api_latency_ms": api_latency,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "logical_calls": logical_calls,
         "cost_available": cost_available,
         "latency_available": latency_available,
+        "wall_clock_available": wall_clock_available,
+        "api_latency_available": api_latency_available,
         "input_tokens_available": input_available,
         "output_tokens_available": output_available,
         "logical_calls_available": calls_available,
@@ -403,11 +421,19 @@ def build_labels(
             "quality": float(row["quality"]),
             "cumulative_cost_usd": float(current["cost_usd"]) if current["cost_usd"] is not None else None,
             "cumulative_latency_ms": float(current["latency_ms"]) if current["latency_ms"] is not None else None,
+            "cumulative_wall_clock_ms": float(current["wall_clock_ms"])
+            if current["wall_clock_ms"] is not None
+            else None,
+            "cumulative_api_latency_ms": float(current["api_latency_ms"])
+            if current["api_latency_ms"] is not None
+            else None,
             "cumulative_input_tokens": float(current["input_tokens"]) if current["input_tokens"] is not None else None,
             "cumulative_output_tokens": float(current["output_tokens"]) if current["output_tokens"] is not None else None,
             "cumulative_logical_calls": float(current["logical_calls"]) if current["logical_calls"] is not None else None,
             "cost_available": bool(current["cost_available"]),
             "latency_available": bool(current["latency_available"]),
+            "wall_clock_available": bool(current["wall_clock_available"]),
+            "api_latency_available": bool(current["api_latency_available"]),
             "next_round_index": int(next_row["round_index"]) if next_row is not None else None,
             "delta_q": delta_q,
             "delta_quality": delta_q,
@@ -429,46 +455,8 @@ def build_labels(
     return labels
 
 
-def label_summary(labels: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    """Return JSON-serializable descriptive statistics for already built labels."""
-
-    transitions = Counter(str(item.get("transition", "unknown")) for item in labels)
-    decision_rows = [item for item in labels if not bool(item.get("is_terminal"))]
-    delta_values = [
-        float(item["delta_q"]) for item in decision_rows if item.get("delta_q") is not None
-    ]
-    value_values = [float(item["V"]) for item in decision_rows if item.get("V") is not None]
-    gain_values = [float(item["G"]) for item in labels if item.get("G") is not None]
-    return {
-        "label_version": LABEL_VERSION,
-        "n_checkpoints": len(labels),
-        "n_decisions": len(decision_rows),
-        "transition_counts": {
-            name: int(transitions[name])
-            for name in ("repair", "neutral", "harm", "recovery", "terminal", "unknown")
-        },
-        "mean_delta_q": sum(delta_values) / len(delta_values) if delta_values else None,
-        "mean_one_step_value": sum(value_values) / len(value_values) if value_values else None,
-        "mean_finite_horizon_value": sum(gain_values) / len(gain_values) if gain_values else None,
-    }
-
-
-def attach_labels(
-    task_record: Mapping[str, Any],
-    lambda_cost: float = 0.0,
-    mu_latency: float = 0.0,
-) -> dict[str, Any]:
-    """Return a shallow JSON-safe copy with derived labels; never mutate input."""
-
-    result = dict(task_record)
-    result["labels"] = build_labels(task_record, lambda_cost=lambda_cost, mu_latency=mu_latency)
-    return result
-
-
 __all__ = [
     "LABEL_SCHEMA_VERSION",
     "LABEL_VERSION",
-    "attach_labels",
     "build_labels",
-    "label_summary",
 ]

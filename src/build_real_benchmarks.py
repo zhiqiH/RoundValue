@@ -8,10 +8,11 @@ fields: they are available only to the local scorer, never to agents.
 
 Usage (from the repository root)::
 
-    python scripts/build_real_benchmarks.py
+    python src/build_real_benchmarks.py
 
-The required ``datasets`` package is kept in the ``benchmark-build`` optional
-dependency group so ordinary runtime installations remain lightweight.
+The required ``datasets`` package is an offline build-time dependency only;
+the runtime experiment needs nothing beyond ``httpx`` (plus ``numpy`` for
+code scoring).
 """
 
 from __future__ import annotations
@@ -184,8 +185,8 @@ def _load_dataset(source: Mapping[str, str], *, cache_dir: Path | None) -> list[
         from datasets import load_dataset
     except ImportError as error:
         raise RuntimeError(
-            "benchmark construction needs the optional dependency: "
-            "python -m pip install -e '.[benchmark-build]'"
+            "benchmark construction needs the build-time dependency: "
+            "python -m pip install 'datasets>=3,<5'"
         ) from error
     dataset = load_dataset(
         str(source["dataset"]),

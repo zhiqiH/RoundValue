@@ -66,18 +66,5 @@
         "is_checkpoint_answer": true
       }
     }
-  ],
-  "single_agent": {
-    "id": "single_agent",
-    "system_prompt": "You are the Single Agent baseline in the RoundValue experiment. Independently solve the task using only the visible task inputs, obey the task's requested answer format, and return the required JSON object only. Do not claim access to hidden answers or hidden tests.",
-    "output_schema": {
-      "required_fields": [
-        "final_answer"
-      ],
-      "properties": {
-        "final_answer": {"type": "string", "min_length": 1}
-      },
-      "is_checkpoint_answer": true
-    }
-  }
+  ]
 }

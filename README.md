@@ -2,11 +2,15 @@
 
 RoundValue 是一套为独立论文实验准备的、精简且可复现的固定 Debate 实验代码。仓库只保存代码、配置、基准、轨迹和结果；论文正文、投稿图表与文献在仓库外单独维护。
 
-用户只需要配置密钥并运行一个入口：
+用户配置密钥后按顺序运行四个入口：
 
 ```powershell
-python -m pip install -e .
-roundvalue --mode smoke
+python -m pip install httpx   # 运行时依赖；代码评分还需 numpy
+python scripts/step1_smoke.py
+python scripts/step2_collect.py --benchmark benchmark/formal_experiment_v1.json \
+  --smoke-run-id <SMOKE_RUN_ID> --allow-local-code-evaluation
+python scripts/step3_analyze.py --run-id <RUN_ID> --allow-local-code-evaluation
+python scripts/step4_visualize.py --run-id <RUN_ID>
 ```
 
 ## 配置密钥
@@ -49,7 +53,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 | 文件 | 作用 |
 |---|---|
-| `configs/agents.json` | 四个 Debate 角色的内嵌提示词与输出字段，以及 Single Agent 基线的独立提示词 |
+| `configs/agents.json` | 四个 Debate 角色的内嵌提示词与输出字段 |
 | `configs/model_config.json` | Provider、模型、采样、重试、价格和密钥位置 |
 | `configs/topology.json` | 拓扑注册表：选择当前拓扑，并定义其节点、边、packet 与轮数 |
 
@@ -59,25 +63,25 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 角色提示词保存在 `agents.json`，不使用散落的 prompt 文件。模型价格采用服务端返回的 token 明细计算；缺失 token、缓存计数、成本或延迟时保存为“未知”，绝不按零处理。
 
-## 六种运行模式
+## 四个执行步骤
 
-```powershell
-roundvalue --mode smoke
-roundvalue --mode collect --benchmark benchmark/your_paper_tasks.json
-roundvalue --mode single --benchmark benchmark/your_paper_tasks.json
-roundvalue --mode fit --run-id <RUN_ID>
-roundvalue --mode evaluate --run-id <RUN_ID>
-roundvalue --mode reproduce --run-id <RUN_ID>
-```
+| 脚本 | 职责 | 模型 API | 写入位置 |
+|---|---|---|---|
+| `step1_smoke.py` | 小规模通路测试：配置、完整一轮 Debate、数学/代码评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
+| `step2_collect.py` | 只收集第 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误） | 是 | `trajectories/<run_id>/` |
+| `step3_analyze.py` | 完全离线：检查完整性、逐轮评分、`ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 否 | `results/<run_id>/` |
+| `step4_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 图表与简短结论 | 否 | `results/<run_id>/` |
 
-- `smoke`：对 `benchmark/test/` 中的全部数学验收题执行一轮完整 DAG、评分并落盘；每题必须得到预期分数 1。
-- `collect`：必须显式给出含 Train/Validation/Test 三个冻结 split 的 JSON 基准，收集完整的至多三轮轨迹。
-- `single`：收集独立的 Single Agent 基线：每题只做一次模型调用，直接产出 `final_answer`；它不是第 0 轮辩论，也不会伪装成任何固定轮次。
-- `fit`：只用 Train 轨迹训练；仅用 Validation 冻结阈值与偏好。
-- `evaluate`：只重放冻结的 Test 轨迹，不调用模型 API。
-- `reproduce`：从已保存 JSON 重新派生标签、汇总与结果，不调用模型 API。
+执行顺序是强制的：
 
-`collect` 输出的 `run_id` 是后续阶段唯一接受的实验标识。不要混用不同 run 的轨迹。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
+1. `step1_smoke` 的每道验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。
+2. `step2_collect` 必须用 `--smoke-run-id` 指向一个已通过的 smoke run，并校验该 smoke 已全部通过、且三份 config 与模型/拓扑选择未发生变化；不满足时拒绝开始。它只保存原始轨迹，不训练策略、不生成结论。给定已存在的 `--run-id` 时进入断点续跑，只重跑失败或缺失任务；失败任务 ID 输出到终端，原因写入 `results/<run>/failure_details.json`。
+3. `step3_analyze` 只读 trajectories，用确定性离线评分器对每一轮评分（代码任务需 `--allow-local-code-evaluation`），构建 `ΔQ/V/G` 标签，只在 Train 拟合、只在 Validation 选阈值、只在 Test 评估，并把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results。它绝不调用模型 API，也绝不回写 trajectories。
+4. `step4_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）与 `summary_conclusion.txt`。可视化不读取 trajectories，不可能反向影响评分或策略。
+
+因此 `trajectories/` 是原始且尽量不被后续阶段修改的模型轨迹；`results/` 必须能由 trajectories 完全离线重建（重跑 step3）。`run_id` 是 step3/step4 唯一接受的实验标识，不要混用不同 run。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
+
+延迟统计保留两个字段：`wall_clock_ms` 是真实的墙钟等待时间（并行的 P/A/C 请求只计一次），`api_latency_ms` 是全部 API 尝试的服务时间总和（含重试）。离线标签、报告图表与策略的时间成本使用墙钟；旧轨迹只有服务时间总和时按未知处理，不用服务时间冒充墙钟。
 
 ### 防泄漏与 Agent 可见信息
 
@@ -112,11 +116,11 @@ MATH-100 是从 MATH-500 以固定种子进行分层抽样得到的 100 道测�
 运行正式收集：
 
 ```powershell
-python -m pip install -e ".[benchmark-build,benchmark-code]"
-roundvalue --mode collect --benchmark benchmark/formal_experiment_v1.json --allow-local-code-evaluation
+python scripts/step2_collect.py --benchmark benchmark/formal_experiment_v1.json \
+  --smoke-run-id <SMOKE_RUN_ID> --allow-local-code-evaluation
 ```
 
-每次运行还会冻结任务文件哈希。`benchmark/formal_experiment_v1.provenance.json` 固定记录生成器版本、MATH 的 Hugging Face revision、EvalPlus 官方 release URL 与 artifact SHA-256、原始记录 SHA-256、MATH-100 抽样种子和全部测试 task ID。若需从已固定来源重新构建数据，运行 `python scripts/build_real_benchmarks.py` 和 `python scripts/verify_real_benchmarks.py`。
+每次运行还会冻结任务文件哈希。`benchmark/formal_experiment_v1.provenance.json` 固定记录生成器版本、MATH 的 Hugging Face revision、EvalPlus 官方 release URL 与 artifact SHA-256、原始记录 SHA-256、MATH-100 抽样种子和全部测试 task ID。若需从已固定来源重新构建数据，先 `python -m pip install 'datasets>=3,<5'`，再运行 `python src/build_real_benchmarks.py` 和 `python src/verify_real_benchmarks.py`。
 
 ## 目录与产物
 
@@ -126,14 +130,16 @@ RoundValue/
 ├── configs/{agents.json,model_config.json,topology.json}
 ├── .secret/model_key.json              # 仅本地存在
 ├── results/YYYY-MM-DD_HHMMSS_<run_id>/
-├── scripts/test_benchmark.py           # 唯一面向用户的入口
-├── src/                                # 扁平的底层 Python 模块
+├── scripts/step1_smoke.py              # scripts/ 只含这四个用户入口
+├── scripts/step2_collect.py
+├── scripts/step3_analyze.py
+├── scripts/step4_visualize.py
+├── src/                                # 底层模块 + pipeline 编排 + benchmark 构建/验证工具
 ├── trajectories/YYYYMMDD_HHMMSS_<run_id>/
 ├── EXPERIMENT_ARCHITECTURE.md
-├── pyproject.toml
 └── README.md
 ```
 
-每个 run 冻结三份配置、基准来源与哈希、命令行、模型 profile、Git 状态、源代码快照、调用尝试、原始响应、checkpoint、评分、特征和标签。`trajectories/` 保存任务级完整记录；`results/` 保存汇总指标、置信区间、策略结果和 manifest。二者是可追溯的实验产物，默认可纳入 Git；提交前仍应确认不含密钥、个人数据或不应公开的模型输出。
+每个 run 冻结三份配置、基准来源与哈希、命令行、模型 profile、Git 状态、源代码快照。`trajectories/` 保存任务级原始记录（调用尝试、原始响应、checkpoint、token、延迟、重试与错误）；`results/` 保存由 step3 离线派生的评分、标签、策略、比较与汇总，可由 trajectories 重建。二者是可追溯的实验产物，默认可纳入 Git；提交前仍应确认不含密钥、个人数据或不应公开的模型输出。
 
-正式报告应比较 Single Agent、Fixed-1/2/3、启发式（共识）、task-only、RoundValue、one-step Oracle 与 trajectory Oracle，并报告质量—成本 Pareto、任务级置信区间、Oracle regret、Repair/Neutral/Harm/Recovery。共识信号要求 Planner/Analyst/Critic 六条输出中至少 2/3 的 `candidate_answer` 完全一致，或 Writer 答案跨轮稳定。Oracle 仅用于诊断上界，绝不用于部署策略。
+正式报告应比较 Fixed-1/2/3、启发式（共识）、task-only、RoundValue、one-step Oracle 与 trajectory Oracle，并报告质量—成本 Pareto、任务级置信区间、Oracle regret、Repair/Neutral/Harm/Recovery。共识信号要求 Planner/Analyst/Critic 六条输出中至少 2/3 的 `candidate_answer` 完全一致，或 Writer 答案跨轮稳定。Oracle 仅用于诊断上界，绝不用于部署策略。

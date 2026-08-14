@@ -550,6 +550,8 @@ def _selected_result(
                 "total_tokens": None,
                 "cost_usd": None,
                 "latency_ms": None,
+                "wall_clock_ms": None,
+                "api_latency_ms": None,
                 "logical_calls": None,
                 "utility": None,
             }
@@ -564,6 +566,12 @@ def _selected_result(
     cost = _optional_number(selected_label.get("cumulative_cost_usd"), "selected cumulative_cost_usd")
     latency = _optional_number(
         selected_label.get("cumulative_latency_ms"), "selected cumulative_latency_ms"
+    )
+    wall_clock = _optional_number(
+        selected_label.get("cumulative_wall_clock_ms"), "selected cumulative_wall_clock_ms"
+    )
+    api_latency = _optional_number(
+        selected_label.get("cumulative_api_latency_ms"), "selected cumulative_api_latency_ms"
     )
     calls = _optional_number(
         selected_label.get("cumulative_logical_calls"), "selected cumulative_logical_calls"
@@ -586,6 +594,8 @@ def _selected_result(
             else None,
             "cost_usd": cost,
             "latency_ms": latency,
+            "wall_clock_ms": wall_clock,
+            "api_latency_ms": api_latency,
             "logical_calls": calls,
             "utility": _objective_utility(
                 quality,
@@ -839,6 +849,8 @@ def _empty_metrics(total_records: int) -> dict[str, Any]:
         "mean_total_tokens": None,
         "mean_cost_usd": None,
         "mean_latency_ms": None,
+        "mean_wall_clock_ms": None,
+        "mean_api_latency_ms": None,
         "mean_logical_calls": None,
         "mean_stop_round": None,
         "stop_round_counts": {},
@@ -851,6 +863,8 @@ def _empty_metrics(total_records: int) -> dict[str, Any]:
         "total_tokens",
         "cost_usd",
         "latency_ms",
+        "wall_clock_ms",
+        "api_latency_ms",
         "logical_calls",
         "stop_round",
     ):
@@ -884,6 +898,8 @@ def _metrics(results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             "total_tokens",
             "cost_usd",
             "latency_ms",
+            "wall_clock_ms",
+            "api_latency_ms",
             "logical_calls",
             "stop_round",
         )
@@ -900,6 +916,8 @@ def _metrics(results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "mean_total_tokens": metric_values["total_tokens"][0],
         "mean_cost_usd": metric_values["cost_usd"][0],
         "mean_latency_ms": metric_values["latency_ms"][0],
+        "mean_wall_clock_ms": metric_values["wall_clock_ms"][0],
+        "mean_api_latency_ms": metric_values["api_latency_ms"][0],
         "mean_logical_calls": metric_values["logical_calls"][0],
         "mean_stop_round": metric_values["stop_round"][0],
         **{
@@ -1102,34 +1120,6 @@ def _solve_linear_system(matrix: list[list[float]], vector: list[float]) -> list
     return [augmented[row][-1] for row in range(size)]
 
 
-def fit_mean_policy(
-    records: Any,
-    *,
-    policy_name: str = "roundvalue",
-    target: str = "G",
-    lambda_cost: float = 0.0,
-    mu_latency: float = 0.0,
-    threshold: float = 0.0,
-) -> dict[str, Any]:
-    """Fit a JSON mean-value policy from a frozen training collection."""
-
-    lambda_value = _nonnegative_number(lambda_cost, "lambda_cost")
-    latency_value = _nonnegative_number(mu_latency, "mu_latency")
-    rows = _training_rows(records, policy_name, target, lambda_value, latency_value)
-    return {
-        "schema_version": POLICY_SCHEMA_VERSION,
-        "policy_version": POLICY_VERSION,
-        "kind": "mean",
-        "policy_name": policy_name,
-        "target": target,
-        "value": sum(row[1] for row in rows) / len(rows),
-        "threshold": _required_number(threshold, "threshold"),
-        "lambda_cost": lambda_value,
-        "mu_latency": latency_value,
-        "training_rows": len(rows),
-    }
-
-
 def _training_rows(
     records: Any,
     policy_name: str,
@@ -1292,7 +1282,6 @@ __all__ = [
     "build_policy_features",
     "consensus_signal",
     "fit_linear_policy",
-    "fit_mean_policy",
     "fit_policy_models",
     "normalize_records",
     "predict_policy_value",

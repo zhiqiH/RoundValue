@@ -1,14 +1,12 @@
-"""The sole user-facing entry point for RoundValue experiments.
+"""Shared orchestration behind the four sequential step entry points.
 
-This script deliberately owns orchestration only.  The implementation lives
-in ``src/`` and all durable state is JSON.  In particular, ``fit``,
-``evaluate``, and ``reproduce`` never construct a provider: they operate only
-on trajectories already saved by ``smoke`` or ``collect``.
+The four ``scripts/step*_*.py`` files are the user-facing interface; this
+module owns orchestration only.  The implementation lives in ``src/`` and all
+durable state is JSON.  Offline stages never construct a provider.
 """
 
 from __future__ import annotations
 
-import argparse
 import inspect
 import json
 import math
@@ -24,15 +22,14 @@ if str(SRC_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SRC_DIRECTORY))
 
 from benchmark_io import benchmark_provenance, freeze_splits, load_benchmark  # noqa: E402
-from config_loader import config_snapshot, load_experiment_config, select_topology  # noqa: E402
-from contracts import utc_now  # noqa: E402
+from config_loader import config_snapshot  # noqa: E402
+from contracts import file_hash, json_hash, utc_now  # noqa: E402
 from debate_runner import FixedDebateRunner  # noqa: E402
-from labels import build_labels, label_summary  # noqa: E402
+from labels import build_labels  # noqa: E402
 from policy import fit_policy_models, replay_policies  # noqa: E402
 from provider import build_provider  # noqa: E402
 from report import summarize_collection  # noqa: E402
 from scorer import score_trajectory  # noqa: E402
-from single_agent_runner import SingleAgentRunner  # noqa: E402
 from storage import (  # noqa: E402
     create_run,
     open_run,
@@ -45,6 +42,7 @@ from storage import (  # noqa: E402
     write_result,
     write_task_record,
 )
+from visualize import build_analysis, render_analysis, write_analysis  # noqa: E402
 
 DEFAULT_BENCHMARK = "benchmark/test/smoke_tasks.json"
 VALID_SPLITS = frozenset({"train", "validation", "test"})
@@ -60,47 +58,6 @@ POLICY_SELECTION = {
 }
 
 
-def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Run or replay the fixed, JSON-configured RoundValue experiment."
-    )
-    parser.add_argument(
-        "--mode",
-        required=True,
-        choices=("smoke", "collect", "single", "fit", "evaluate", "reproduce"),
-        help="smoke/collect/single make real API calls; all other modes are offline only.",
-    )
-    parser.add_argument(
-        "--benchmark",
-        default=None,
-        help=(
-            "Project-relative JSON benchmark manifest. Smoke defaults to its visible fixture; "
-            "collect requires a frozen train/validation/test benchmark."
-        ),
-    )
-    parser.add_argument(
-        "--run-id",
-        help="Existing run for offline modes, or an optional explicit new ID for smoke/collect.",
-    )
-    parser.add_argument(
-        "--model-id",
-        help="Model profile ID from configs/model_config.json (smoke/collect/single only).",
-    )
-    parser.add_argument(
-        "--topology-id",
-        help="Topology ID from configs/topology.json (smoke/collect/single only).",
-    )
-    parser.add_argument(
-        "--allow-local-code-evaluation",
-        action="store_true",
-        help=(
-            "Allow local execution of code-benchmark candidates during collection. "
-            "Use only in an isolated environment; this is not an OS security sandbox."
-        ),
-    )
-    return parser
-
-
 def _emit(value: Mapping[str, Any]) -> None:
     """Print a compact JSON status line suitable for a terminal or a runner."""
 
@@ -114,8 +71,44 @@ def _safe_message(error: BaseException) -> str:
     return message[:500] if message else type(error).__name__
 
 
+def entrypoint(mode: str, invoke: Callable[[], int], state: dict[str, Any]) -> int:
+    """Shared terminal error handling for the four sequential step scripts."""
+
+    try:
+        return invoke()
+    except KeyboardInterrupt:
+        manifest = state.get("manifest")
+        if isinstance(manifest, Mapping):
+            state["manifest"] = update_run_status(dict(manifest), "interrupted")
+        _emit({"status": "interrupted", "mode": mode})
+        return 130
+    except Exception as error:
+        manifest = state.get("manifest")
+        if isinstance(manifest, Mapping):
+            state["manifest"] = update_run_status(
+                dict(manifest),
+                f"{mode}_failed",
+                failure={"type": type(error).__name__, "message": _safe_message(error)},
+            )
+        _emit(
+            {
+                "status": "failed",
+                "mode": mode,
+                "error": {
+                    "type": type(error).__name__,
+                    "message": _safe_message(error),
+                },
+                "run_id": manifest.get("run_id")
+                if isinstance(manifest, Mapping)
+                else None,
+            }
+        )
+        return 1
+
+
 def _command_line() -> list[str]:
-    return ["roundvalue", *sys.argv[1:]]
+    program = Path(sys.argv[0]).name if sys.argv and sys.argv[0] else "roundvalue"
+    return [program, *sys.argv[1:]]
 
 
 def _create_run(
@@ -199,6 +192,7 @@ def _task_record(
     trajectory: Mapping[str, Any],
     *,
     allow_local_code_evaluation: bool,
+    score: bool = True,
 ) -> dict[str, Any]:
     record: dict[str, Any] = {
         "schema_version": "1.0",
@@ -211,6 +205,10 @@ def _task_record(
             "allow_local_code_evaluation": allow_local_code_evaluation,
         },
     }
+    if not score:
+        # Collection keeps trajectories raw; step3_analyze derives scores
+        # offline into results/ and never writes them back here.
+        return record
     try:
         scores = _score_record(
             record, allow_local_code_evaluation=allow_local_code_evaluation
@@ -254,6 +252,7 @@ def _collect_task(
     run_id: str,
     max_rounds: int,
     allow_local_code_evaluation: bool,
+    score: bool = True,
 ) -> dict[str, Any]:
     trajectory = runner.run_trajectory(
         task=dict(task), run_id=run_id, max_rounds=max_rounds
@@ -263,6 +262,7 @@ def _collect_task(
         split,
         trajectory,
         allow_local_code_evaluation=allow_local_code_evaluation,
+        score=score,
     )
 
 
@@ -277,6 +277,115 @@ def _write_frozen_splits(
             "splits": split_by_task,
         },
     )
+
+
+def _record_is_complete(record: Mapping[str, Any]) -> bool:
+    """Return true only for a fully collected, scored trajectory.
+
+    A failed provider call, malformed Writer JSON, or missing scorer output
+    all make a record eligible for recollection during a resume.
+    """
+
+    trajectory = record.get("trajectory")
+    if not isinstance(trajectory, Mapping) or trajectory.get("status") != "complete":
+        return False
+    if record.get("scoring_error"):
+        return False
+    scores = record.get("scores")
+    if "scores" not in record:
+        # A raw trajectory collected without scoring is complete when its
+        # trajectory is complete; step3_analyze derives scores offline.
+        return True
+    if not isinstance(scores, list) or not scores:
+        return False
+    for score in scores:
+        quality = score.get("quality") if isinstance(score, Mapping) else None
+        if (
+            isinstance(quality, bool)
+            or not isinstance(quality, int | float)
+            or not math.isfinite(float(quality))
+        ):
+            return False
+    return True
+
+
+def _open_resumable_run(
+    args: argparse.Namespace, mode: str
+) -> dict[str, Any] | None:
+    """Return an existing run eligible for resume, or ``None`` for a new run."""
+
+    if not args.run_id:
+        return None
+    try:
+        manifest = open_run(PROJECT_ROOT, args.run_id)
+    except FileNotFoundError:
+        return None
+    if manifest.get("mode") != mode:
+        raise ValueError(
+            f"run {args.run_id} was started in mode {manifest.get('mode')!r}; "
+            f"resuming mode {mode!r} requires a {mode!r} run"
+        )
+    return manifest
+
+
+def _validate_resume_consistency(
+    manifest: Mapping[str, Any],
+    split_by_task: Mapping[str, str],
+) -> None:
+    """Refuse to resume against a changed benchmark or split assignment."""
+
+    trajectory_dir = Path(manifest["trajectory_dir"])
+    frozen = read_json(trajectory_dir / "frozen_splits.json")
+    if frozen.get("splits") != dict(split_by_task):
+        raise ValueError(
+            "resume aborted: the frozen split assignment no longer matches the benchmark"
+        )
+    provenance = read_json(trajectory_dir / "benchmark_provenance.json")
+    for relative, expected_hash in provenance.get("files", {}).items():
+        if file_hash(PROJECT_ROOT / relative) != expected_hash:
+            raise ValueError(
+                f"resume aborted: benchmark source changed since the run started: {relative}"
+            )
+
+
+def _verify_smoke_gate(
+    smoke_run_id: str | None, experiment: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Require a passing smoke run before formal collection starts."""
+
+    if not smoke_run_id:
+        raise ValueError("--smoke-run-id is required; run step1_smoke.py first")
+    smoke_manifest = open_run(PROJECT_ROOT, smoke_run_id)
+    if smoke_manifest.get("mode") != "smoke":
+        raise ValueError(
+            f"run {smoke_run_id} is not a smoke run "
+            f"(mode={smoke_manifest.get('mode')!r}); rerun step1_smoke.py"
+        )
+    task_count = smoke_manifest.get("task_count")
+    complete_count = smoke_manifest.get("complete_task_count")
+    failed_ids = smoke_manifest.get("failed_task_ids") or []
+    if (
+        not isinstance(task_count, int)
+        or task_count < 1
+        or complete_count != task_count
+        or failed_ids
+    ):
+        raise ValueError(
+            f"smoke run {smoke_run_id} did not pass every task; rerun step1_smoke.py"
+        )
+    if smoke_manifest.get("config_hash") != json_hash(config_snapshot(PROJECT_ROOT)):
+        raise ValueError(
+            "configs changed since the smoke run; rerun step1_smoke.py first"
+        )
+    if smoke_manifest.get("selected_model_id") != experiment.get("model_id"):
+        raise ValueError(
+            "smoke used a different model profile; rerun step1_smoke.py with the same profile"
+        )
+    if smoke_manifest.get("selected_topology_id") != experiment.get("topology_id"):
+        raise ValueError(
+            "smoke used a different topology; rerun step1_smoke.py with the same topology"
+        )
+    return smoke_manifest
 
 
 def _run_smoke(
@@ -340,6 +449,14 @@ def _run_smoke(
         for record in records
     )
     status = "smoke_complete" if succeeded else "smoke_failed"
+    failed_task_ids = [
+        record["task"]["task_id"]
+        for record in records
+        if record["trajectory"].get("status") != "complete"
+        or record.get("scoring_error")
+        or len(record.get("scores", [])) != 1
+        or (record.get("scores") or [{}])[0].get("quality") != 1
+    ]
     updated = update_run_status(
         manifest,
         status,
@@ -347,6 +464,7 @@ def _run_smoke(
         complete_task_count=sum(
             record["trajectory"].get("status") == "complete" for record in records
         ),
+        failed_task_ids=failed_task_ids,
     )
     state["manifest"] = updated
     _emit(
@@ -354,6 +472,7 @@ def _run_smoke(
             "status": status,
             "mode": "smoke",
             "run_id": updated["run_id"],
+            "failed_task_ids": failed_task_ids,
             "trajectory_dir": updated["trajectory_dir"],
             "result_dir": updated["result_dir"],
         }
@@ -365,6 +484,8 @@ def _run_collect(
     args: argparse.Namespace,
     experiment: Mapping[str, Any],
     state: dict[str, Any],
+    *,
+    score: bool = True,
 ) -> int:
     """Collect complete trajectories only; online stopping never changes collection."""
 
@@ -395,16 +516,35 @@ def _run_collect(
             "benchmark includes code tasks; pass --allow-local-code-evaluation "
             "only after reviewing the local-execution risk"
         )
-    manifest = _create_run(args, experiment, state)
-    _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
-    _write_frozen_splits(manifest, split_by_task)
+    resuming_manifest = _open_resumable_run(args, "collect")
+    if resuming_manifest is not None:
+        manifest = resuming_manifest
+        state["manifest"] = manifest
+        _validate_resume_consistency(manifest, split_by_task)
+        existing_records = read_task_records(manifest)
+    else:
+        manifest = _create_run(args, experiment, state)
+        _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
+        _write_frozen_splits(manifest, split_by_task)
+        existing_records = []
+    complete_by_task = {
+        str(record.get("task", {}).get("task_id")): record
+        for record in existing_records
+        if _record_is_complete(record)
+    }
     provider = build_provider(dict(experiment))
     records: list[dict[str, Any]] = []
+    resumed_task_ids: list[str] = []
     try:
         runner = FixedDebateRunner(dict(experiment), provider)
         max_rounds = int(experiment["topology"]["max_rounds"])
         for task in tasks:
             split = split_by_task[task["task_id"]]
+            prior = complete_by_task.get(str(task["task_id"]))
+            if prior is not None:
+                records.append(prior)
+                resumed_task_ids.append(str(task["task_id"]))
+                continue
             record = _collect_task(
                 runner,
                 task=task,
@@ -412,6 +552,7 @@ def _run_collect(
                 run_id=str(manifest["run_id"]),
                 max_rounds=max_rounds,
                 allow_local_code_evaluation=args.allow_local_code_evaluation,
+                score=score,
             )
             records.append(record)
             write_task_record(manifest, record)
@@ -425,6 +566,21 @@ def _run_collect(
         if record["trajectory"].get("status") != "complete"
         or record.get("scoring_error")
     ]
+    failure_details = [
+        {
+            "task_id": str(record.get("task", {}).get("task_id")),
+            "split": record.get("split"),
+            "trajectory_status": record.get("trajectory", {}).get("status"),
+            "failure_reason": record.get("trajectory", {}).get("failure_reason"),
+            "scoring_error": record.get("scoring_error"),
+        }
+        for record in failed
+    ]
+    write_result(
+        manifest,
+        "failure_details",
+        {"schema_version": "1.0", "failures": failure_details},
+    )
     status = "collect_complete" if not failed else "collect_failed"
     updated = update_run_status(
         manifest,
@@ -432,6 +588,8 @@ def _run_collect(
         task_count=len(records),
         complete_task_count=len(records) - len(failed),
         failed_task_ids=[record["task"].get("task_id") for record in failed],
+        resumed_task_ids=resumed_task_ids,
+        resumed=bool(resuming_manifest),
     )
     state["manifest"] = updated
     _emit(
@@ -441,92 +599,8 @@ def _run_collect(
             "run_id": updated["run_id"],
             "task_count": len(records),
             "failed_task_count": len(failed),
-            "trajectory_dir": updated["trajectory_dir"],
-            "result_dir": updated["result_dir"],
-        }
-    )
-    return 0 if not failed else 1
-
-
-def _run_single(
-    args: argparse.Namespace,
-    experiment: Mapping[str, Any],
-    state: dict[str, Any],
-) -> int:
-    """Collect the independent one-call Single Agent baseline."""
-
-    if not args.benchmark:
-        raise ValueError(
-            "single requires --benchmark <project-relative-benchmark.json>"
-        )
-    benchmark_path, benchmark_document, tasks = load_benchmark(
-        PROJECT_ROOT, args.benchmark
-    )
-    split_by_task = freeze_splits(tasks, seed=SPLIT_SEED)
-    split_counts = {
-        split: sum(value == split for value in split_by_task.values())
-        for split in VALID_SPLITS
-    }
-    absent_splits = [split for split, count in split_counts.items() if count == 0]
-    if absent_splits:
-        raise ValueError(
-            "frozen benchmark has no "
-            + ", ".join(sorted(absent_splits))
-            + " tasks; single requires train, validation, and test coverage"
-        )
-    if not args.allow_local_code_evaluation and any(
-        task.get("domain") == "code" for task in tasks
-    ):
-        raise ValueError(
-            "benchmark includes code tasks; pass --allow-local-code-evaluation "
-            "only after reviewing the local-execution risk"
-        )
-    manifest = _create_run(args, experiment, state)
-    _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
-    _write_frozen_splits(manifest, split_by_task)
-    provider = build_provider(dict(experiment))
-    records: list[dict[str, Any]] = []
-    try:
-        runner = SingleAgentRunner(dict(experiment), provider)
-        for task in tasks:
-            split = split_by_task[task["task_id"]]
-            trajectory = runner.run_trajectory(
-                task=dict(task), run_id=str(manifest["run_id"])
-            )
-            record = _task_record(
-                task,
-                split,
-                trajectory,
-                allow_local_code_evaluation=args.allow_local_code_evaluation,
-            )
-            records.append(record)
-            write_task_record(manifest, record)
-    finally:
-        provider.close()
-    summary = _summary(records)
-    write_result(manifest, "collection_summary", summary)
-    failed = [
-        record
-        for record in records
-        if record["trajectory"].get("status") != "complete"
-        or record.get("scoring_error")
-    ]
-    status = "single_complete" if not failed else "single_failed"
-    updated = update_run_status(
-        manifest,
-        status,
-        task_count=len(records),
-        complete_task_count=len(records) - len(failed),
-        failed_task_ids=[record["task"].get("task_id") for record in failed],
-    )
-    state["manifest"] = updated
-    _emit(
-        {
-            "status": status,
-            "mode": "single",
-            "run_id": updated["run_id"],
-            "task_count": len(records),
-            "failed_task_count": len(failed),
+            "failed_task_ids": [record["task"].get("task_id") for record in failed],
+            "resumed_task_count": len(resumed_task_ids),
             "trajectory_dir": updated["trajectory_dir"],
             "result_dir": updated["result_dir"],
         }
@@ -545,48 +619,6 @@ def _require_existing_run(
     manifest = open_run(PROJECT_ROOT, args.run_id)
     state["manifest"] = manifest
     return manifest
-
-
-def _frozen_experiment(manifest: Mapping[str, Any]) -> dict[str, Any]:
-    """Use a run's immutable selected topology, never a later config file."""
-
-    snapshots = manifest.get("configs")
-    if not isinstance(snapshots, Mapping):
-        raise ValueError("run manifest has no frozen JSON configuration snapshot")
-    topology_snapshot = snapshots.get("topology.json")
-    if not isinstance(topology_snapshot, Mapping):
-        raise ValueError("run manifest has no frozen topology.json snapshot")
-    topology_document = topology_snapshot.get("content")
-    if not isinstance(topology_document, Mapping):
-        raise ValueError("run manifest has malformed frozen topology.json content")
-    selected_id = manifest.get("selected_topology_id")
-    if selected_id is not None and not isinstance(selected_id, str):
-        raise ValueError("run manifest has malformed selected_topology_id")
-    topology_id, topology = select_topology(dict(topology_document), selected_id)
-    return {
-        "model_id": manifest.get("selected_model_id"),
-        "topology_id": topology_id,
-        "topology": topology,
-    }
-
-
-def _records_for_split(
-    records: list[dict[str, Any]], split: str
-) -> list[dict[str, Any]]:
-    selected = [record for record in records if record.get("split") == split]
-    if not selected:
-        raise ValueError(f"run has no {split} records")
-    if any(
-        record.get("trajectory", {}).get("status") != "complete" for record in selected
-    ):
-        raise ValueError(
-            f"run has incomplete {split} trajectories; recollect before offline analysis"
-        )
-    if any(record.get("scoring_error") for record in selected):
-        raise ValueError(
-            f"run has unscored {split} trajectories; resolve scorer failures before analysis"
-        )
-    return selected
 
 
 def _selection_config() -> dict[str, Any]:
@@ -683,31 +715,103 @@ def _freeze_thresholds(
     return frozen, audit
 
 
-def _run_fit(
+def _run_analyze(
     args: argparse.Namespace,
     experiment: Mapping[str, Any],
     state: dict[str, Any],
 ) -> int:
-    """Fit only on train records and freeze thresholds only on validation records."""
+    """Offline step3: score, label, fit, select thresholds, and evaluate.
 
+    This function reads trajectories only, derives every result into
+    ``results/<run_id>/``, and never writes back to ``trajectories/``.  It
+    makes no provider calls.
+    """
+
+    del experiment  # Analysis is fully offline and uses the frozen run inputs.
     manifest = _require_existing_run(args, state)
+    if manifest.get("mode") != "collect":
+        raise ValueError(
+            "step3_analyze requires a run collected by step2_collect "
+            f"(mode={manifest.get('mode')!r})"
+        )
     records = read_task_records(manifest)
-    train_records = _records_for_split(records, "train")
-    validation_records = _records_for_split(records, "validation")
-    if any(record.get("split") != "train" for record in train_records):
-        raise ValueError("policy fitting accepts train records only")
+    if not records:
+        raise ValueError("run has no saved task records")
+    frozen = read_json(Path(manifest["trajectory_dir"]) / "frozen_splits.json")
+    expected_splits = frozen.get("splits")
+    if not isinstance(expected_splits, Mapping):
+        raise ValueError("run has no frozen split assignment")
+    collected_ids = {
+        str(record.get("task", {}).get("task_id")) for record in records
+    }
+    missing = sorted(set(expected_splits) - collected_ids)
+    extra = sorted(collected_ids - set(expected_splits))
+    if missing or extra:
+        raise ValueError(
+            "trajectory coverage mismatch: "
+            f"missing={missing}, extra={extra}; resume with step2_collect.py"
+        )
+    incomplete = [
+        str(record.get("task", {}).get("task_id"))
+        for record in records
+        if record.get("trajectory", {}).get("status") != "complete"
+        or record.get("scoring_error")
+    ]
+    if incomplete:
+        raise ValueError(
+            f"incomplete trajectories: {incomplete}; resume with step2_collect.py"
+        )
+    has_code = any(
+        str(record.get("task", {}).get("domain", "")).casefold() == "code"
+        for record in records
+    )
+    if has_code and not args.allow_local_code_evaluation:
+        raise ValueError(
+            "run contains code tasks; pass --allow-local-code-evaluation "
+            "for offline deterministic scoring"
+        )
+
     selection = _selection_config()
     lambda_cost = float(selection["lambda_cost"])
     mu_latency = float(selection["mu_latency"])
-    for record in [*train_records, *validation_records]:
-        record["labels"] = build_labels(
-            record, lambda_cost=lambda_cost, mu_latency=mu_latency
+    scored_records: list[dict[str, Any]] = []
+    labels_by_task: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        task_id = str(record.get("task", {}).get("task_id"))
+        scored = dict(record)
+        scores = _score_record(
+            scored, allow_local_code_evaluation=args.allow_local_code_evaluation
         )
-        if not record["labels"]:
-            raise ValueError(
-                f"no labels available for task {record['task'].get('task_id')}"
-            )
-        write_task_record(manifest, record)
+        for score in scores:
+            quality = score.get("quality")
+            if (
+                isinstance(quality, bool)
+                or not isinstance(quality, int | float)
+                or not math.isfinite(float(quality))
+            ):
+                raise ValueError(
+                    f"task {task_id} has an unscored or invalid checkpoint"
+                )
+        scored["scores"] = scores
+        labels = build_labels(
+            scored, lambda_cost=lambda_cost, mu_latency=mu_latency
+        )
+        scored["labels"] = labels
+        labels_by_task[task_id] = labels
+        scored_records.append(scored)
+
+    train_records = [
+        record for record in scored_records if record.get("split") == "train"
+    ]
+    validation_records = [
+        record for record in scored_records if record.get("split") == "validation"
+    ]
+    test_records = [
+        record for record in scored_records if record.get("split") == "test"
+    ]
+    if not train_records or not validation_records or not test_records:
+        raise ValueError("run must contain train, validation, and test records")
+
     fitted = fit_policy_models(
         train_records,
         lambda_cost=lambda_cost,
@@ -734,8 +838,46 @@ def _run_fit(
             record["task"].get("task_id") for record in validation_records
         ],
     }
-    write_json(Path(manifest["trajectory_dir"]) / "policy.json", policy_document)
+    replay = replay_policies(test_records, frozen)
+    replay.update(
+        {
+            "evaluated_at": utc_now(),
+            "run_id": manifest["run_id"],
+            "evaluation_split": "test",
+        }
+    )
+    analysis = build_analysis(
+        dict(manifest),
+        scored_records,
+        label_parameters=(lambda_cost, mu_latency),
+        replay=replay,
+    )
+
+    write_result(
+        manifest,
+        "scores",
+        {
+            "schema_version": "1.0",
+            "run_id": manifest["run_id"],
+            "scorer_note": "deterministic offline scores derived from saved trajectories",
+            "scores_by_task": {
+                str(record["task"]["task_id"]): [dict(score) for score in record["scores"]]
+                for record in scored_records
+            },
+        },
+    )
+    write_result(
+        manifest,
+        "labels",
+        {
+            "schema_version": "1.0",
+            "run_id": manifest["run_id"],
+            "label_parameters": {"lambda_cost": lambda_cost, "mu_latency": mu_latency},
+            "labels_by_task": labels_by_task,
+        },
+    )
     write_result(manifest, "policy", policy_document)
+    write_result(manifest, "test_policy_replay", replay)
     write_result(
         manifest,
         "fit_summary",
@@ -751,51 +893,6 @@ def _run_fit(
             },
         },
     )
-    updated = update_run_status(manifest, "fit_complete")
-    state["manifest"] = updated
-    _emit(
-        {
-            "status": "fit_complete",
-            "mode": "fit",
-            "run_id": updated["run_id"],
-            "result_dir": updated["result_dir"],
-        }
-    )
-    return 0
-
-
-def _read_frozen_policy(manifest: Mapping[str, Any]) -> dict[str, Any]:
-    result_path = Path(manifest["result_dir"]) / "policy.json"
-    trajectory_path = Path(manifest["trajectory_dir"]) / "policy.json"
-    if result_path.is_file():
-        return read_json(result_path)
-    if trajectory_path.is_file():
-        return read_json(trajectory_path)
-    raise FileNotFoundError(
-        "frozen policy not found; run --mode fit --run-id <RUN_ID> first"
-    )
-
-
-def _run_evaluate(
-    args: argparse.Namespace,
-    experiment: Mapping[str, Any],
-    state: dict[str, Any],
-) -> int:
-    """Replay the frozen policy on test trajectories only; no provider exists here."""
-
-    del experiment  # This mode must not construct a provider or alter model settings.
-    manifest = _require_existing_run(args, state)
-    policy_document = _read_frozen_policy(manifest)
-    test_records = _records_for_split(read_task_records(manifest), "test")
-    replay = replay_policies(test_records, policy_document)
-    replay.update(
-        {
-            "evaluated_at": utc_now(),
-            "run_id": manifest["run_id"],
-            "evaluation_split": "test",
-        }
-    )
-    write_result(manifest, "test_policy_replay", replay)
     write_result(
         manifest,
         "evaluation_summary",
@@ -807,160 +904,50 @@ def _run_evaluate(
             "policy_metrics": replay["policy_metrics"],
         },
     )
-    updated = update_run_status(manifest, "evaluate_complete")
-    state["manifest"] = updated
-    _emit(
-        {
-            "status": "evaluate_complete",
-            "mode": "evaluate",
-            "run_id": updated["run_id"],
-            "result_dir": updated["result_dir"],
-        }
-    )
-    return 0
-
-
-def _label_parameters_from_policy_or_defaults(
-    manifest: Mapping[str, Any]
-) -> tuple[float, float]:
-    try:
-        policy_document = _read_frozen_policy(manifest)
-    except FileNotFoundError:
-        selection = _selection_config()
-        return float(selection["lambda_cost"]), float(selection["mu_latency"])
-    parameters = policy_document.get("label_parameters")
-    if not isinstance(parameters, Mapping):
-        raise ValueError("frozen policy has no JSON label_parameters object")
-    cost = parameters.get("lambda_cost")
-    latency = parameters.get("mu_latency")
-    if (
-        isinstance(cost, bool)
-        or not isinstance(cost, int | float)
-        or isinstance(latency, bool)
-        or not isinstance(latency, int | float)
-    ):
-        raise ValueError("frozen policy has invalid label parameters")
-    return float(cost), float(latency)
-
-
-def _run_reproduce(
-    args: argparse.Namespace,
-    experiment: Mapping[str, Any],
-    state: dict[str, Any],
-) -> int:
-    """Rebuild labels and summaries from saved JSON only; no score/API calls occur."""
-
-    manifest = _require_existing_run(args, state)
-    records = read_task_records(manifest)
-    if not records:
-        raise ValueError("run has no saved task records")
-    lambda_cost, mu_latency = _label_parameters_from_policy_or_defaults(manifest)
-    labels_by_task: dict[str, list[dict[str, Any]]] = {}
-    summaries: dict[str, Any] = {}
-    for record in records:
-        if not isinstance(record.get("scores"), list):
-            task_id = record.get("task", {}).get("task_id")
-            raise ValueError(
-                f"task {task_id} has no saved scores; reproduce does not rescore"
-            )
-        labels = build_labels(record, lambda_cost=lambda_cost, mu_latency=mu_latency)
-        task_id = str(record.get("task", {}).get("task_id"))
-        labels_by_task[task_id] = labels
-        summaries[task_id] = label_summary(labels)
-    report = _summary(records)
-    report.update(
-        {
-            "reproduced_at": utc_now(),
-            "run_id": manifest["run_id"],
-            "label_parameters": {"lambda_cost": lambda_cost, "mu_latency": mu_latency},
-        }
-    )
-    write_result(manifest, "reproduced_collection_summary", report)
-    write_result(
+    write_analysis(dict(manifest), analysis)
+    updated = update_run_status(
         manifest,
-        "reproduced_labels",
-        {
-            "schema_version": "1.0",
-            "run_id": manifest["run_id"],
-            "labels_by_task": labels_by_task,
-            "label_summaries_by_task": summaries,
-        },
+        "analyze_complete",
+        analyzed_task_count=len(scored_records),
+        training_records=len(train_records),
+        validation_records=len(validation_records),
+        test_records=len(test_records),
     )
-    updated = update_run_status(manifest, "reproduce_complete")
     state["manifest"] = updated
     write_result(updated, "reproducibility_index", reproducibility_index(updated))
     _emit(
         {
-            "status": "reproduce_complete",
-            "mode": "reproduce",
+            "status": "analyze_complete",
+            "mode": "analyze",
             "run_id": updated["run_id"],
+            "analyzed_task_count": len(scored_records),
             "result_dir": updated["result_dir"],
         }
     )
     return 0
 
 
-def main(argv: list[str] | None = None) -> int:
-    args = _parser().parse_args(argv)
-    state: dict[str, Any] = {"manifest": None}
-    try:
-        if args.mode in {"smoke", "collect", "single"}:
-            experiment = load_experiment_config(
-                PROJECT_ROOT,
-                model_id=args.model_id,
-                topology_id=args.topology_id,
-            )
-        else:
-            if args.model_id or args.topology_id:
-                raise ValueError(
-                    "--model-id and --topology-id are only valid for smoke or collect; "
-                    "offline modes use frozen outputs"
-                )
-            # Offline work uses the config snapshot captured at collection. It
-            # must not silently depend on a subsequently edited topology.json.
-            manifest = _require_existing_run(args, state)
-            experiment = _frozen_experiment(manifest)
-        handlers: dict[
-            str, Callable[[argparse.Namespace, Mapping[str, Any], dict[str, Any]], int]
-        ] = {
-            "smoke": _run_smoke,
-            "collect": _run_collect,
-            "single": _run_single,
-            "fit": _run_fit,
-            "evaluate": _run_evaluate,
-            "reproduce": _run_reproduce,
+def _run_visualize(
+    args: argparse.Namespace,
+    experiment: Mapping[str, Any],
+    state: dict[str, Any],
+) -> int:
+    """Offline step4: render saved results into CSV, HTML, and a conclusion."""
+
+    del experiment  # Visualization reads results only, never trajectories.
+    manifest = _require_existing_run(args, state)
+    paths = render_analysis(dict(manifest))
+    updated = update_run_status(manifest, "visualize_complete")
+    state["manifest"] = updated
+    _emit(
+        {
+            "status": "visualize_complete",
+            "mode": "visualize",
+            "run_id": updated["run_id"],
+            "result_dir": updated["result_dir"],
+            "html_report": paths["html"],
+            "task_csv": paths["csv"],
+            "summary": paths["summary"],
         }
-        return handlers[args.mode](args, experiment, state)
-    except KeyboardInterrupt:
-        manifest = state.get("manifest")
-        if isinstance(manifest, Mapping):
-            state["manifest"] = update_run_status(dict(manifest), "interrupted")
-        _emit({"status": "interrupted", "mode": args.mode})
-        return 130
-    except Exception as error:
-        manifest = state.get("manifest")
-        if isinstance(manifest, Mapping):
-            failure_status = f"{args.mode}_failed"
-            state["manifest"] = update_run_status(
-                dict(manifest),
-                failure_status,
-                failure={"type": type(error).__name__, "message": _safe_message(error)},
-            )
-        _emit(
-            {
-                "status": "failed",
-                "mode": args.mode,
-                "error": {
-                    "type": type(error).__name__,
-                    "message": _safe_message(error),
-                },
-                "run_id": manifest.get("run_id")
-                if isinstance(manifest, Mapping)
-                else None,
-            }
-        )
-        return 1
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    )
+    return 0

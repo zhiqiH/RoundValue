@@ -37,7 +37,17 @@ from typing import Any
 SCORER_VERSION = "roundvalue-offline-scorer-v3"
 _FINAL_ANSWER_RE = re.compile(r"(?:final[_ ]?answer|answer)\s*:\s*([^\r\n]+)", re.I)
 _FENCE_RE = re.compile(r"```(?:python|py)?\s*\r?\n(.*?)```", re.I | re.S)
-_NUMBER_COMMA_RE = re.compile(r"(?<=\d),(?=\d)")
+# A comma is treated as a thousands separator only inside a bare digit run
+# such as ``1,234`` or ``11,111,100``.  It is never removed inside a tuple,
+# interval, or set, so ``(1,2)`` stays distinct from ``(12)`` and ``12``.
+_THOUSANDS_SEPARATOR_RE = re.compile(
+    r"(?<![0-9(\[{])([0-9]{1,3})(?:,([0-9]{3}))+(?![0-9)\]}\{\[])"
+)
+# The pinned canonical oracles are trusted upstream code and may legitimately
+# be much slower than a model candidate (for example Mbpp/599's official
+# reference sums ``range`` up to 1e8).  The reference gets its own generous
+# budget while untrusted candidate code keeps the short configured timeout.
+_EVALPLUS_REFERENCE_TIMEOUT_SECONDS = 180.0
 
 
 def _mapping(value: Any) -> Mapping[str, Any] | None:
@@ -204,7 +214,9 @@ def normalize_math_answer(value: str) -> str:
     text = text.replace("\\left", "").replace("\\right", "")
     text = text.replace("\\dfrac", "\\frac").replace("\\tfrac", "\\frac")
     text = text.replace("\\,", "").replace("\\!", "")
-    text = _NUMBER_COMMA_RE.sub("", text)
+    text = _THOUSANDS_SEPARATOR_RE.sub(
+        lambda match: match.group(0).replace(",", ""), text
+    )
     text = "".join(text.split())
     if text.endswith(".") and not re.fullmatch(r"[+-]?\d+\.", text):
         text = text[:-1]
@@ -747,7 +759,9 @@ import copy
 import io
 import json
 import math
+import os
 import sys
+import threading
 
 try:
     import numpy as np
@@ -755,6 +769,39 @@ except BaseException:
     np = None
 
 CAPTURED = io.StringIO()
+EXIT_REFERENCE_TIMEOUT = 42
+EXIT_CANDIDATE_TIMEOUT = 43
+
+
+class PhaseWatchdog:
+    # Abruptly exit this throwaway worker when a phase exceeds its budget.
+    # ``os._exit`` interrupts even a C-level loop such as ``sum(range(...))``,
+    # which a Python exception raised from a signal handler cannot reliably
+    # do.  The parent maps the exit code back to the timed-out phase.
+
+    def __init__(self, seconds, exit_code):
+        self.seconds = seconds
+        self.exit_code = exit_code
+        self.ready = threading.Event()
+        self.thread = None
+
+    def __enter__(self):
+        def run():
+            if not self.ready.wait(self.seconds):
+                os._exit(self.exit_code)
+
+        self.thread = threading.Thread(
+            target=run, name="roundvalue-phase-watchdog", daemon=True
+        )
+        self.thread.start()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.ready.set()
+        if self.thread is not None:
+            self.thread.join(timeout=1.0)
+        return False
+
 
 MBPP_OUTPUT_NOT_NONE_TASKS = {"check_str", "text_match_three", "text_starta_endb"}
 MBPP_OUTPUT_SET_EQ_TASKS = {
@@ -884,47 +931,51 @@ def main():
     payload = json.loads(sys.stdin.read())
     dataset = payload["dataset"]
     entry_point = payload["entry_point"]
+    reference_seconds = float(payload.get("reference_timeout_seconds", 180.0))
+    candidate_seconds = float(payload.get("candidate_timeout_seconds", 10.0))
     try:
-        base_inputs = payload["base_inputs"]
-        plus_inputs = payload["plus_inputs"]
-        if dataset == "mbpp":
-            base_inputs = mbpp_deserialize_inputs(payload["source_task_id"], base_inputs)
-            plus_inputs = mbpp_deserialize_inputs(payload["source_task_id"], plus_inputs)
-        reference_namespace = {"__name__": "reference"}
-        with contextlib.redirect_stdout(CAPTURED), contextlib.redirect_stderr(CAPTURED):
-            exec(compile(payload["reference_code"], "<evalplus-reference>", "exec"), reference_namespace, reference_namespace)
-        reference_function = reference_namespace.get(entry_point)
-        if not callable(reference_function):
-            raise ValueError("reference_entry_point_not_callable")
-        output_not_none = dataset == "mbpp" and entry_point in MBPP_OUTPUT_NOT_NONE_TASKS
-        expected_base = reference_outputs(reference_function, base_inputs, output_not_none)
-        expected_plus = reference_outputs(reference_function, plus_inputs, output_not_none)
+        with PhaseWatchdog(reference_seconds, EXIT_REFERENCE_TIMEOUT):
+            base_inputs = payload["base_inputs"]
+            plus_inputs = payload["plus_inputs"]
+            if dataset == "mbpp":
+                base_inputs = mbpp_deserialize_inputs(payload["source_task_id"], base_inputs)
+                plus_inputs = mbpp_deserialize_inputs(payload["source_task_id"], plus_inputs)
+            reference_namespace = {"__name__": "reference"}
+            with contextlib.redirect_stdout(CAPTURED), contextlib.redirect_stderr(CAPTURED):
+                exec(compile(payload["reference_code"], "<evalplus-reference>", "exec"), reference_namespace, reference_namespace)
+            reference_function = reference_namespace.get(entry_point)
+            if not callable(reference_function):
+                raise ValueError("reference_entry_point_not_callable")
+            output_not_none = dataset == "mbpp" and entry_point in MBPP_OUTPUT_NOT_NONE_TASKS
+            expected_base = reference_outputs(reference_function, base_inputs, output_not_none)
+            expected_plus = reference_outputs(reference_function, plus_inputs, output_not_none)
     except BaseException as error:
         emit({"status": "error", "detail": "reference_" + type(error).__name__})
         return
     try:
-        with contextlib.redirect_stdout(CAPTURED), contextlib.redirect_stderr(CAPTURED):
-            candidate_function = load_candidate(
-                payload["source"], entry_point, payload.get("allowed_modules", [])
+        with PhaseWatchdog(candidate_seconds, EXIT_CANDIDATE_TIMEOUT):
+            with contextlib.redirect_stdout(CAPTURED), contextlib.redirect_stderr(CAPTURED):
+                candidate_function = load_candidate(
+                    payload["source"], entry_point, payload.get("allowed_modules", [])
+                )
+            tolerance = float(payload["atol"])
+            base_ok, base_count, base_detail = check_outputs(
+                dataset, entry_point, candidate_function, base_inputs, expected_base, tolerance
             )
+            if not base_ok:
+                emit({"status": "failed", "split": "base", "failed_test": base_count, "detail": base_detail})
+                return
+            plus_ok, plus_count, plus_detail = check_outputs(
+                dataset, entry_point, candidate_function, plus_inputs, expected_plus, tolerance
+            )
+            if not plus_ok:
+                emit({"status": "failed", "split": "plus", "failed_test": plus_count, "detail": plus_detail})
+                return
     except ValueError as error:
         emit({"status": "rejected", "detail": str(error)})
         return
     except BaseException as error:
         emit({"status": "rejected", "detail": "candidate_" + type(error).__name__})
-        return
-    tolerance = float(payload["atol"])
-    base_ok, base_count, base_detail = check_outputs(
-        dataset, entry_point, candidate_function, base_inputs, expected_base, tolerance
-    )
-    if not base_ok:
-        emit({"status": "failed", "split": "base", "failed_test": base_count, "detail": base_detail})
-        return
-    plus_ok, plus_count, plus_detail = check_outputs(
-        dataset, entry_point, candidate_function, plus_inputs, expected_plus, tolerance
-    )
-    if not plus_ok:
-        emit({"status": "failed", "split": "plus", "failed_test": plus_count, "detail": plus_detail})
         return
     emit({"status": "passed", "base_count": len(base_inputs), "plus_count": len(plus_inputs)})
 
@@ -1202,10 +1253,14 @@ def _score_evalplus_differential(
     """Score a candidate with pinned official EvalPlus base/plus inputs.
 
     Expected outputs are recomputed from the private canonical oracle inside a
-    fresh child process.  The candidate receives neither that source nor the
-    hidden inputs through its agent-facing task view.  This deliberately has a
-    distinct result identity from the upstream EvalPlus runner: its process
-    isolation and timing policy are RoundValue's local adapter policy.
+    fresh child process.  The oracle and the candidate run in two separately
+    time-boxed phases of the same worker: a slow official reference (for
+    example Mbpp/599) gets a generous budget, while untrusted candidate code
+    keeps the short configured timeout.  The candidate receives neither the
+    oracle source nor the hidden inputs through its agent-facing task view.
+    This deliberately has a distinct result identity from the upstream
+    EvalPlus runner: its process isolation and timing policy are RoundValue's
+    local adapter policy.
     """
 
     entry_point = _entry_point(task)
@@ -1235,10 +1290,17 @@ def _score_evalplus_differential(
         )
     scoring = _mapping(task.get("scoring")) or {}
     timeout = _positive_float(scoring.get("timeout_seconds", timeout_seconds), timeout_seconds, 60.0)
+    reference_timeout = _positive_float(
+        scoring.get("reference_timeout_seconds", _EVALPLUS_REFERENCE_TIMEOUT_SECONDS),
+        _EVALPLUS_REFERENCE_TIMEOUT_SECONDS,
+        3600.0,
+    )
     payload = {
         "source": code,
         "entry_point": entry_point,
         "allowed_modules": _CANDIDATE_ALLOWED_MODULES,
+        "candidate_timeout_seconds": timeout,
+        "reference_timeout_seconds": reference_timeout,
         **data,
     }
     try:
@@ -1250,7 +1312,7 @@ def _score_evalplus_differential(
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                timeout=timeout,
+                timeout=timeout + reference_timeout + 15,
                 check=False,
                 cwd=temporary_cwd,
                 env=_code_runner_environment(temporary_cwd),
@@ -1272,6 +1334,30 @@ def _score_evalplus_differential(
             quality=0.0,
             reason="evalplus_differential_runner_error",
             extra={"runner_error": type(error).__name__, "evaluator": "evalplus_differential_v1"},
+        )
+    if completed.returncode == 42:
+        return _result(
+            task,
+            domain="code",
+            answer=code,
+            quality=0.0,
+            reason="evalplus_reference_timeout",
+            extra={
+                "evaluator": "evalplus_differential_v1",
+                "reference_timeout_seconds": reference_timeout,
+            },
+        )
+    if completed.returncode == 43:
+        return _result(
+            task,
+            domain="code",
+            answer=code,
+            quality=0.0,
+            reason="evalplus_differential_timeout",
+            extra={
+                "evaluator": "evalplus_differential_v1",
+                "candidate_timeout_seconds": timeout,
+            },
         )
     try:
         response = json.loads(completed.stdout)

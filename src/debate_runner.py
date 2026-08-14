@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 import json
+import time
 import traceback
 from typing import Any
 
@@ -234,8 +235,10 @@ class FixedDebateRunner:
             "messages": messages,
         }
 
-    def _cumulative(self, nodes: list[dict[str, Any]]) -> dict[str, Any]:
-        return node_cumulative(nodes, self.model)
+    def _cumulative(
+        self, nodes: list[dict[str, Any]], wall_clock_ms: int | float | None = None
+    ) -> dict[str, Any]:
+        return node_cumulative(nodes, self.model, wall_clock_ms=wall_clock_ms)
 
     def run_round(
         self,
@@ -244,6 +247,7 @@ class FixedDebateRunner:
         round_index: int,
         previous_checkpoint: dict[str, Any] | None,
     ) -> dict[str, Any]:
+        round_started_monotonic = time.monotonic()
         nodes = self.topology["nodes"]
         stage_1_specs = [node for node in nodes if node["stage"] == 1]
         stage_2_specs = [node for node in nodes if node["stage"] == 2]
@@ -263,7 +267,17 @@ class FixedDebateRunner:
         )
         round_record["nodes"].extend(stage_1)
         if any(node["status"] != "completed" for node in stage_1):
-            round_record.update({"ended_at": utc_now(), "status": "failed", "cumulative": self._cumulative(round_record["nodes"])})
+            wall_clock_ms = max(0, round((time.monotonic() - round_started_monotonic) * 1000))
+            round_record.update(
+                {
+                    "ended_at": utc_now(),
+                    "status": "failed",
+                    "wall_clock_ms": wall_clock_ms,
+                    "cumulative": self._cumulative(
+                        round_record["nodes"], wall_clock_ms=wall_clock_ms
+                    ),
+                }
+            )
             return round_record
         completed_by_id = {node["node_id"]: node for node in stage_1}
         stage_1_packet = self._packet("stage_1_packet", completed_by_id)
@@ -283,7 +297,17 @@ class FixedDebateRunner:
             stage_2 = [future.result() for future in futures]
         round_record["nodes"].extend(stage_2)
         if any(node["status"] != "completed" for node in stage_2):
-            round_record.update({"ended_at": utc_now(), "status": "failed", "cumulative": self._cumulative(round_record["nodes"])})
+            wall_clock_ms = max(0, round((time.monotonic() - round_started_monotonic) * 1000))
+            round_record.update(
+                {
+                    "ended_at": utc_now(),
+                    "status": "failed",
+                    "wall_clock_ms": wall_clock_ms,
+                    "cumulative": self._cumulative(
+                        round_record["nodes"], wall_clock_ms=wall_clock_ms
+                    ),
+                }
+            )
             return round_record
         node_by_id = {node["node_id"]: node for node in [*stage_1, *stage_2]}
         writer_packet = self._packet("writer_packet", node_by_id)
@@ -296,9 +320,17 @@ class FixedDebateRunner:
             visible_messages=[writer_packet],
         )
         round_record["nodes"].append(writer)
-        cumulative = self._cumulative(round_record["nodes"])
+        wall_clock_ms = max(0, round((time.monotonic() - round_started_monotonic) * 1000))
+        cumulative = self._cumulative(round_record["nodes"], wall_clock_ms=wall_clock_ms)
         if writer["status"] != "completed":
-            round_record.update({"ended_at": utc_now(), "status": "failed", "cumulative": cumulative})
+            round_record.update(
+                {
+                    "ended_at": utc_now(),
+                    "status": "failed",
+                    "wall_clock_ms": wall_clock_ms,
+                    "cumulative": cumulative,
+                }
+            )
             return round_record
         checkpoint = {
             "round_index": round_index,
@@ -317,7 +349,13 @@ class FixedDebateRunner:
             }
         )
         round_record.update(
-            {"ended_at": utc_now(), "status": "completed", "cumulative": cumulative, "checkpoint": checkpoint}
+            {
+                "ended_at": utc_now(),
+                "status": "completed",
+                "wall_clock_ms": wall_clock_ms,
+                "cumulative": cumulative,
+                "checkpoint": checkpoint,
+            }
         )
         return round_record
 
@@ -335,6 +373,7 @@ class FixedDebateRunner:
         if not isinstance(rounds_to_run, int) or not 1 <= rounds_to_run <= configured_max:
             raise ProtocolError(f"max_rounds must be an integer from 1 to {configured_max}")
         trajectory_id = json_hash({"run_id": run_id, "task_id": task["task_id"]})[:24]
+        trajectory_started_monotonic = time.monotonic()
         trajectory: dict[str, Any] = {
             "schema_version": "1.0",
             "trajectory_id": trajectory_id,
@@ -354,6 +393,7 @@ class FixedDebateRunner:
             "checkpoints": [],
         }
         previous_checkpoint: dict[str, Any] | None = None
+        cumulative_wall_clock_ms = 0
         for round_index in range(1, rounds_to_run + 1):
             round_record = self.run_round(
                 task=task,
@@ -366,20 +406,35 @@ class FixedDebateRunner:
                     {
                         "status": "failed",
                         "ended_at": utc_now(),
+                        "wall_clock_ms": max(
+                            0, round((time.monotonic() - trajectory_started_monotonic) * 1000)
+                        ),
                         "failure_round": round_index,
                         "failure_reason": "one or more fixed-DAG node calls failed or violated JSON output contract",
                     }
                 )
                 return trajectory
+            round_wall_clock_ms = int(round_record.get("wall_clock_ms", 0) or 0)
+            cumulative_wall_clock_ms += max(0, round_wall_clock_ms)
             checkpoint = round_record["checkpoint"]
             checkpoint["round_cost"] = dict(checkpoint["cumulative"])
             all_nodes = [node for prior_round in trajectory["rounds"] for node in prior_round["nodes"]]
-            checkpoint["cumulative"] = self._cumulative(all_nodes)
+            checkpoint["cumulative"] = self._cumulative(
+                all_nodes, wall_clock_ms=cumulative_wall_clock_ms
+            )
             trajectory["checkpoints"].append(checkpoint)
             previous_checkpoint = {
                 "round_index": checkpoint["round_index"],
                 "final_answer": checkpoint["final_answer"],
                 "checkpoint_hash": checkpoint["checkpoint_hash"],
             }
-        trajectory.update({"status": "complete", "ended_at": utc_now()})
+        trajectory.update(
+            {
+                "status": "complete",
+                "ended_at": utc_now(),
+                "wall_clock_ms": max(
+                    0, round((time.monotonic() - trajectory_started_monotonic) * 1000)
+                ),
+            }
+        )
         return trajectory

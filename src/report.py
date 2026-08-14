@@ -75,6 +75,8 @@ def task_level_summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "input_tokens": cumulative.get("input_tokens"),
                 "output_tokens": cumulative.get("output_tokens"),
                 "latency_ms": cumulative.get("latency_ms"),
+                "wall_clock_ms": cumulative.get("wall_clock_ms"),
+                "api_latency_ms": cumulative.get("api_latency_ms"),
                 "cost_usd": cumulative.get("cost_usd"),
                 "logical_calls": cumulative.get("logical_calls"),
             }
@@ -180,6 +182,12 @@ def summarize_collection(
     latency, latency_observation = _complete_aggregate(
         complete, key="latency_ms", seed=bootstrap_seed, samples=bootstrap_samples
     )
+    wall_clock, wall_clock_observation = _complete_aggregate(
+        complete, key="wall_clock_ms", seed=bootstrap_seed, samples=bootstrap_samples
+    )
+    api_latency, api_latency_observation = _complete_aggregate(
+        complete, key="api_latency_ms", seed=bootstrap_seed, samples=bootstrap_samples
+    )
     cost, cost_observation = _complete_aggregate(
         complete, key="cost_usd", seed=bootstrap_seed, samples=bootstrap_samples
     )
@@ -200,6 +208,8 @@ def summarize_collection(
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "latency_ms": latency,
+        "wall_clock_ms": wall_clock,
+        "api_latency_ms": api_latency,
         "cost_usd": cost,
         "resource_observation": {
             "quality": quality_observation,
@@ -207,31 +217,11 @@ def summarize_collection(
             "input_tokens": input_observation,
             "output_tokens": output_observation,
             "latency_ms": latency_observation,
+            "wall_clock_ms": wall_clock_observation,
+            "api_latency_ms": api_latency_observation,
             "cost_usd": cost_observation,
         },
         "cost_status": "configured"
         if cost_observation["complete_observation"] and complete
         else "unknown_or_incomplete",
     }
-
-
-def pareto_frontier(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Keep policy points not dominated by another point with higher quality/lower cost."""
-
-    valid = [
-        row
-        for row in rows
-        if isinstance(row.get("quality"), (int, float)) and isinstance(row.get("cost"), (int, float))
-    ]
-    frontier: list[dict[str, Any]] = []
-    for candidate in valid:
-        dominated = any(
-            other is not candidate
-            and other["quality"] >= candidate["quality"]
-            and other["cost"] <= candidate["cost"]
-            and (other["quality"] > candidate["quality"] or other["cost"] < candidate["cost"])
-            for other in valid
-        )
-        if not dominated:
-            frontier.append(candidate)
-    return sorted(frontier, key=lambda row: (row["cost"], -row["quality"]))

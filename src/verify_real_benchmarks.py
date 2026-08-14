@@ -1,5 +1,7 @@
 """Verify the generated real-data benchmark before a formal collection run.
 
+Run from the repository root with ``python src/verify_real_benchmarks.py``.
+
 The verification checks the manifest topology and privacy boundary, then runs
 canonical source against a representative set of the private EvalPlus
 differential inputs.  ``--all-code`` checks every generated canonical source;
