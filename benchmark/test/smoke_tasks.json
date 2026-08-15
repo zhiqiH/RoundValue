@@ -14,31 +14,11 @@
       "domain": "math",
       "prompt": "Solve for x: 3x + 5 = 20. Return only x.",
       "reference_answer": "5"
-    },
-    {
-      "task_id": "test_code_001",
-      "domain": "code",
-      "prompt": "Write a Python function named add_one(x) that returns x plus 1.",
-      "entry_point": "add_one",
-      "test_cases": [
-        {"args": [0], "expected": 1},
-        {"args": [-2], "expected": -1}
-      ]
-    },
-    {
-      "task_id": "test_code_002",
-      "domain": "code",
-      "prompt": "Write a Python function named is_even(n) that returns True exactly when integer n is even.",
-      "entry_point": "is_even",
-      "test_cases": [
-        {"args": [8], "expected": true},
-        {"args": [7], "expected": false}
-      ]
     }
   ],
   "invariants": [
     "Task identifiers are globally unique within this independent test benchmark.",
-    "All answers and test cases are public repository-test fixtures only.",
+    "All answers are public repository-test fixtures only.",
     "No task may be copied from a paper benchmark."
   ]
 }

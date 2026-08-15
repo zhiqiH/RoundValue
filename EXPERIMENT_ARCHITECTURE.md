@@ -42,8 +42,7 @@ Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata`
 
 ```text
 benchmark/math/MATH-500.json      MATH-500 独立任务文件（300/100/100），provenance 内嵌
-benchmark/code/HumanEvalPlus.json HumanEval+ 独立任务文件（98/32/34），provenance 内嵌
-benchmark/code/MBPPPlus.json      MBPP+ 独立任务文件（226/75/77），provenance 内嵌
+benchmark/math/MATH-50.json       MATH-500 分层验证子集（30/10/10），provenance 内嵌
 benchmark/test/                   独立仓库验收题；不来自主基准且不用于论文结果
 configs/                          agents.json, model_config.json, topology.json
 scripts/step1_smoke.py            三个顺序用户入口（scripts/ 只有这三个 Python 入口）
@@ -57,23 +56,20 @@ results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、�
 .secret/model_key.json            本地密钥，永不提交
 ```
 
-三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 是拓扑注册表，当前选择并冻结上述 Debate DAG；`model_config.json` 冻结模型与运行参数。新增拓扑时在 `topologies` 下新增 ID，并同时实现对应 runner 与校验器；不会静默改写现有 Debate。默认 DeepSeek profile 使用 `deepseek-v4-flash`、`temperature: 0.0`，适配器显式发送 `thinking: {"type":"disabled"}`。Provider 是通用接口：新增厂商只增加适配器和 JSON profile，不改变 Debate、评分或策略。
+三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 只保留唯一的 `deepseek_flash` profile。Debate 模块是一个不可选的固定整体：运行时不接受模型或拓扑选择参数，任何变更都会通过 config/源码哈希与 smoke gate 强制重跑验收。默认使用 `deepseek-v4-flash`、`temperature: 0.0`，适配器显式发送 `thinking: {"type":"disabled"}`。
 
-正式基准是三个各自独立的数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
-确定性划分，余数计入 Test：MATH-500（500 → 300/100/100）、HumanEval+ v0.1.10
-（164 → 98/32/34）、MBPP+ v0.2.0（378 → 226/75/77）。每个 run 通过
-`--benchmark <数据集 json>` 只选取一个数据集，Train/Validation/Test 绝不跨数据集或
-跨域混用；未来新增数据集时增加一个独立 JSON 即可。每个数据集文件内嵌的 `provenance`
+正式基准是两个数学数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
+确定性划分，余数计入 Test：MATH-500（500 → 300/100/100）与 MATH-50（50 → 30/10/10）。
+每个 run 通过 `--benchmark <数据集 json>` 只选取一个数据集，Train/Validation/Test
+绝不跨数据集混用。每个数据集文件内嵌的 `provenance`
 字段冻结来源 revision、上游校验信息、原始记录 hash、划分种子、比例和全部测试 task ID；
 collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照。
 
-代码任务使用 `evalplus_differential_v1`：在去除密钥的本地子进程中，以官方发布的 base/plus 输入、canonical oracle 与容差进行差分评分，并且不向 Agent 暴露测试输入或 oracle。所有本地评测路径对候选代码施加同一套防护：受限 builtins（`eval` 仅限算术表达式，`exec`/`compile`/`open`/`__import__` 不可达）、禁止下划线属性访问、受限语法和模块白名单（`sys` 通过只读代理暴露）；官方 canonical oracle 与受信测试程序不受该白名单限制。该适配器不是官方 EvalPlus runner、容器或 leaderboard；论文中必须将其结果标记为 RoundValue differential-adapter 结果。本地代码执行仍须显式授权；上述防护是纵深防御，不构成操作系统级沙箱。
-
 ## 5. 实验链路
 
-1. `step1_smoke.py`：`--domain` 选择验收域（math 默认，code 需 `--allow-local-code-evaluation`），独立验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
-2. `step2_collect_analyze.py`：用 `--benchmark` 选择单个数据集文件并从中读出 `dataset_id` 与 `domain`，校验**同域** smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
-3. `step3_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 图表与简短结论。
+1. `step1_smoke.py`：运行独立数学验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
+2. `step2_collect_analyze.py`：用 `--benchmark` 选择单个数学数据集文件，校验 smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
+3. `step3_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 报告、5 张 PNG 图表与简短结论。
 
 `roundvalue smoke|collect-analyze|visualize` 是这三个入口的等价转发命令，参数、门禁与退出码
 完全一致，不构成第五个实验步骤；`python scripts/step*_*.py` 形式保持不变。

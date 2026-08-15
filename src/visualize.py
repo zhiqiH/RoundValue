@@ -1,12 +1,15 @@
-"""Dependency-free offline report builder for saved RoundValue runs.
+"""Offline report builder for saved RoundValue runs.
 
 This module reads task records, scores, labels, and (when available) the
-frozen policy replay and renders three readable artifacts:
+frozen policy replay and renders the readable artifacts:
 
 * ``report_data.json`` -- machine-readable tables used by the HTML below,
 * ``task_level_results.csv`` -- one row per collected task,
 * ``report.html`` -- a self-contained page with the requested summary tables
-  and quality-vs-token / quality-vs-latency charts (inline SVG, no CDN).
+  and quality-vs-token / quality-vs-latency charts (inline SVG, no CDN),
+
+plus standalone PNG charts for the same summaries.  Matplotlib is imported
+lazily inside the chart renderer so the rest of the module stays lightweight.
 
 It never contacts a provider and never rescore checkpoints.
 """
@@ -668,7 +671,7 @@ def write_analysis(manifest: Mapping[str, Any], analysis: Mapping[str, Any]) -> 
     return path
 
 
-def render_analysis(manifest: Mapping[str, Any]) -> dict[str, str]:
+def render_analysis(manifest: Mapping[str, Any]) -> dict[str, Any]:
     """Render a previously saved ``analysis.json`` without reading trajectories."""
 
     result_dir = Path(manifest["result_dir"])
@@ -680,12 +683,181 @@ def render_analysis(manifest: Mapping[str, Any]) -> dict[str, str]:
     _write_task_csv(csv_path, analysis.get("task_rows", []), max_rounds)
     html_path.write_text(_render_html(analysis), encoding="utf-8")
     summary_path.write_text(_render_conclusion(analysis), encoding="utf-8")
+    chart_paths = _render_png_charts(result_dir, analysis)
     return {
         "json": str(result_dir / "analysis.json"),
         "csv": str(csv_path),
         "html": str(html_path),
         "summary": str(summary_path),
+        "charts": chart_paths,
     }
+
+
+def _render_png_charts(
+    result_dir: Path, analysis: Mapping[str, Any]
+) -> list[str]:
+    """Write standalone PNG charts from one saved analysis bundle."""
+
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError as error:
+        raise RuntimeError(
+            "PNG charts require matplotlib; install it with 'pip install matplotlib'"
+        ) from error
+
+    paths: list[str] = []
+    run_id = str(analysis.get("run_id", ""))
+    round_colors = {1: "#2563eb", 2: "#dc2626", 3: "#16a34a"}
+
+    def save(fig: Any, name: str) -> None:
+        path = result_dir / name
+        fig.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+        paths.append(str(path))
+
+    per_round = analysis.get("per_round", [])
+    if per_round:
+        rows = [
+            (int(row["round_index"]), _number(row.get("accuracy")))
+            for row in per_round
+            if isinstance(row, Mapping)
+            and isinstance(row.get("round_index"), int)
+        ]
+        rows = [(round_index, accuracy) for round_index, accuracy in rows if accuracy is not None]
+        if rows:
+            fig, ax = plt.subplots(figsize=(7.5, 4.2))
+            bars = ax.bar(
+                [str(round_index) for round_index, _ in rows],
+                [accuracy for _, accuracy in rows],
+                color=round_colors[1],
+                width=0.5,
+            )
+            ax.bar_label(bars, fmt="%.3f", padding=2)
+            ax.set_ylim(0.0, 1.05)
+            ax.set_ylabel("accuracy")
+            ax.set_xlabel("round")
+            ax.set_title(f"Accuracy by round - {run_id}")
+            save(fig, "chart_accuracy_by_round.png")
+
+    policies = [
+        policy
+        for policy in analysis.get("policy_table", [])
+        if isinstance(policy, Mapping) and policy.get("policy")
+    ]
+    if policies:
+        names = [str(policy["policy"]) for policy in policies]
+        accuracies = [_number(policy.get("accuracy")) for policy in policies]
+        stop_rounds = [_number(policy.get("mean_stop_round")) for policy in policies]
+        fig, (ax_accuracy, ax_stop) = plt.subplots(
+            1, 2, figsize=(12.5, 4.5), sharey=False
+        )
+        accuracy_rows = [
+            (name, value)
+            for name, value in zip(names, accuracies, strict=False)
+            if value is not None
+        ]
+        bars = ax_accuracy.bar(
+            [name for name, _ in accuracy_rows],
+            [value for _, value in accuracy_rows],
+            color="#2563eb",
+            width=0.6,
+        )
+        ax_accuracy.bar_label(bars, fmt="%.2f", padding=2)
+        ax_accuracy.set_ylim(0.0, 1.05)
+        ax_accuracy.set_ylabel("accuracy")
+        ax_accuracy.tick_params(axis="x", labelrotation=30)
+        ax_accuracy.set_title("Policy accuracy")
+
+        stop_rows = [
+            (name, value)
+            for name, value in zip(names, stop_rounds, strict=False)
+            if value is not None
+        ]
+        bars = ax_stop.bar(
+            [name for name, _ in stop_rows],
+            [value for _, value in stop_rows],
+            color="#16a34a",
+            width=0.6,
+        )
+        ax_stop.bar_label(bars, fmt="%.2f", padding=2)
+        ax_stop.set_ylabel("mean stop round")
+        ax_stop.tick_params(axis="x", labelrotation=30)
+        ax_stop.set_title("Policy mean stop round")
+        fig.suptitle(f"Policy comparison - {run_id}")
+        fig.tight_layout()
+        save(fig, "chart_policy_comparison.png")
+
+    def scatter(
+        points: Any,
+        *,
+        x_label: str,
+        title: str,
+        filename: str,
+    ) -> None:
+        if not points:
+            return
+        fig, ax = plt.subplots(figsize=(8.2, 5.0))
+        rounds = sorted({int(point["round_index"]) for point in points})
+        for round_index in rounds:
+            xs = [float(point["x"]) for point in points if int(point["round_index"]) == round_index]
+            ys = [float(point["y"]) for point in points if int(point["round_index"]) == round_index]
+            ax.scatter(
+                xs,
+                ys,
+                s=22,
+                alpha=0.55,
+                color=round_colors.get(round_index, "#6b7280"),
+                label=f"round {round_index}",
+            )
+        ax.set_xlabel(x_label)
+        ax.set_ylabel("quality")
+        ax.set_title(f"{title} - {run_id}")
+        ax.legend(title="round")
+        save(fig, filename)
+
+    scatter(
+        analysis.get("quality_token_points", []),
+        x_label="cumulative tokens",
+        title="Quality vs tokens",
+        filename="chart_quality_vs_tokens.png",
+    )
+    scatter(
+        analysis.get("quality_latency_points", []),
+        x_label="cumulative wall-clock (ms)",
+        title="Quality vs latency",
+        filename="chart_quality_vs_latency.png",
+    )
+
+    stop_matrix = analysis.get("stop_round_matrix", {})
+    if policies and stop_matrix:
+        policy_names = names
+        rounds = sorted({int(round_index) for round_index in stop_matrix})
+        fig, ax = plt.subplots(figsize=(9.0, 4.6))
+        bottoms = [0] * len(policy_names)
+        for round_index in rounds:
+            counts = [
+                int(stop_matrix.get(str(round_index), {}).get(name, 0))
+                for name in policy_names
+            ]
+            ax.bar(
+                policy_names,
+                counts,
+                bottom=bottoms,
+                color=round_colors.get(round_index, "#6b7280"),
+                width=0.6,
+                label=f"stop round {round_index}",
+            )
+            bottoms = [bottom + count for bottom, count in zip(bottoms, counts, strict=False)]
+        ax.set_ylabel("tasks")
+        ax.tick_params(axis="x", labelrotation=30)
+        ax.legend(title="stop round")
+        ax.set_title(f"Stop-round distribution - {run_id}")
+        save(fig, "chart_stop_round_distribution.png")
+
+    return paths
 
 
 def _render_conclusion(analysis: Mapping[str, Any]) -> str:

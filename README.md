@@ -8,7 +8,7 @@ RoundValue 是一套为独立论文实验准备的、精简且可复现的固定
 conda create -n roundvalue python=3.11 -y   # 首次创建环境；项目要求 Python 3.11+
 conda activate roundvalue
 python -m pip install -e .                  # 安装 pyproject.toml 声明的依赖并注册 roundvalue 命令
-roundvalue smoke --domain math
+roundvalue smoke
 roundvalue collect-analyze --benchmark benchmark/math/MATH-500.json \
   --smoke-run-id <SMOKE_RUN_ID>
 roundvalue visualize --run-id <RUN_ID>
@@ -19,13 +19,12 @@ roundvalue visualize --run-id <RUN_ID>
 
 `roundvalue` 只是三个 step 脚本的等价转发命令：`roundvalue smoke|collect-analyze|visualize`
 与 `python scripts/step*_*.py` 的参数、门禁和退出码完全一致，不新增第四步。原脚本方式
-仍然可用。运行依赖由 `pyproject.toml` 管理（`httpx`、`numpy`；重建基准另需可选组
+仍然可用。运行依赖由 `pyproject.toml` 管理（`httpx`、`numpy`、`matplotlib`；重建基准另需可选组
 `benchmark-build`，即 `datasets>=3,<5`）。项目要求 Python 3.11+。
 
 每个数据集都是独立的自包含基准文件：`collect` 用 `--benchmark <数据集 json>` 选择，
-run 命名直接带数据集名称，任何 run 都不会混合两个数据集。`smoke` 用 `--domain math|code`
-选择验收域，collect 的 smoke run 必须同域；代码数据集还需在 smoke/collect/analyze 上传
-`--allow-local-code-evaluation`。
+run 命名直接带数据集名称，任何 run 都不会混合两个数据集。本项目只测试数学：
+可用数据集是 MATH-500 全集与其验证子集 MATH-50。
 
 ## 配置密钥
 
@@ -68,12 +67,13 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 | 文件 | 作用 |
 |---|---|
 | `configs/agents.json` | 四个 Debate 角色的内嵌提示词、输出字段，以及 `format_retries` / `format_budget_margin` 修复协议 |
-| `configs/model_config.json` | Provider、模型、采样、重试、价格和密钥位置 |
-| `configs/topology.json` | 拓扑注册表：选择当前拓扑，并定义其节点、边、packet 与轮数 |
+| `configs/model_config.json` | 唯一的 Provider/模型 profile（`deepseek_flash`）、采样、重试、价格和密钥位置 |
+| `configs/topology.json` | 唯一的 Debate 通信流 `debate`：节点、边、packet 与轮数 |
 
-`topology.json` 的 `topologies` 是按 ID 索引的注册表。当前仅有 `debate_pac_v1`；运行时可用 `--topology-id <ID>` 选择。每个拓扑条目只保留 `runner`、`max_rounds`、`nodes`、`packets`、`edges`：前四者定义调用与确定性汇聚，`edges` 定义可见通信路径。新增拓扑还必须新增对应的 Python runner 与校验器；未实现的 runner 会在调用 API 前明确报错。
+Debate 模块已被固化为一个整体：`topology.json` 只保留唯一且无版本号的 `debate` 通信流，`runner`、
+`max_rounds`、`nodes`、`packets`、`edges` 均不可选，运行时也不再接受模型或拓扑选择参数。
 
-默认 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 固定为 `0.0`。DeepSeek 适配器会显式关闭思考模式（发送 `thinking: {"type": "disabled"}`），并要求响应中不存在 reasoning 内容。Provider 接口与 Debate 执行器分离；后续接入其他公司模型时增加适配器与 JSON profile，不改变拓扑、评分或策略。
+唯一 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 固定为 `0.0`。DeepSeek 适配器会显式关闭思考模式（发送 `thinking: {"type": "disabled"}`），并要求响应中不存在 reasoning 内容。
 
 角色提示词保存在 `agents.json`，不使用散落的 prompt 文件。模型价格采用服务端返回的 token 明细计算；缺失 token、缓存计数、成本或延迟时保存为“未知”，绝不按零处理。
 
@@ -81,15 +81,15 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 | 脚本 | 职责 | 模型 API | 写入位置 |
 |---|---|---|---|
-| `step1_smoke.py` | 小规模通路测试：配置、完整一轮 Debate、`--domain` 指定域的评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
+| `step1_smoke.py` | 小规模数学通路测试：配置、完整一轮 Debate、评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
 | `step2_collect_analyze.py` | 收集 `--benchmark` 指定单个数据集的 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误）；全部完成后立即检查完整性、逐轮评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 收集阶段是 | `trajectories/<run_id>/` 与 `results/<run_id>/` |
-| `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 图表与简短结论 | 否 | `results/<run_id>/` |
+| `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 报告、5 张 PNG 图表（分轮准确率、策略对比、质量-token、质量-延迟、停止轮分布）与简短结论 | 否 | `results/<run_id>/` |
 
 执行顺序是强制的：
 
-1. `step1_smoke` 的每道验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。smoke 的 `--domain` 必须与后续 collect 相同。
-2. `step2_collect_analyze` 必须用 `--smoke-run-id` 指向一个已通过的**同域** smoke run，并校验该 smoke 已全部通过、且三份 config、源码快照与模型/拓扑选择未发生变化；不满足时拒绝开始。新 run 自动命名，无需传 `--run-id`；给定一个已存在的 collect `--run-id` 时先断点续跑，只重跑失败或缺失任务。它先保存原始轨迹；若全部完成，再只用 trajectories 做确定性离线评分（代码任务需 `--allow-local-code-evaluation`）、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估，把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results；若收集不完整则跳过分析并输出失败任务 ID（原因在 `results/<run>/failure_details.json`），可用同一命令加 `--run-id` 续跑。分析阶段绝不调用模型 API，也绝不回写 trajectories。
-3. `step3_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）与 `summary_conclusion.txt`。可视化不读取 trajectories，不可能反向影响评分或策略。
+1. `step1_smoke` 的每道数学验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。
+2. `step2_collect_analyze` 必须用 `--smoke-run-id` 指向一个已通过的 smoke run，并校验该 smoke 已全部通过、且三份 config 与源码快照未发生变化；不满足时拒绝开始。新 run 自动命名，无需传 `--run-id`；给定一个已存在的 collect `--run-id` 时先断点续跑，只重跑失败或缺失任务。它先保存原始轨迹；若全部完成，再只用 trajectories 做确定性离线评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估，把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results；若收集不完整则跳过分析并输出失败任务 ID（原因在 `results/<run>/failure_details.json`），可用同一命令加 `--run-id` 续跑。分析阶段绝不调用模型 API，也绝不回写 trajectories。
+3. `step3_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）、`summary_conclusion.txt`，以及 5 张独立 PNG 图表（`chart_accuracy_by_round.png`、`chart_policy_comparison.png`、`chart_quality_vs_tokens.png`、`chart_quality_vs_latency.png`、`chart_stop_round_distribution.png`）。可视化不读取 trajectories，不可能反向影响评分或策略。
 
 `roundvalue smoke|collect-analyze|visualize` 分别转发到上述三个脚本的 `main`，不改变
 任何参数、强制顺序或门禁；`scripts/` 目录仍然只包含这三个用户入口。
@@ -107,18 +107,13 @@ MATH-500 的 collect run 是 `202608142334_MATH500_15193d5a`（数据集名中�
 
 Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的公开元数据。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
 
-### 本地代码执行
-
-所有本地代码评测路径对模型生成的候选代码施加同一套防护：受限 builtins（`eval` 仅限算术表达式，`exec`/`compile`/`open`/`__import__` 不可达）、禁止下划线属性访问、受限语法与模块白名单（`sys` 通过只读代理暴露）；官方 canonical oracle 和受信测试程序不受该白名单限制。候选进程仍使用去除密钥的环境和临时工作目录，但这只是纵深防御，不是操作系统级沙箱。
-
 ## Benchmark 边界
 
-`benchmark/test/` 是仓库独立验收题，只用于检查 API、DAG、JSON 输出、评分与落盘是否正常；它不从论文基准抽样，也不得出现在训练、验证、测试或论文结果中。`smoke --domain math` 只运行数学验收题；`smoke --domain code` 必须同时加 `--allow-local-code-evaluation`，因为这会执行模型生成的代码。
+`benchmark/test/` 是仓库独立数学验收题，只用于检查 API、DAG、JSON 输出、评分与落盘是否正常；它不从论文基准抽样，也不得出现在训练、验证、测试或论文结果中。
 
-论文主实验使用三个**各自独立**的冻结数据集文件：`benchmark/math/MATH-500.json`、
-`benchmark/code/HumanEvalPlus.json` 与 `benchmark/code/MBPPPlus.json`。每个数据集文件
-自带 `dataset_id`、`domain`、划分与内嵌 provenance，彼此不混合；后续新增数据集时只需
-再加一个独立文件。
+论文主实验使用两个**各自独立**的冻结数学数据集文件：`benchmark/math/MATH-500.json`
+及其验证子集 `benchmark/math/MATH-50.json`。每个数据集文件自带 `dataset_id`、`domain`、
+划分与内嵌 provenance，彼此不混合。
 
 ## 正式真实数据基准（v3：按数据集独立）
 
@@ -128,14 +123,9 @@ Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的�
 |---|---|---:|---:|---:|---:|
 | MATH-500 | `benchmark/math/MATH-500.json` | 300 | 100 | 100 | 500 |
 | MATH-50 | `benchmark/math/MATH-50.json` | 30 | 10 | 10 | 50 |
-| HumanEval+ v0.1.10 | `benchmark/code/HumanEvalPlus.json` | 98 | 32 | 34 | 164 |
-| MBPP+ v0.2.0 | `benchmark/code/MBPPPlus.json` | 226 | 75 | 77 | 378 |
 
-MATH-500 的 500 道题只在自己的 train/validation/test 三个互不相交分区之间流动；
-HumanEval+ 与 MBPP+ 也各自独立划分，绝不把不同数据集或不同域混在同一个 run 中。
+MATH-500 的 500 道题只在自己的 train/validation/test 三个互不相交分区之间流动。
 MATH-50 是 MATH-500 的确定性分层子集（按学科比例、难度均匀抽样，60/20/20 划分），只用于快速验证；任务 ID、题面、参考答案与原集逐字一致，可用 `python src/build_math50.py` 重建。
-
-代码评分器 `evalplus_differential_v1` 使用官方 EvalPlus 发布的 base/plus 输入、canonical oracle 与容差字段进行差分比较；题面之外的测试输入和 oracle 不会提供给 Agent。它是 RoundValue 的可复现适配器，**不是**官方 `evalplus.evaluate`、官方容器或 leaderboard 成绩；正式报告应标注为“RoundValue EvalPlus differential adapter”。
 
 数学评分采用与 MATH-500 provenance 同源的 PRM800K/MATH 归一化约定（分数简写、`\sqrt`、度数、单位、`\%` 等先统一写法）做精确比较，并附一个只支持有限数值表达式与 `\frac` 的保守数值回退，数学题默认零容差。普通百分号不当作噪声删除（`5%` 不会误判成 `5`），而是经数值回退按 `/100` 解释（`50%` 与 `0.5` 等价）。该约定外的等价改写（例如 `14/3` 与 `4.666…` 互换）不会被自动判等价，以保证与公开 MATH-500 评分口径可比。
 
@@ -144,19 +134,16 @@ MATH-50 是 MATH-500 的确定性分层子集（按学科比例、难度均匀�
 运行正式收集：
 
 ```powershell
-# 先做同域 smoke
-roundvalue smoke --domain math
-roundvalue smoke --domain code --allow-local-code-evaluation
+# 先做 smoke
+roundvalue smoke
 
 # MATH-500
-roundvalue collect --benchmark benchmark/math/MATH-500.json \
+roundvalue collect-analyze --benchmark benchmark/math/MATH-500.json \
   --smoke-run-id <MATH_SMOKE_RUN_ID>
 
-# HumanEval+ / MBPP+（各自独立运行）
-roundvalue collect --benchmark benchmark/code/HumanEvalPlus.json \
-  --smoke-run-id <CODE_SMOKE_RUN_ID> --allow-local-code-evaluation
-roundvalue collect --benchmark benchmark/code/MBPPPlus.json \
-  --smoke-run-id <CODE_SMOKE_RUN_ID> --allow-local-code-evaluation
+# MATH-50 快速验证
+roundvalue collect-analyze --benchmark benchmark/math/MATH-50.json \
+  --smoke-run-id <MATH_SMOKE_RUN_ID>
 ```
 
 每个数据集的 provenance 都内嵌在任务文件本身的 `provenance` 字段里，固定记录生成器
@@ -170,13 +157,12 @@ roundvalue collect --benchmark benchmark/code/MBPPPlus.json \
 
 ```text
 RoundValue/
-├── benchmark/{code,math,test}/
+├── benchmark/{math,test}/
 ├── configs/{agents.json,model_config.json,topology.json}
 ├── .secret/model_key.json              # 仅本地存在
 ├── pyproject.toml                      # 依赖管理 + roundvalue 控制台命令
 ├── benchmark/math/MATH-500.json         # 一个数据集一个文件，provenance 内嵌
-├── benchmark/code/HumanEvalPlus.json
-├── benchmark/code/MBPPPlus.json
+├── benchmark/math/MATH-50.json          # MATH-500 的验证子集
 ├── results/YYYYMMDDHHMM_<数据集>_<hex>/
 ├── scripts/step1_smoke.py              # scripts/ 只有这三个 Python 用户入口
 ├── scripts/step2_collect_analyze.py

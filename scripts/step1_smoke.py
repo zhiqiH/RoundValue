@@ -1,10 +1,8 @@
-"""Step 1: small-scale smoke acceptance run.
+"""Step 1: small-scale math smoke acceptance run.
 
 Runs one complete fixed Debate round with the real model provider against the
-independent repository acceptance tasks of the selected ``--domain`` (math by
-default, code with the explicit local-execution flag).  Every task must
-complete and score exactly 1, otherwise this script exits nonzero and step2
-must not start.
+independent repository math acceptance tasks.  Every task must complete and
+score exactly 1, otherwise this script exits nonzero and step2 must not start.
 
 Smoke trajectories are stored under their own ``smoke`` split and never enter
 the formal paper results.
@@ -33,30 +31,9 @@ def main(argv: list[str] | None = None) -> int:
         help="Project-relative smoke benchmark (default: benchmark/test/smoke_tasks.json).",
     )
     parser.add_argument("--run-id", help="Optional explicit new smoke run ID.")
-    parser.add_argument("--model-id", help="Model profile ID from configs/model_config.json.")
-    parser.add_argument("--topology-id", help="Topology ID from configs/topology.json.")
-    parser.add_argument(
-        "--domain",
-        choices=("math", "code"),
-        default="math",
-        help=(
-            "Acceptance domain. A later collect run must use a smoke run of "
-            "the same domain (default: math)."
-        ),
-    )
-    parser.add_argument(
-        "--allow-local-code-evaluation",
-        action="store_true",
-        help=(
-            "Also run the code acceptance tasks by executing generated code locally. "
-            "This is not an OS security sandbox."
-        ),
-    )
     args = parser.parse_args(argv)
     args.mode = "smoke"
-    experiment = load_experiment_config(
-        tb.PROJECT_ROOT, model_id=args.model_id, topology_id=args.topology_id
-    )
+    experiment = load_experiment_config(tb.PROJECT_ROOT)
     state: dict = {"manifest": None}
     return tb.entrypoint("smoke", lambda: tb._run_smoke(args, experiment, state), state)
 

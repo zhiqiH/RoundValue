@@ -33,9 +33,7 @@ POLICY_VERSION = "roundvalue-replay-v1"
 ROUNDVALUE_FEATURES: tuple[str, ...] = (
     "round_index",
     "prompt_length",
-    "domain_is_code",
     "task_difficulty",
-    "test_case_count",
     "answer_length",
     "node_count",
     "node_answer_agreement",
@@ -49,9 +47,7 @@ ROUNDVALUE_FEATURES: tuple[str, ...] = (
 TASK_ONLY_FEATURES: tuple[str, ...] = (
     "round_index",
     "prompt_length",
-    "domain_is_code",
     "task_difficulty",
-    "test_case_count",
 )
 _EPSILON = 1e-12
 
@@ -375,14 +371,6 @@ def build_policy_features(
     # boundary used for Agent inputs in the debate runner.
     task = public_task(dict(raw_task))
     prompt = _text(task.get("prompt", ""))
-    domain = str(task.get("domain", "")).casefold()
-    public_test_count = task.get("public_test_case_count", 0)
-    test_count = (
-        int(public_test_count)
-        if isinstance(public_test_count, int) and not isinstance(public_test_count, bool)
-        and public_test_count >= 0
-        else 0
-    )
     difficulty = _number(
         task.get(
             "difficulty",
@@ -403,9 +391,7 @@ def build_policy_features(
             _positive_integer(checkpoint.get("round_index", checkpoint.get("round"))) or 0
         ),
         "prompt_length": float(len(prompt)),
-        "domain_is_code": float(domain in {"code", "coding", "programming", "python"}),
         "task_difficulty": difficulty,
-        "test_case_count": float(test_count),
         "answer_length": float(len(_checkpoint_answer(checkpoint))),
         "node_count": float(len(_node_items(checkpoint))),
         "node_answer_agreement": _node_agreement(checkpoint),

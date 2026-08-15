@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "default_topology_id": "debate_pac_v1",
+  "default_topology_id": "debate",
   "topologies": {
-    "debate_pac_v1": {
+    "debate": {
       "runner": "two_stage_pac_writer",
       "max_rounds": 3,
       "nodes": [

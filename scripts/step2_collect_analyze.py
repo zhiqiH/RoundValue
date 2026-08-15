@@ -38,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help=(
             "Project-relative self-contained dataset document, e.g. "
-            "benchmark/math/MATH-500.json or benchmark/code/HumanEvalPlus.json."
+            "benchmark/math/MATH-500.json or benchmark/math/MATH-50.json."
         ),
     )
     parser.add_argument(
@@ -54,21 +54,9 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help="Passing step1_smoke run ID; collection refuses to start without it.",
     )
-    parser.add_argument("--model-id", help="Model profile ID from configs/model_config.json.")
-    parser.add_argument("--topology-id", help="Topology ID from configs/topology.json.")
-    parser.add_argument(
-        "--allow-local-code-evaluation",
-        action="store_true",
-        help=(
-            "Required when the benchmark contains code tasks. Local execution is "
-            "defense-in-depth, not an OS security sandbox."
-        ),
-    )
     args = parser.parse_args(argv)
     args.mode = "collect"
-    experiment = load_experiment_config(
-        tb.PROJECT_ROOT, model_id=args.model_id, topology_id=args.topology_id
-    )
+    experiment = load_experiment_config(tb.PROJECT_ROOT)
     state: dict[str, Any] = {"manifest": None}
 
     def run() -> int:
@@ -100,7 +88,6 @@ def main(argv: list[str] | None = None) -> int:
         analyze_args = argparse.Namespace(
             run_id=run_id,
             mode="analyze",
-            allow_local_code_evaluation=args.allow_local_code_evaluation,
         )
         analyze_code = tb._run_analyze(analyze_args, None, state)
         if analyze_code != 0:

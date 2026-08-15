@@ -38,7 +38,8 @@ STEP_ENTRIES: dict[str, tuple[str, Callable[[list[str]], int]]] = {
         collect_analyze_main,
     ),
     "visualize": (
-        "Render CSV, HTML/SVG charts, and a conclusion (scripts/step3_visualize.py).",
+        "Render CSV, HTML/SVG and PNG charts, and a conclusion "
+        "(scripts/step3_visualize.py).",
         visualize_main,
     ),
 }

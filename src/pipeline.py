@@ -157,40 +157,10 @@ def _write_benchmark_snapshot(
     )
 
 
-def _score_record(
-    record: Mapping[str, Any],
-    *,
-    allow_local_code_evaluation: bool,
-) -> list[dict[str, Any]]:
-    """Call the scorer while supporting its explicit safety-gate spelling.
+def _score_record(record: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Score every saved checkpoint of one math task record."""
 
-    The scorer is the authority for code execution.  This small adapter lets
-    this user entry point stay compatible with a deliberately flat scorer
-    interface while ensuring that a code task never silently ignores the
-    user's explicit authorization flag.
-    """
-
-    task = record.get("task")
-    is_code = (
-        isinstance(task, Mapping) and str(task.get("domain", "")).casefold() == "code"
-    )
-    parameters = inspect.signature(score_trajectory).parameters
-    keyword: dict[str, Any] = {}
-    for name in (
-        "allow_local_code_evaluation",
-        "allow_local_code_execution",
-        "allow_local_execution",
-    ):
-        if name in parameters:
-            keyword[name] = allow_local_code_evaluation
-            break
-    else:
-        if is_code and not allow_local_code_evaluation:
-            raise RuntimeError(
-                "code scoring requires --allow-local-code-evaluation; "
-                "the installed scorer has no explicit local-execution gate"
-            )
-    return score_trajectory(record, **keyword)
+    return score_trajectory(record)
 
 
 def _task_record(
@@ -198,7 +168,6 @@ def _task_record(
     split: str,
     trajectory: Mapping[str, Any],
     *,
-    allow_local_code_evaluation: bool,
     score: bool = True,
 ) -> dict[str, Any]:
     record: dict[str, Any] = {
@@ -209,7 +178,6 @@ def _task_record(
         "trajectory": dict(trajectory),
         "scoring": {
             "mode": "offline_deterministic",
-            "allow_local_code_evaluation": allow_local_code_evaluation,
         },
     }
     if not score:
@@ -217,9 +185,7 @@ def _task_record(
         # offline into results/ and never writes them back here.
         return record
     try:
-        scores = _score_record(
-            record, allow_local_code_evaluation=allow_local_code_evaluation
-        )
+        scores = _score_record(record)
         if trajectory.get("status") == "complete" and any(
             isinstance(score.get("quality"), bool)
             or not isinstance(score.get("quality"), int | float)
@@ -258,7 +224,6 @@ def _collect_task(
     split: str,
     run_id: str,
     max_rounds: int,
-    allow_local_code_evaluation: bool,
     score: bool = True,
 ) -> dict[str, Any]:
     trajectory = runner.run_trajectory(
@@ -268,7 +233,6 @@ def _collect_task(
         task,
         split,
         trajectory,
-        allow_local_code_evaluation=allow_local_code_evaluation,
         score=score,
     )
 
@@ -361,7 +325,7 @@ def _validate_resume_consistency(
 
 
 def _verify_smoke_gate(
-    smoke_run_id: str | None, experiment: Mapping[str, Any], domain: str
+    smoke_run_id: str | None,
 ) -> dict[str, Any]:
     """Require a passing smoke run before formal collection starts."""
 
@@ -372,12 +336,6 @@ def _verify_smoke_gate(
         raise ValueError(
             f"run {smoke_run_id} is not a smoke run "
             f"(mode={smoke_manifest.get('mode')!r}); rerun step1_smoke.py"
-        )
-    smoke_domain = smoke_manifest.get("domain") or "math"
-    if smoke_domain != domain:
-        raise ValueError(
-            f"smoke run {smoke_run_id} is a {smoke_domain!r} smoke; "
-            f"collect requires a {domain!r} smoke run"
         )
     task_count = smoke_manifest.get("task_count")
     complete_count = smoke_manifest.get("complete_task_count")
@@ -399,14 +357,6 @@ def _verify_smoke_gate(
         raise ValueError(
             "source code changed since the smoke run; rerun step1_smoke.py first"
         )
-    if smoke_manifest.get("selected_model_id") != experiment.get("model_id"):
-        raise ValueError(
-            "smoke used a different model profile; rerun step1_smoke.py with the same profile"
-        )
-    if smoke_manifest.get("selected_topology_id") != experiment.get("topology_id"):
-        raise ValueError(
-            "smoke used a different topology; rerun step1_smoke.py with the same topology"
-        )
     return smoke_manifest
 
 
@@ -415,24 +365,18 @@ def _run_smoke(
     experiment: Mapping[str, Any],
     state: dict[str, Any],
 ) -> int:
-    """Run the independent repository acceptance tasks with real API calls."""
+    """Run the math acceptance tasks with real API calls."""
 
+    domain = "math"
     benchmark = args.benchmark or DEFAULT_BENCHMARK
     benchmark_path, benchmark_document, tasks = load_benchmark(PROJECT_ROOT, benchmark)
-    if args.domain not in {"math", "code"}:
-        raise ValueError(f"unknown smoke domain: {args.domain!r}")
-    if args.domain == "code" and not args.allow_local_code_evaluation:
-        raise ValueError(
-            "code smoke requires --allow-local-code-evaluation because it "
-            "executes generated code locally"
-        )
-    selected_tasks = [task for task in tasks if task.get("domain") == args.domain]
+    selected_tasks = [task for task in tasks if task.get("domain") == domain]
     skipped_other_domain_task_ids = [
-        str(task["task_id"]) for task in tasks if task.get("domain") != args.domain
+        str(task["task_id"]) for task in tasks if task.get("domain") != domain
     ]
     if not selected_tasks:
-        raise ValueError(f"smoke benchmark has no runnable {args.domain} task")
-    manifest = _create_run(args, experiment, state, "smoke", args.domain)
+        raise ValueError(f"smoke benchmark has no runnable {domain} task")
+    manifest = _create_run(args, experiment, state, "smoke", domain)
     _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
     provider = build_provider(dict(experiment))
     try:
@@ -444,7 +388,6 @@ def _run_smoke(
                 split="smoke",
                 run_id=str(manifest["run_id"]),
                 max_rounds=1,
-                allow_local_code_evaluation=args.allow_local_code_evaluation,
             )
             for task in selected_tasks
         ]
@@ -460,7 +403,7 @@ def _run_smoke(
         {
             "schema_version": "1.0",
             "mode": "smoke",
-            "domain": args.domain,
+            "domain": domain,
             "task_ids": [task["task_id"] for task in selected_tasks],
             "skipped_other_domain_task_ids": skipped_other_domain_task_ids,
             "expected_logical_calls": 7 * len(selected_tasks),
@@ -488,7 +431,7 @@ def _run_smoke(
         manifest,
         status,
         dataset="smoke",
-        domain=args.domain,
+        domain=domain,
         task_count=len(records),
         complete_task_count=sum(
             record["trajectory"].get("status") == "complete" for record in records
@@ -529,13 +472,15 @@ def _run_collect(
     domain = benchmark_document.get("domain")
     if not isinstance(dataset_name, str) or not dataset_name:
         raise ValueError("benchmark must declare a non-empty dataset_id")
-    if domain not in {"math", "code"}:
-        raise ValueError(f"benchmark must declare domain math or code: {domain!r}")
+    if domain != "math":
+        raise ValueError(
+            f"benchmark must be a math dataset: {domain!r} is not supported"
+        )
     if not tasks or any(task.get("domain") != domain for task in tasks):
         raise ValueError(
             f"dataset {dataset_name!r} must contain only {domain!r} tasks"
         )
-    _verify_smoke_gate(args.smoke_run_id, experiment, domain)
+    _verify_smoke_gate(args.smoke_run_id)
     split_seed = SPLIT_SEED
     split_by_task = freeze_splits(tasks, seed=split_seed)
     split_counts = {
@@ -548,13 +493,6 @@ def _run_collect(
             "frozen benchmark has no "
             + ", ".join(sorted(absent_splits))
             + " tasks; collect requires train, validation, and test coverage"
-        )
-    if not args.allow_local_code_evaluation and any(
-        task.get("domain") == "code" for task in tasks
-    ):
-        raise ValueError(
-            "benchmark includes code tasks; pass --allow-local-code-evaluation "
-            "only after reviewing the local-execution risk"
         )
     resuming_manifest = _open_resumable_run(args, "collect")
     if resuming_manifest is not None:
@@ -601,7 +539,6 @@ def _run_collect(
                 split=split,
                 run_id=str(manifest["run_id"]),
                 max_rounds=max_rounds,
-                allow_local_code_evaluation=args.allow_local_code_evaluation,
                 score=score,
             )
             records.append(record)
@@ -815,16 +752,6 @@ def _run_analyze(
         raise ValueError(
             f"incomplete trajectories: {incomplete}; resume with step2_collect_analyze.py"
         )
-    has_code = any(
-        str(record.get("task", {}).get("domain", "")).casefold() == "code"
-        for record in records
-    )
-    if has_code and not args.allow_local_code_evaluation:
-        raise ValueError(
-            "run contains code tasks; pass --allow-local-code-evaluation "
-            "for offline deterministic scoring"
-        )
-
     selection = _selection_config()
     lambda_cost = float(selection["lambda_cost"])
     mu_latency = float(selection["mu_latency"])
@@ -833,9 +760,7 @@ def _run_analyze(
     for record in records:
         task_id = str(record.get("task", {}).get("task_id"))
         scored = dict(record)
-        scores = _score_record(
-            scored, allow_local_code_evaluation=args.allow_local_code_evaluation
-        )
+        scores = _score_record(scored)
         for score in scores:
             quality = score.get("quality")
             if (
@@ -1007,6 +932,7 @@ def _run_visualize(
             "html_report": paths["html"],
             "task_csv": paths["csv"],
             "summary": paths["summary"],
+            "png_charts": paths.get("charts", []),
         }
     )
     return 0

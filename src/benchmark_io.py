@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import math
 from pathlib import Path
 from typing import Any
 
@@ -14,18 +13,9 @@ from contracts import ConfigurationError, file_hash, require_list, require_objec
 PRIVATE_TASK_FIELDS = {
     "reference_answer",
     "expected",
-    "test_cases",
-    "hidden_tests",
     "gold",
     "label",
     "solution",
-    "evalplus_dataset",
-    "evalplus_reference_code",
-    "evalplus_base_inputs",
-    "evalplus_plus_inputs",
-    "evalplus_atol",
-    "evalplus_test",
-    "evalplus_test_imports",
 }
 
 # These fields are explicitly permitted in runtime prompts/features.  New
@@ -33,7 +23,6 @@ PRIVATE_TASK_FIELDS = {
 # test cases, and verifier outcomes remain offline-only.
 PUBLIC_OPTIONAL_TASK_FIELDS = {
     "difficulty",
-    "public_test_case_count",
     "public_metadata",
     "public_verifier",
 }
@@ -45,10 +34,6 @@ PUBLIC_OPTIONAL_TASK_FIELDS = {
 PUBLIC_METADATA_HIDDEN_KEYS = frozenset(
     {
         "source_task_id",
-        "base_input_count",
-        "plus_input_count",
-        "input_count",
-        "test_count",
     }
 )
 
@@ -69,59 +54,12 @@ def _safe_project_path(root: Path, supplied: str | Path) -> Path:
 def _validate_task(task: dict[str, Any], *, source: Path) -> dict[str, Any]:
     task_id = require_string(task.get("task_id"), f"{source} task_id")
     domain = require_string(task.get("domain"), f"{source} task {task_id}.domain")
-    if domain not in {"math", "code"}:
-        raise ConfigurationError(f"{source} task {task_id} domain must be math or code")
+    if domain != "math":
+        raise ConfigurationError(
+            f"{source} task {task_id} domain must be math; the project is math-only"
+        )
     require_string(task.get("prompt"), f"{source} task {task_id}.prompt")
-    if domain == "math":
-        require_string(task.get("reference_answer"), f"{source} math task {task_id}.reference_answer")
-    if domain == "code":
-        require_string(task.get("entry_point"), f"{source} code task {task_id}.entry_point")
-        evaluator = task.get("code_evaluator")
-        if evaluator == "evalplus_differential_v1":
-            dataset = require_string(
-                task.get("evalplus_dataset"), f"{source} code task {task_id}.evalplus_dataset"
-            )
-            if dataset not in {"humaneval", "mbpp"}:
-                raise ConfigurationError(
-                    f"{source} code task {task_id}.evalplus_dataset must be humaneval or mbpp"
-                )
-            require_string(
-                task.get("evalplus_reference_code"),
-                f"{source} code task {task_id}.evalplus_reference_code",
-            )
-            require_list(
-                task.get("evalplus_base_inputs"),
-                f"{source} code task {task_id}.evalplus_base_inputs",
-            )
-            require_list(
-                task.get("evalplus_plus_inputs"),
-                f"{source} code task {task_id}.evalplus_plus_inputs",
-            )
-            try:
-                tolerance = float(task.get("evalplus_atol"))
-            except (TypeError, ValueError) as error:
-                raise ConfigurationError(
-                    f"{source} code task {task_id}.evalplus_atol must be numeric"
-                ) from error
-            if not math.isfinite(tolerance) or tolerance < 0:
-                raise ConfigurationError(
-                    f"{source} code task {task_id}.evalplus_atol must be finite and nonnegative"
-                )
-        elif evaluator == "evalplus_embedded_v1":
-            require_string(task.get("evalplus_test"), f"{source} code task {task_id}.evalplus_test")
-            imports = require_list(
-                task.get("evalplus_test_imports", []),
-                f"{source} code task {task_id}.evalplus_test_imports",
-            )
-            for index, value in enumerate(imports):
-                require_string(
-                    value,
-                    f"{source} code task {task_id}.evalplus_test_imports[{index}]",
-                )
-        else:
-            cases = require_list(task.get("test_cases"), f"{source} code task {task_id}.test_cases")
-            if not cases:
-                raise ConfigurationError(f"{source} code task {task_id} must have at least one test case")
+    require_string(task.get("reference_answer"), f"{source} math task {task_id}.reference_answer")
     return task
 
 
@@ -194,7 +132,7 @@ def load_benchmark(root: Path, supplied_path: str | Path) -> tuple[Path, dict[st
 def _public_task_id(task_id: str) -> str:
     """Derive a stable opaque identifier for the Agent-facing task view.
 
-    Benchmark task IDs such as ``humanevalplus::HumanEval_0`` name the exact
+    Benchmark task IDs such as ``math500::test/algebra/2584.json`` name the exact
     upstream entry and can trigger memorized solutions.  The public view
     therefore uses a deterministic hash while all on-disk records keep the
     original ID.

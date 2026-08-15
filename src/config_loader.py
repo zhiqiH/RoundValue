@@ -230,13 +230,13 @@ def _validate_debate_topology(topology: dict[str, Any], topology_id: str) -> Non
         raise ConfigurationError("Debate deterministic packet source order must remain fixed")
 
 
-def select_topology(document: dict[str, Any], topology_id: str | None = None) -> tuple[str, dict[str, Any]]:
-    """Resolve a topology registry entry; unknown runners never execute implicitly."""
+def select_topology(document: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """Resolve the single frozen topology entry; it is the only executable."""
 
     if document.get("schema_version") != "1.0":
         raise ConfigurationError("topology.json schema_version must be '1.0'")
     topologies = require_object(document.get("topologies"), "topology.json topologies")
-    selected_id = topology_id or require_string(
+    selected_id = require_string(
         document.get("default_topology_id"), "topology.json default_topology_id"
     )
     if selected_id not in topologies:
@@ -252,9 +252,9 @@ def select_topology(document: dict[str, Any], topology_id: str | None = None) ->
 
 
 def load_experiment_config(
-    project_root: Path, model_id: str | None = None, topology_id: str | None = None
+    project_root: Path,
 ) -> dict[str, Any]:
-    """Return validated configuration plus the selected, provider-neutral model profile."""
+    """Return the fixed validated configuration and its single model profile."""
 
     root = project_root.resolve()
     config_dir = root / "configs"
@@ -263,8 +263,8 @@ def load_experiment_config(
     topology_document = load_json(config_dir / "topology.json")
     _validate_agents(agents)
     _validate_model_config(model_config)
-    selected_topology_id, topology = select_topology(topology_document, topology_id)
-    selected_id = model_id or model_config["default_model_id"]
+    selected_topology_id, topology = select_topology(topology_document)
+    selected_id = model_config["default_model_id"]
     models = model_config["models"]
     if selected_id not in models:
         raise ConfigurationError(f"unknown model id: {selected_id}")
