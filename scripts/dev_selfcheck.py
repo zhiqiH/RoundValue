@@ -2,9 +2,11 @@
 
 This script never contacts a model provider.  A scripted fake provider emits
 the exact failure signatures observed in the field (token-length truncation,
-early-stop invalid JSON, and overlong schema fields) and asserts that the
+early-stop invalid JSON, and missing required fields) and asserts that the
 runner repairs them within its bounded retry budget, records every attempt,
-and derives each node's output budget from its declared schema.
+and derives each node's output budget from its declared schema.  Per-field
+``max_length`` is advisory, so a valid overshoot is accepted without repair
+while the hard token budget still bounds the reply.
 """
 
 from __future__ import annotations
@@ -127,6 +129,7 @@ def main() -> int:
     valid = json.dumps(ROLE_OUTPUTS["writer"], separators=(",", ":"))
     truncated = '{"final_answer": "5"'
     overlong = json.dumps({"final_answer": "x" * 600}, separators=(",", ":"))
+    missing_field = "{}"
 
     record, provider = _node_result(
         experiment, [("stop", "this is not json"), ("stop", valid)]
@@ -145,10 +148,17 @@ def main() -> int:
     check("TruncatedOutput" in provider.requests[1].messages[2]["content"], "length repair message is specific")
 
     record, provider = _node_result(
-        experiment, [("stop", overlong), ("stop", valid)]
+        experiment, [("stop", overlong)]
     )
-    check(record["status"] == "completed", "overlong schema field repaired to completed")
-    check("at most 500 characters" in provider.requests[1].messages[2]["content"], "schema repair message carries max_length")
+    check(record["status"] == "completed", "advisory max_length overshoot accepted")
+    check(record["format_repairs"] == 0, "advisory max_length triggers no repair")
+    check(len(provider.requests) == 1, "advisory max_length costs exactly one call")
+
+    record, provider = _node_result(
+        experiment, [("stop", missing_field), ("stop", valid)]
+    )
+    check(record["status"] == "completed", "missing required field repaired to completed")
+    check("missing required JSON field" in provider.requests[1].messages[2]["content"], "missing-field repair message is specific")
 
     record, provider = _node_result(
         experiment, [("stop", "bad"), ("length", truncated), ("stop", "bad")]

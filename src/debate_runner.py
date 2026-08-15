@@ -161,17 +161,17 @@ class FixedDebateRunner:
         lines.extend(
             [
             "Return exactly one JSON object and nothing else: no Markdown fences, no prose, no commentary outside the object, and do not echo the rejected text back.",
-            "Respect these declared field limits:",
+            "Keep fields near these target lengths (short is better than exact):",
             ]
         )
         for name in schema["required_fields"]:
             specification = schema["properties"][name]
             lines.append(
-                f'- "{name}": a non-empty string of at most '
+                f'- "{name}": a non-empty string, target at most '
                 f'{specification["max_length"]} characters'
             )
         lines.append(
-            f"Keep the entire JSON response well below {budget} tokens; "
+            f"Keep the entire JSON response within {budget} tokens; "
             "do not restate the task and do not repeat earlier text."
         )
         return "\n".join(lines)

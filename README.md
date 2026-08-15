@@ -58,7 +58,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
                  Writer → final_answer
 ```
 
-`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 3 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。只有 Writer 的 `final_answer` 是可评分 checkpoint。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量）；非法 JSON、截断输出或超长字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录。修复不静默改动任何字段，重试耗尽仍会如实失败。
+`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 3 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。只有 Writer 的 `final_answer` 是可评分 checkpoint。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量），这是硬的有界性保证；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。修复不静默改动任何字段，重试耗尽仍会如实失败。
 
 策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
 

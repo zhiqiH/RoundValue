@@ -121,7 +121,15 @@ def parse_json_object(text: str) -> dict[str, Any] | None:
 def validate_output_contract(
     output: dict[str, Any], schema: Mapping[str, Any], label: str
 ) -> str | None:
-    """Return the first schema violation for a parsed role output, or ``None``."""
+    """Return the first fatal schema violation, or ``None``.
+
+    Structural properties that a sampler can reliably satisfy are enforced
+    here: every required field must exist, be a string, and be non-empty.
+    Per-field ``max_length`` is deliberately advisory: models cannot count
+    characters reliably, and a few characters of overshoot are harmless.  The
+    hard boundedness guarantee comes from the node-level token budget derived
+    from the same schema, so long replies are still capped mechanically.
+    """
 
     required = schema["required_fields"]
     missing = [field for field in required if field not in output]
@@ -135,17 +143,6 @@ def validate_output_contract(
         text = value.strip() if isinstance(value, str) else ""
         if not isinstance(value, str) or not text:
             return f"{label} {field} must be a non-empty string"
-        max_length = specification.get("max_length")
-        if (
-            isinstance(max_length, int)
-            and not isinstance(max_length, bool)
-            and max_length > 0
-            and len(text) > max_length
-        ):
-            return (
-                f"{label} {field} must be at most {max_length} characters, "
-                f"got {len(text)}"
-            )
     return None
 
 

@@ -34,7 +34,7 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 | 在线停止策略 | 题目、当前答案、可见消息、公开 verifier、已用预算 |
 | 离线评分/标签 | 参考答案、隐藏测试与离线 Judge（不可回流在线） |
 
-所有角色必须返回严格 JSON。节点输出预算由角色 output_schema 推导并逐节点限制 `max_output_tokens`；非法 JSON、`finish_reason=length` 截断或违反字段上限（含 `max_length`）会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录。重试耗尽时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
+所有角色必须返回严格 JSON。节点输出预算由角色 output_schema 推导并逐节点限制 `max_output_tokens`，这是硬的有界性保证；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。重试耗尽时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
 
 Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。原 ID 与完整标签只保存在磁盘记录和离线评分中。
 
