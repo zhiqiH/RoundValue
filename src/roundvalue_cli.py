@@ -1,8 +1,8 @@
-"""Single ``roundvalue`` console command that aliases the four step scripts.
+"""Single ``roundvalue`` console command that aliases the three step scripts.
 
-This file does not add a fifth pipeline step and does not change any step's
+This file does not add a fourth pipeline step and does not change any step's
 flags, exit codes, or gating.  Each subcommand forwards the remaining argv to
-the exact same ``main`` used by ``python scripts/step*_*.py``, so the four
+the exact same ``main`` used by ``python scripts/step*_*.py``, so the three
 documented scripts remain the canonical user-facing entries.
 
 The dispatcher is kept next to the flat ``src/`` modules so it is included in
@@ -24,25 +24,21 @@ for directory in (SRC_DIRECTORY, SCRIPTS_DIRECTORY):
         sys.path.insert(0, str(directory))
 
 from step1_smoke import main as smoke_main  # noqa: E402
-from step2_collect import main as collect_main  # noqa: E402
-from step3_analyze import main as analyze_main  # noqa: E402
-from step4_visualize import main as visualize_main  # noqa: E402
+from step2_collect_analyze import main as collect_analyze_main  # noqa: E402
+from step3_visualize import main as visualize_main  # noqa: E402
 
 STEP_ENTRIES: dict[str, tuple[str, Callable[[list[str]], int]]] = {
     "smoke": (
         "Run the small real-API acceptance gate (scripts/step1_smoke.py).",
         smoke_main,
     ),
-    "collect": (
-        "Collect raw one-to-three-round trajectories (scripts/step2_collect.py).",
-        collect_main,
-    ),
-    "analyze": (
-        "Offline scoring, labels, policy fit, and evaluation (scripts/step3_analyze.py).",
-        analyze_main,
+    "collect-analyze": (
+        "Collect trajectories, then run offline analysis in one step "
+        "(scripts/step2_collect_analyze.py).",
+        collect_analyze_main,
     ),
     "visualize": (
-        "Render CSV, HTML/SVG charts, and a conclusion (scripts/step4_visualize.py).",
+        "Render CSV, HTML/SVG charts, and a conclusion (scripts/step3_visualize.py).",
         visualize_main,
     ),
 }

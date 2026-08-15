@@ -213,7 +213,7 @@ def _task_record(
         },
     }
     if not score:
-        # Collection keeps trajectories raw; step3_analyze derives scores
+        # Collection keeps trajectories raw; the analysis stage derives scores
         # offline into results/ and never writes them back here.
         return record
     try:
@@ -301,7 +301,7 @@ def _record_is_complete(record: Mapping[str, Any]) -> bool:
     scores = record.get("scores")
     if "scores" not in record:
         # A raw trajectory collected without scoring is complete when its
-        # trajectory is complete; step3_analyze derives scores offline.
+        # trajectory is complete; the analysis stage derives scores offline.
         return True
     if not isinstance(scores, list) or not scores:
         return False
@@ -785,7 +785,7 @@ def _run_analyze(
     manifest = _require_existing_run(args, state)
     if manifest.get("mode") != "collect":
         raise ValueError(
-            "step3_analyze requires a run collected by step2_collect "
+            "analysis requires a run collected by step2_collect_analyze "
             f"(mode={manifest.get('mode')!r})"
         )
     records = read_task_records(manifest)
@@ -803,7 +803,7 @@ def _run_analyze(
     if missing or extra:
         raise ValueError(
             "trajectory coverage mismatch: "
-            f"missing={missing}, extra={extra}; resume with step2_collect.py"
+            f"missing={missing}, extra={extra}; resume with step2_collect_analyze.py"
         )
     incomplete = [
         str(record.get("task", {}).get("task_id"))
@@ -813,7 +813,7 @@ def _run_analyze(
     ]
     if incomplete:
         raise ValueError(
-            f"incomplete trajectories: {incomplete}; resume with step2_collect.py"
+            f"incomplete trajectories: {incomplete}; resume with step2_collect_analyze.py"
         )
     has_code = any(
         str(record.get("task", {}).get("domain", "")).casefold() == "code"

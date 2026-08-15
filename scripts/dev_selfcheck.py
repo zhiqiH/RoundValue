@@ -6,7 +6,10 @@ early-stop invalid JSON, and missing required fields) and asserts that the
 runner repairs them within its bounded retry budget, records every attempt,
 and derives each node's output budget from its declared schema.  Per-field
 ``max_length`` is advisory, so a valid overshoot is accepted without repair
-while the hard token budget still bounds the reply.
+while the hard token budget still bounds the reply.  The terminal repair is a
+deterministic answer-only fallback: it asks for nothing but the answer and
+then completes the frozen schema around that answer with recorded markers, so
+a node cannot fail merely because the model refuses to write a short JSON.
 """
 
 from __future__ import annotations
@@ -148,6 +151,33 @@ def main() -> int:
     check("TruncatedOutput" in provider.requests[1].messages[2]["content"], "length repair message is specific")
 
     record, provider = _node_result(
+        experiment, [("length", truncated), ("length", truncated), ("stop", valid)]
+    )
+    check(record["status"] == "completed", "repeated truncation recovered by shrinking budget")
+    check(record["format_repairs"] == 2, "two shrinking repairs recorded")
+    check(
+        [request.max_output_tokens for request in provider.requests] == [348, 174, 128],
+        "full-schema budgets shrink, then the answer-only fallback takes over",
+    )
+    check(
+        "Return ONLY the final answer" in provider.requests[2].messages[1]["content"],
+        "terminal repair asks only for the answer",
+    )
+    check(
+        record["fallback"]["type"] == "answer_only"
+        and record["output"]["final_answer"] == "5",
+        "answer-only fallback completes the writer schema deterministically",
+    )
+
+    record, provider = _node_result(
+        experiment,
+        [("stop", "not json"), ("stop", "still bad"), ("stop", '"63"')],
+    )
+    check(record["status"] == "completed", "fallback accepts a bare JSON-string answer")
+    check(record["output"]["final_answer"] == "63", "fallback answer is preserved")
+    check(record["fallback"]["answer"] == "63", "fallback provenance records the answer")
+
+    record, provider = _node_result(
         experiment, [("stop", overlong)]
     )
     check(record["status"] == "completed", "advisory max_length overshoot accepted")
@@ -161,21 +191,40 @@ def main() -> int:
     check("missing required JSON field" in provider.requests[1].messages[2]["content"], "missing-field repair message is specific")
 
     record, provider = _node_result(
-        experiment, [("stop", "bad"), ("length", truncated), ("stop", "bad")]
+        experiment, [("stop", "bad"), ("length", truncated), ("stop", "")]
     )
-    check(record["status"] == "format_error", "exhausted repairs still fail loudly")
+    check(record["status"] == "format_error", "empty fallback still fails honestly")
     check(record["format_repairs"] == 2, "retry budget respected")
     check(len(record["repair_records"]) == 2, "both failed repairs recorded")
     check(len(record["attempts"]) == 3, "all three attempts recorded")
+    check(record["error"]["type"] == "EmptyFallback", "empty fallback error is specific")
+    check("fallback" not in record, "failed fallback is not marked as completed")
 
     for role_id in ("planner", "analyst", "critic", "writer"):
         runner = FixedDebateRunner(dict(experiment), None)
         budget = runner._schema_token_budget(role_id)
+        sequence = runner._attempt_budgets(role_id)
         model_max = int(experiment["model"]["max_output_tokens"])
         check(
             16 <= budget < model_max,
             f"{role_id} budget {budget} derived from schema and below model max {model_max}",
         )
+        check(
+            sequence[0] == budget
+            and sequence == [budget, max(64, budget // 2)]
+            and all(
+                later <= earlier for earlier, later in zip(sequence, sequence[1:])
+            ),
+            f"{role_id} attempt budgets escalate downward: {sequence}",
+        )
+    runner = FixedDebateRunner(dict(experiment), None)
+    check(runner._answer_only_budget() == 128, "answer-only fallback cap is 128 tokens")
+    analyst_fallback = runner._fallback_output("analyst", "63")
+    check(
+        analyst_fallback["candidate_answer"] == "63"
+        and "[answer-only fallback" in analyst_fallback["analysis"],
+        "non-writer fallback keeps the answer and marks omitted fields",
+    )
 
     full_script: list[tuple[str | None, str]] = []
     for node_id in ("planner_stage_1", "analyst_stage_1", "critic_stage_1", "planner_stage_2", "analyst_stage_2", "critic_stage_2", "writer"):

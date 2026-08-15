@@ -136,21 +136,132 @@ class FixedDebateRunner:
         token_estimate = max(1, math.ceil(max(1, characters) / 3.0))
         return max(16, math.ceil(token_estimate * self.format_budget_margin))
 
+    def _answer_field(self, role_id: str) -> str:
+        """Return the one field whose content is the node's candidate answer."""
+
+        required = self.roles[role_id]["output_schema"]["required_fields"]
+        return "final_answer" if "final_answer" in required else "candidate_answer"
+
+    def _attempt_budgets(self, role_id: str) -> list[int]:
+        """Escalate the full-schema attempts downward before the fallback.
+
+        Repairing at the same budget reproduces the same overlong output at
+        temperature zero, as observed in the field.  Non-final repair attempts
+        halve the cap; the final repair is a separate answer-only fallback and
+        therefore does not appear in this list.
+        """
+
+        budgets = [self._schema_token_budget(role_id)]
+        for _ in range(max(0, self.format_retries - 1)):
+            budgets.append(max(64, budgets[-1] // 2))
+        return budgets
+
+    def _answer_only_budget(self) -> int:
+        """Cap for the answer-only fallback; roomy for LaTeX, tight for prose."""
+
+        return min(int(self.model["max_output_tokens"]), 128)
+
+    def _answer_only_request(
+        self,
+        base_request: ModelRequest,
+        task: dict[str, Any],
+        error: dict[str, Any],
+    ) -> ModelRequest:
+        """Ask for nothing but the final answer on the terminal repair."""
+
+        instruction = {
+            "instruction": (
+                "Your earlier replies were rejected because they did not form "
+                "a complete JSON object. Return ONLY the final answer to the "
+                'task as one short JSON string, for example "63". Do not '
+                "derive, restate, explain, or add anything else."
+            ),
+            "task": public_task(task),
+            "rejection_reason": error,
+        }
+        return ModelRequest(
+            messages=[
+                base_request.messages[0],
+                {
+                    "role": "user",
+                    "content": json.dumps(instruction, ensure_ascii=False, sort_keys=True),
+                },
+            ],
+            model=base_request.model,
+            temperature=base_request.temperature,
+            max_output_tokens=self._answer_only_budget(),
+            reasoning_enabled=base_request.reasoning_enabled,
+            metadata=base_request.metadata,
+        )
+
+    @staticmethod
+    def _extract_answer(text: str) -> str | None:
+        """Read a short answer from a JSON string, object, or bare value."""
+
+        value = parse_json_object(text)
+        if value is not None:
+            for key in ("final_answer", "candidate_answer", "answer"):
+                candidate = value.get(key)
+                if isinstance(candidate, str) and candidate.strip():
+                    return candidate.strip()
+            for candidate in value.values():
+                if isinstance(candidate, str) and candidate.strip():
+                    return candidate.strip()
+            return None
+        try:
+            decoded = json.loads(text)
+            if isinstance(decoded, str) and decoded.strip():
+                return decoded.strip()
+        except json.JSONDecodeError:
+            pass
+        stripped = text.strip().strip('"').strip()
+        return stripped or None
+
+    def _fallback_output(self, role_id: str, answer: str) -> dict[str, Any]:
+        """Deterministically complete the schema around a model-supplied answer.
+
+        This is a recorded degradation, never a silent repair: the trajectory
+        stores a ``fallback`` marker, the answer field keeps the model's real
+        answer, and every auxiliary field is a self-describing placeholder.
+        """
+
+        schema = self.roles[role_id]["output_schema"]
+        answer_field = self._answer_field(role_id)
+        output: dict[str, Any] = {}
+        for name in schema["required_fields"]:
+            if name == answer_field:
+                output[name] = answer
+            else:
+                output[name] = "[answer-only fallback: field omitted]"
+        return output
+
     def _repair_message(
         self,
         role_id: str,
         error_type: str,
         message: str,
+        token_budget: int,
         offending_text: str | None = None,
     ) -> str:
         """Give the model the concrete contract violation instead of a bare retry."""
 
         schema = self.roles[role_id]["output_schema"]
-        budget = self._schema_token_budget(role_id)
-        lines = [
-            "Your previous response was rejected by the protocol and must be regenerated.",
-            f"Reason: {error_type} - {message}",
-        ]
+        if error_type == "TruncatedOutput":
+            lines = [
+                "Your previous response was cut off by the token limit before it formed a complete JSON object.",
+                "Do not derive, restate, or explain anything. Emit only the required JSON object with one short phrase per field, and put the final answer in its answer field.",
+            ]
+        elif error_type == "InvalidJSON":
+            lines = [
+                "Your previous response was not a valid JSON object.",
+                "Do not write prose, Markdown, or commentary. Emit only the required JSON object with one short phrase per field.",
+            ]
+        else:
+            lines = [
+                "Your previous response was rejected by the protocol.",
+                "Fix the reported schema problem and emit only the required JSON object with one short phrase per field.",
+            ]
+        lines.append(f"Reason: {error_type} - {message}")
         if offending_text:
             sample = offending_text.strip()
             if len(sample) > 600:
@@ -171,7 +282,7 @@ class FixedDebateRunner:
                 f'{specification["max_length"]} characters'
             )
         lines.append(
-            f"Keep the entire JSON response within {budget} tokens; "
+            f"Keep the entire JSON response within {token_budget} tokens; "
             "do not restate the task and do not repeat earlier text."
         )
         return "\n".join(lines)
@@ -197,12 +308,13 @@ class FixedDebateRunner:
             previous_checkpoint=previous_checkpoint,
             visible_messages=visible_messages,
         )
+        attempt_budgets = self._attempt_budgets(role_id)
         base_request = self._request_for_node(
             node_input,
             role_id,
             round_index,
             node_id,
-            token_budget=self._schema_token_budget(role_id),
+            token_budget=attempt_budgets[0],
         )
         record: dict[str, Any] = {
             "node_id": node_id,
@@ -219,9 +331,15 @@ class FixedDebateRunner:
         last_error: dict[str, Any] | None = None
         last_response = None
         parsed: dict[str, Any] | None = None
+        fallback: dict[str, Any] | None = None
         while True:
-            request = base_request
-            if repair_count:
+            is_fallback = self.format_retries > 0 and repair_count == self.format_retries
+            if repair_count == 0:
+                request = base_request
+            elif is_fallback:
+                request = self._answer_only_request(base_request, task, last_error)
+            else:
+                budget = attempt_budgets[min(repair_count, len(attempt_budgets) - 1)]
                 request = ModelRequest(
                     messages=[
                         *base_request.messages,
@@ -231,13 +349,14 @@ class FixedDebateRunner:
                                 role_id,
                                 str(last_error["type"]),
                                 str(last_error["message"]),
-                                response.text if repair_count else None,
+                                token_budget=budget,
+                                offending_text=response.text if repair_count else None,
                             ),
                         },
                     ],
                     model=base_request.model,
                     temperature=base_request.temperature,
-                    max_output_tokens=base_request.max_output_tokens,
+                    max_output_tokens=budget,
                     reasoning_enabled=base_request.reasoning_enabled,
                     metadata=base_request.metadata,
                 )
@@ -268,36 +387,57 @@ class FixedDebateRunner:
                 return record
             record["attempts"].extend(attempts)
             last_response = response
-            parsed = parse_json_object(response.text)
-            if response.finish_reason == "length":
-                # A provider-side token cutoff can still yield a parseable but
-                # truncated object; it must be repaired instead of scored.
-                parsed = None
-                last_error = {
-                    "type": "TruncatedOutput",
-                    "message": (
-                        "provider stopped with finish_reason=length before "
-                        "completing the JSON object"
-                    ),
-                }
-            elif parsed is None:
-                last_error = {
-                    "type": "InvalidJSON",
-                    "message": "model output was not a strict JSON object",
-                }
-            else:
-                output_error = self._validate_output(parsed, role_id)
-                if output_error:
+            if is_fallback:
+                answer = self._extract_answer(response.text)
+                if answer is None:
+                    last_error = {
+                        "type": "EmptyFallback",
+                        "message": "answer-only fallback returned no usable answer",
+                    }
                     parsed = None
-                    last_error = {"type": "OutputSchemaError", "message": output_error}
                 else:
+                    parsed = self._fallback_output(role_id, answer)
+                    fallback = {
+                        "type": "answer_only",
+                        "reason": last_error,
+                        "answer": answer,
+                    }
                     last_error = None
+            else:
+                parsed = parse_json_object(response.text)
+                if response.finish_reason == "length":
+                    # A provider-side token cutoff can still yield a parseable
+                    # but truncated object; it must be repaired instead of scored.
+                    parsed = None
+                    last_error = {
+                        "type": "TruncatedOutput",
+                        "message": (
+                            "provider stopped with finish_reason=length before "
+                            "completing the JSON object"
+                        ),
+                    }
+                elif parsed is None:
+                    last_error = {
+                        "type": "InvalidJSON",
+                        "message": "model output was not a strict JSON object",
+                    }
+                else:
+                    output_error = self._validate_output(parsed, role_id)
+                    if output_error:
+                        parsed = None
+                        last_error = {
+                            "type": "OutputSchemaError",
+                            "message": output_error,
+                        }
+                    else:
+                        last_error = None
             if last_error is None or repair_count >= self.format_retries:
                 break
             repair_records.append(
                 {
                     "repair_index": repair_count,
                     "error": last_error,
+                    "max_output_tokens": request.max_output_tokens,
                     "response": response.log_view(),
                     "raw_text": response.text,
                 }
@@ -314,6 +454,8 @@ class FixedDebateRunner:
         )
         if repair_records:
             record["repair_records"] = repair_records
+        if fallback is not None:
+            record["fallback"] = fallback
         if last_error is not None:
             record.update({"status": "format_error", "error": last_error})
             if parsed is not None:

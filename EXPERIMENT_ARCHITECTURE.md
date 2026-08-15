@@ -34,7 +34,7 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 | 在线停止策略 | 题目、当前答案、可见消息、公开 verifier、已用预算 |
 | 离线评分/标签 | 参考答案、隐藏测试与离线 Judge（不可回流在线） |
 
-所有角色必须返回严格 JSON。节点输出预算由角色 output_schema 推导并逐节点限制 `max_output_tokens`，这是硬的有界性保证；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。重试耗尽时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
+所有角色必须返回严格 JSON。节点输出预算由角色 output_schema 推导并逐节点限制 `max_output_tokens`，这是硬的有界性保证；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的预算逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 的 `final_answer` 始终是模型给出的真实答案，不产生占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
 
 Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。原 ID 与完整标签只保存在磁盘记录和离线评分中。
 
@@ -46,13 +46,12 @@ benchmark/code/HumanEvalPlus.json HumanEval+ 独立任务文件（98/32/34），
 benchmark/code/MBPPPlus.json      MBPP+ 独立任务文件（226/75/77），provenance 内嵌
 benchmark/test/                   独立仓库验收题；不来自主基准且不用于论文结果
 configs/                          agents.json, model_config.json, topology.json
-scripts/step1_smoke.py            四个顺序用户入口（scripts/ 只有这四个 Python 入口）
-scripts/step2_collect.py
-scripts/step3_analyze.py
-scripts/step4_visualize.py
+scripts/step1_smoke.py            三个顺序用户入口（scripts/ 只有这三个 Python 入口）
+scripts/step2_collect_analyze.py
+scripts/step3_visualize.py
 pyproject.toml                    运行依赖管理 + roundvalue 控制台命令注册
 src/                              扁平模块 + pipeline 共享编排 + benchmark 构建/验证工具
-src/roundvalue_cli.py             roundvalue 子命令 → 四个 step 入口的等价转发
+src/roundvalue_cli.py             roundvalue 子命令 → 三个 step 入口的等价转发
 trajectories/YYYYMMDDHHMM_<数据集>_<hex>/    任务级完整调用与 checkpoint 记录
 results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、策略报告与 manifest
 .secret/model_key.json            本地密钥，永不提交
@@ -73,11 +72,10 @@ collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照
 ## 5. 实验链路
 
 1. `step1_smoke.py`：`--domain` 选择验收域（math 默认，code 需 `--allow-local-code-evaluation`），独立验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
-2. `step2_collect.py`：用 `--benchmark` 选择单个数据集文件并从中读出 `dataset_id` 与 `domain`，校验**同域** smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹。
-3. `step3_analyze.py`：完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估；只写 `results/`，不回写 trajectories。
-4. `step4_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 图表与简短结论。
+2. `step2_collect_analyze.py`：用 `--benchmark` 选择单个数据集文件并从中读出 `dataset_id` 与 `domain`，校验**同域** smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
+3. `step3_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 图表与简短结论。
 
-`roundvalue smoke|collect|analyze|visualize` 是这四个入口的等价转发命令，参数、门禁与退出码
+`roundvalue smoke|collect-analyze|visualize` 是这三个入口的等价转发命令，参数、门禁与退出码
 完全一致，不构成第五个实验步骤；`python scripts/step*_*.py` 形式保持不变。
 
 每个 run 保存配置快照和哈希、基准来源与哈希、Git 状态、源代码快照、命令行、模型响应名、API 尝试、checkpoint、评分、特征、标签和聚合结果。服务端即便在温度为零时仍可能变化，因此以任务级轨迹和配对 bootstrap 报告不确定性，不宣称逐 token 完全确定。

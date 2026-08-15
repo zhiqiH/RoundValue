@@ -2,24 +2,23 @@
 
 RoundValue 是一套为独立论文实验准备的、精简且可复现的固定 Debate 实验代码。仓库只保存代码、配置、基准、轨迹和结果；论文正文、投稿图表与文献在仓库外单独维护。
 
-用户配置密钥后按顺序运行四个入口：
+用户配置密钥后按顺序运行三个入口：
 
 ```powershell
 conda create -n roundvalue python=3.11 -y   # 首次创建环境；项目要求 Python 3.11+
 conda activate roundvalue
 python -m pip install -e .                  # 安装 pyproject.toml 声明的依赖并注册 roundvalue 命令
 roundvalue smoke --domain math
-roundvalue collect --benchmark benchmark/math/MATH-500.json \
+roundvalue collect-analyze --benchmark benchmark/math/MATH-500.json \
   --smoke-run-id <SMOKE_RUN_ID>
-roundvalue analyze --run-id <RUN_ID>
 roundvalue visualize --run-id <RUN_ID>
 ```
 
 `python` 必须指向 3.11+ 解释器；macOS 系统自带的 `/usr/bin/python3` 可能是 3.9，
 请始终在 `conda activate roundvalue` 后运行以上命令。
 
-`roundvalue` 只是四个 step 脚本的等价转发命令：`roundvalue smoke|collect|analyze|visualize`
-与 `python scripts/step*_*.py` 的参数、门禁和退出码完全一致，不新增第五步。原脚本方式
+`roundvalue` 只是三个 step 脚本的等价转发命令：`roundvalue smoke|collect-analyze|visualize`
+与 `python scripts/step*_*.py` 的参数、门禁和退出码完全一致，不新增第四步。原脚本方式
 仍然可用。运行依赖由 `pyproject.toml` 管理（`httpx`、`numpy`；重建基准另需可选组
 `benchmark-build`，即 `datasets>=3,<5`）。项目要求 Python 3.11+。
 
@@ -58,7 +57,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
                  Writer → final_answer
 ```
 
-`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 3 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。只有 Writer 的 `final_answer` 是可评分 checkpoint。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量），这是硬的有界性保证；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。修复不静默改动任何字段，重试耗尽仍会如实失败。
+`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 3 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。只有 Writer 的 `final_answer` 是可评分 checkpoint。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量），这是硬的有界性保证；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 的回退不产生占位（`final_answer` 是真实答案），非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
 
 策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
 
@@ -78,24 +77,22 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 角色提示词保存在 `agents.json`，不使用散落的 prompt 文件。模型价格采用服务端返回的 token 明细计算；缺失 token、缓存计数、成本或延迟时保存为“未知”，绝不按零处理。
 
-## 四个执行步骤
+## 三个执行步骤
 
 | 脚本 | 职责 | 模型 API | 写入位置 |
 |---|---|---|---|
 | `step1_smoke.py` | 小规模通路测试：配置、完整一轮 Debate、`--domain` 指定域的评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
-| `step2_collect.py` | 只收集 `--benchmark` 指定单个数据集的 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误） | 是 | `trajectories/<run_id>/` |
-| `step3_analyze.py` | 完全离线：检查完整性、逐轮评分、`ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 否 | `results/<run_id>/` |
-| `step4_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 图表与简短结论 | 否 | `results/<run_id>/` |
+| `step2_collect_analyze.py` | 收集 `--benchmark` 指定单个数据集的 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误）；全部完成后立即检查完整性、逐轮评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 收集阶段是 | `trajectories/<run_id>/` 与 `results/<run_id>/` |
+| `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 图表与简短结论 | 否 | `results/<run_id>/` |
 
 执行顺序是强制的：
 
 1. `step1_smoke` 的每道验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。smoke 的 `--domain` 必须与后续 collect 相同。
-2. `step2_collect` 必须用 `--smoke-run-id` 指向一个已通过的**同域** smoke run，并校验该 smoke 已全部通过、且三份 config、源码快照与模型/拓扑选择未发生变化；不满足时拒绝开始。它只保存原始轨迹，不训练策略、不生成结论。新 run 自动命名，无需传 `--run-id`；给定一个已存在的 collect `--run-id` 时进入断点续跑，只重跑失败或缺失任务；失败任务 ID 输出到终端，原因写入 `results/<run>/failure_details.json`。
-3. `step3_analyze` 只读 trajectories，用确定性离线评分器对每一轮评分（代码任务需 `--allow-local-code-evaluation`），构建 `ΔQ/V/G` 标签，只在 Train 拟合、只在 Validation 选阈值、只在 Test 评估，并把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results。它绝不调用模型 API，也绝不回写 trajectories。
-4. `step4_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）与 `summary_conclusion.txt`。可视化不读取 trajectories，不可能反向影响评分或策略。
+2. `step2_collect_analyze` 必须用 `--smoke-run-id` 指向一个已通过的**同域** smoke run，并校验该 smoke 已全部通过、且三份 config、源码快照与模型/拓扑选择未发生变化；不满足时拒绝开始。新 run 自动命名，无需传 `--run-id`；给定一个已存在的 collect `--run-id` 时先断点续跑，只重跑失败或缺失任务。它先保存原始轨迹；若全部完成，再只用 trajectories 做确定性离线评分（代码任务需 `--allow-local-code-evaluation`）、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估，把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results；若收集不完整则跳过分析并输出失败任务 ID（原因在 `results/<run>/failure_details.json`），可用同一命令加 `--run-id` 续跑。分析阶段绝不调用模型 API，也绝不回写 trajectories。
+3. `step3_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）与 `summary_conclusion.txt`。可视化不读取 trajectories，不可能反向影响评分或策略。
 
-`roundvalue smoke|collect|analyze|visualize` 分别转发到上述四个脚本的 `main`，不改变
-任何参数、强制顺序或门禁；`scripts/` 目录仍然只包含这四个用户入口。
+`roundvalue smoke|collect-analyze|visualize` 分别转发到上述三个脚本的 `main`，不改变
+任何参数、强制顺序或门禁；`scripts/` 目录仍然只包含这三个用户入口。
 
 run 命名统一为 `YYYYMMDDHHMM_<数据集名称>_<hex>`：trajectories 与 results 使用
 完全相同的目录名，时间取达拉斯本地时区（America/Chicago），精确到分钟。例如
@@ -181,12 +178,11 @@ RoundValue/
 ├── benchmark/code/HumanEvalPlus.json
 ├── benchmark/code/MBPPPlus.json
 ├── results/YYYYMMDDHHMM_<数据集>_<hex>/
-├── scripts/step1_smoke.py              # scripts/ 只有这四个 Python 用户入口
-├── scripts/step2_collect.py
-├── scripts/step3_analyze.py
-├── scripts/step4_visualize.py
+├── scripts/step1_smoke.py              # scripts/ 只有这三个 Python 用户入口
+├── scripts/step2_collect_analyze.py
+├── scripts/step3_visualize.py
 ├── src/                                # 底层模块 + pipeline 编排 + benchmark 构建/验证工具
-│   └── roundvalue_cli.py               # roundvalue 子命令 → 四个 step 入口的转发
+│   └── roundvalue_cli.py               # roundvalue 子命令 → 三个 step 入口的转发
 ├── trajectories/YYYYMMDDHHMM_<数据集>_<hex>/
 ├── EXPERIMENT_ARCHITECTURE.md
 └── README.md
