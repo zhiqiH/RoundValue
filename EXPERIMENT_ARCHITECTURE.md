@@ -41,34 +41,44 @@ Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata`
 ## 4. 实现边界
 
 ```text
-benchmark/math/                   MATH 论文主基准的 JSON 来源登记与任务文件
-benchmark/code/                   EvalPlus HumanEval+/MBPP+ 论文主基准的 JSON 来源登记与任务文件
-benchmark/formal_experiment_v1.json  冻结的 842 题正式真实数据 manifest
-benchmark/formal_experiment_v1.provenance.json  固定来源 revision、哈希和 MATH-100 抽样记录
+benchmark/math/MATH-500.json      MATH-500 独立任务文件（300/100/100），provenance 内嵌
+benchmark/code/HumanEvalPlus.json HumanEval+ 独立任务文件（98/32/34），provenance 内嵌
+benchmark/code/MBPPPlus.json      MBPP+ 独立任务文件（226/75/77），provenance 内嵌
 benchmark/test/                   独立仓库验收题；不来自主基准且不用于论文结果
 configs/                          agents.json, model_config.json, topology.json
-scripts/step1_smoke.py            四个顺序用户入口（scripts/ 只含这四个文件）
+scripts/step1_smoke.py            四个顺序用户入口（scripts/ 只有这四个 Python 入口）
 scripts/step2_collect.py
 scripts/step3_analyze.py
 scripts/step4_visualize.py
+pyproject.toml                    运行依赖管理 + roundvalue 控制台命令注册
 src/                              扁平模块 + pipeline 共享编排 + benchmark 构建/验证工具
-trajectories/<run_id>/            任务级完整调用与 checkpoint 记录
-results/<dated_run_id>/           聚合指标、置信区间、策略报告与 manifest
+src/roundvalue_cli.py             roundvalue 子命令 → 四个 step 入口的等价转发
+trajectories/YYYYMMDDHHMMSS_<数据集>_<hex>/    任务级完整调用与 checkpoint 记录
+results/YYYYMMDDHHMMSS_<数据集>_<hex>/         聚合指标、置信区间、策略报告与 manifest
 .secret/model_key.json            本地密钥，永不提交
 ```
 
 三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 是拓扑注册表，当前选择并冻结上述 Debate DAG；`model_config.json` 冻结模型与运行参数。新增拓扑时在 `topologies` 下新增 ID，并同时实现对应 runner 与校验器；不会静默改写现有 Debate。默认 DeepSeek profile 使用 `deepseek-v4-flash`、`temperature: 0.0`，适配器显式发送 `thinking: {"type":"disabled"}`。Provider 是通用接口：新增厂商只增加适配器和 JSON profile，不改变 Debate、评分或策略。
 
-正式基准的 Train/Validation/Test 划分是：140 道 MATH 开发题 / 60 道 MATH 开发题 / 100 道 MATH-500 派生的 MATH-100、164 道 HumanEval+、378 道 MBPP+。开发题在生成时排除所有 MATH-500 题目；全部 542 道代码题都只属于 Test，因此其结果是跨领域策略评估，不是 EvalPlus 训练集结果。`formal_experiment_v1.provenance.json` 冻结每个来源的 revision、上游校验信息、原始记录 hash、抽样种子和测试 ID。
+正式基准是三个各自独立的数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
+确定性划分，余数计入 Test：MATH-500（500 → 300/100/100）、HumanEval+ v0.1.10
+（164 → 98/32/34）、MBPP+ v0.2.0（378 → 226/75/77）。每个 run 通过
+`--benchmark <数据集 json>` 只选取一个数据集，Train/Validation/Test 绝不跨数据集或
+跨域混用；未来新增数据集时增加一个独立 JSON 即可。每个数据集文件内嵌的 `provenance`
+字段冻结来源 revision、上游校验信息、原始记录 hash、划分种子、比例和全部测试 task ID；
+collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照。
 
 代码任务使用 `evalplus_differential_v1`：在去除密钥的本地子进程中，以官方发布的 base/plus 输入、canonical oracle 与容差进行差分评分，并且不向 Agent 暴露测试输入或 oracle。所有本地评测路径对候选代码施加同一套防护：受限 builtins（`eval` 仅限算术表达式，`exec`/`compile`/`open`/`__import__` 不可达）、禁止下划线属性访问、受限语法和模块白名单（`sys` 通过只读代理暴露）；官方 canonical oracle 与受信测试程序不受该白名单限制。该适配器不是官方 EvalPlus runner、容器或 leaderboard；论文中必须将其结果标记为 RoundValue differential-adapter 结果。本地代码执行仍须显式授权；上述防护是纵深防御，不构成操作系统级沙箱。
 
 ## 5. 实验链路
 
-1. `step1_smoke.py`：独立验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
-2. `step2_collect.py`：校验 smoke 通过后，按原始 `task_id` 冻结 Train/Validation/Test，只收集每题至多三轮原始轨迹。
+1. `step1_smoke.py`：`--domain` 选择验收域（math 默认，code 需 `--allow-local-code-evaluation`），独立验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
+2. `step2_collect.py`：用 `--benchmark` 选择单个数据集文件并从中读出 `dataset_id` 与 `domain`，校验**同域** smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹。
 3. `step3_analyze.py`：完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估；只写 `results/`，不回写 trajectories。
 4. `step4_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 图表与简短结论。
+
+`roundvalue smoke|collect|analyze|visualize` 是这四个入口的等价转发命令，参数、门禁与退出码
+完全一致，不构成第五个实验步骤；`python scripts/step*_*.py` 形式保持不变。
 
 每个 run 保存配置快照和哈希、基准来源与哈希、Git 状态、源代码快照、命令行、模型响应名、API 尝试、checkpoint、评分、特征、标签和聚合结果。服务端即便在温度为零时仍可能变化，因此以任务级轨迹和聚类 bootstrap 报告不确定性，不宣称逐 token 完全确定。
 

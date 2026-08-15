@@ -115,18 +115,24 @@ def _create_run(
     args: argparse.Namespace,
     experiment: Mapping[str, Any],
     state: dict[str, Any],
+    dataset_name: str,
+    domain: str,
 ) -> dict[str, Any]:
     manifest = create_run(
         PROJECT_ROOT,
         command=_command_line(),
         config_snapshot=config_snapshot(PROJECT_ROOT),
         run_id=args.run_id,
+        dataset_name=dataset_name,
+        domain=domain,
     )
     state["manifest"] = manifest
     manifest = update_run_status(
         manifest,
         "running",
         mode=args.mode,
+        dataset=dataset_name,
+        domain=domain,
         selected_model_id=experiment["model_id"],
         selected_topology_id=experiment["topology_id"],
     )
@@ -349,7 +355,7 @@ def _validate_resume_consistency(
 
 
 def _verify_smoke_gate(
-    smoke_run_id: str | None, experiment: Mapping[str, Any]
+    smoke_run_id: str | None, experiment: Mapping[str, Any], domain: str
 ) -> dict[str, Any]:
     """Require a passing smoke run before formal collection starts."""
 
@@ -360,6 +366,12 @@ def _verify_smoke_gate(
         raise ValueError(
             f"run {smoke_run_id} is not a smoke run "
             f"(mode={smoke_manifest.get('mode')!r}); rerun step1_smoke.py"
+        )
+    smoke_domain = smoke_manifest.get("domain") or "math"
+    if smoke_domain != domain:
+        raise ValueError(
+            f"smoke run {smoke_run_id} is a {smoke_domain!r} smoke; "
+            f"collect requires a {domain!r} smoke run"
         )
     task_count = smoke_manifest.get("task_count")
     complete_count = smoke_manifest.get("complete_task_count")
@@ -397,16 +409,20 @@ def _run_smoke(
 
     benchmark = args.benchmark or DEFAULT_BENCHMARK
     benchmark_path, benchmark_document, tasks = load_benchmark(PROJECT_ROOT, benchmark)
-    selected_tasks = [task for task in tasks if task.get("domain") == "math"]
-    skipped_code_task_ids = [
-        str(task["task_id"]) for task in tasks if task.get("domain") == "code"
+    if args.domain not in {"math", "code"}:
+        raise ValueError(f"unknown smoke domain: {args.domain!r}")
+    if args.domain == "code" and not args.allow_local_code_evaluation:
+        raise ValueError(
+            "code smoke requires --allow-local-code-evaluation because it "
+            "executes generated code locally"
+        )
+    selected_tasks = [task for task in tasks if task.get("domain") == args.domain]
+    skipped_other_domain_task_ids = [
+        str(task["task_id"]) for task in tasks if task.get("domain") != args.domain
     ]
-    if args.allow_local_code_evaluation:
-        selected_tasks.extend(task for task in tasks if task.get("domain") == "code")
-        skipped_code_task_ids = []
     if not selected_tasks:
-        raise ValueError("smoke benchmark has no runnable math task")
-    manifest = _create_run(args, experiment, state)
+        raise ValueError(f"smoke benchmark has no runnable {args.domain} task")
+    manifest = _create_run(args, experiment, state, "smoke", args.domain)
     _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
     provider = build_provider(dict(experiment))
     try:
@@ -434,8 +450,9 @@ def _run_smoke(
         {
             "schema_version": "1.0",
             "mode": "smoke",
+            "domain": args.domain,
             "task_ids": [task["task_id"] for task in selected_tasks],
-            "skipped_code_task_ids": skipped_code_task_ids,
+            "skipped_other_domain_task_ids": skipped_other_domain_task_ids,
             "expected_logical_calls": 7 * len(selected_tasks),
             "max_rounds": 1,
             "requires_quality_one": True,
@@ -460,6 +477,8 @@ def _run_smoke(
     updated = update_run_status(
         manifest,
         status,
+        dataset="smoke",
+        domain=args.domain,
         task_count=len(records),
         complete_task_count=sum(
             record["trajectory"].get("status") == "complete" for record in records
@@ -496,6 +515,17 @@ def _run_collect(
     benchmark_path, benchmark_document, tasks = load_benchmark(
         PROJECT_ROOT, args.benchmark
     )
+    dataset_name = benchmark_document.get("dataset_id")
+    domain = benchmark_document.get("domain")
+    if not isinstance(dataset_name, str) or not dataset_name:
+        raise ValueError("benchmark must declare a non-empty dataset_id")
+    if domain not in {"math", "code"}:
+        raise ValueError(f"benchmark must declare domain math or code: {domain!r}")
+    if not tasks or any(task.get("domain") != domain for task in tasks):
+        raise ValueError(
+            f"dataset {dataset_name!r} must contain only {domain!r} tasks"
+        )
+    _verify_smoke_gate(args.smoke_run_id, experiment, domain)
     split_seed = SPLIT_SEED
     split_by_task = freeze_splits(tasks, seed=split_seed)
     split_counts = {
@@ -519,11 +549,16 @@ def _run_collect(
     resuming_manifest = _open_resumable_run(args, "collect")
     if resuming_manifest is not None:
         manifest = resuming_manifest
+        if manifest.get("dataset") != dataset_name or manifest.get("domain") != domain:
+            raise ValueError(
+                f"run {args.run_id} belongs to dataset "
+                f"{manifest.get('dataset')!r}; resuming requires the same dataset"
+            )
         state["manifest"] = manifest
         _validate_resume_consistency(manifest, split_by_task)
         existing_records = read_task_records(manifest)
     else:
-        manifest = _create_run(args, experiment, state)
+        manifest = _create_run(args, experiment, state, dataset_name, domain)
         _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
         _write_frozen_splits(manifest, split_by_task)
         existing_records = []
@@ -585,6 +620,8 @@ def _run_collect(
     updated = update_run_status(
         manifest,
         status,
+        dataset=dataset_name,
+        domain=domain,
         task_count=len(records),
         complete_task_count=len(records) - len(failed),
         failed_task_ids=[record["task"].get("task_id") for record in failed],
@@ -596,7 +633,9 @@ def _run_collect(
         {
             "status": status,
             "mode": "collect",
-            "run_id": updated["run_id"],
+            "dataset": dataset_name,
+            "domain": domain,
+        "run_id": updated["run_id"],
             "task_count": len(records),
             "failed_task_count": len(failed),
             "failed_task_ids": [record["task"].get("task_id") for record in failed],

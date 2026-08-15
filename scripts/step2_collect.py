@@ -4,7 +4,9 @@ This entry only makes model calls and saves raw trajectories to
 ``trajectories/<run_id>/``: node outputs, Writer checkpoints, token counts,
 latency, retries, and errors.  It does not train a policy, derive labels, or
 produce conclusions.  Scoring and every derived result happen offline in
-step3_analyze.
+step3_analyze.  ``--benchmark`` selects one self-contained per-dataset JSON
+document; its ``dataset_id`` and ``domain`` drive run naming and the smoke
+gate, and datasets are never mixed inside a run.
 
 Collection is gated by a passing step1_smoke run: pass its run ID with
 ``--smoke-run-id``.  If the smoke run failed, or the configs changed since it
@@ -31,7 +33,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--benchmark",
         required=True,
-        help="Project-relative frozen benchmark (e.g. benchmark/formal_experiment_v1.json).",
+        help=(
+            "Project-relative self-contained dataset document, e.g. "
+            "benchmark/math/MATH-500.json or benchmark/code/HumanEvalPlus.json."
+        ),
     )
     parser.add_argument(
         "--run-id",
@@ -63,7 +68,6 @@ def main(argv: list[str] | None = None) -> int:
     state: dict = {"manifest": None}
 
     def run() -> int:
-        tb._verify_smoke_gate(args.smoke_run_id, experiment)
         return tb._run_collect(args, experiment, state, score=False)
 
     return tb.entrypoint("collect", run, state)

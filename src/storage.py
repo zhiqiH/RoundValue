@@ -97,7 +97,7 @@ def _source_snapshot(root: Path) -> dict[str, Any]:
 
 
 def _package_versions() -> dict[str, str | None]:
-    names = ("httpx",)
+    names = ("httpx", "numpy")
     versions: dict[str, str | None] = {}
     for name in names:
         try:
@@ -108,9 +108,9 @@ def _package_versions() -> dict[str, str | None]:
 
 
 def make_run_id() -> str:
-    """Compact timestamp + entropy; each side of the output split has a matching ID."""
+    """Compact contiguous timestamp; the dataset tag and entropy are added by create_run."""
 
-    return f"{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+    return datetime.now(UTC).strftime("%Y%m%d%H%M%S")
 
 
 def _validated_run_id(run_id: str) -> str:
@@ -124,13 +124,14 @@ def _validated_run_id(run_id: str) -> str:
 
 
 def result_directory_name(run_id: str) -> str:
-    """Keep trajectories compact and results in the requested YYYY-MM-DD time style."""
+    """Both output sides now share one compact timestamped ID.
 
-    try:
-        date_part, time_part, suffix = run_id.split("_", 2)
-        return f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}_{time_part}_{suffix}"
-    except ValueError:
-        return run_id
+    Run IDs look like ``20260814_195613_afbd99d4_math``: no hyphens in the date
+    and a trailing single-domain tag.  Keeping the directory names identical
+    makes trajectories and results easy to pair without fuzzy matching.
+    """
+
+    return run_id
 
 
 def create_run(
@@ -139,11 +140,17 @@ def create_run(
     command: list[str],
     config_snapshot: dict[str, Any],
     run_id: str | None = None,
+    dataset_name: str,
+    domain: str,
 ) -> dict[str, Any]:
     """Create matching raw-trajectory and aggregate-result directories."""
 
     root = root.resolve()
-    chosen_id = _validated_run_id(run_id or make_run_id())
+    dataset_token = _validated_run_id(dataset_name)
+    chosen_id = _validated_run_id(
+        run_id
+        or f"{make_run_id()}_{dataset_token}_{uuid.uuid4().hex[:8]}"
+    )
     trajectory_dir = root / "trajectories" / chosen_id
     result_dir = root / "results" / result_directory_name(chosen_id)
     if trajectory_dir.exists() or result_dir.exists():
@@ -155,6 +162,8 @@ def create_run(
     manifest = {
         "schema_version": "1.0",
         "run_id": chosen_id,
+        "dataset": dataset_name,
+        "domain": domain,
         "status": "created",
         "created_at": utc_now(),
         "command": command,

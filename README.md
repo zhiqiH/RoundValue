@@ -5,13 +5,23 @@ RoundValue 是一套为独立论文实验准备的、精简且可复现的固定
 用户配置密钥后按顺序运行四个入口：
 
 ```powershell
-python -m pip install httpx   # 运行时依赖；代码评分还需 numpy
-python scripts/step1_smoke.py
-python scripts/step2_collect.py --benchmark benchmark/formal_experiment_v1.json \
-  --smoke-run-id <SMOKE_RUN_ID> --allow-local-code-evaluation
-python scripts/step3_analyze.py --run-id <RUN_ID> --allow-local-code-evaluation
-python scripts/step4_visualize.py --run-id <RUN_ID>
+python -m pip install -e .   # 安装 pyproject.toml 声明的依赖并注册 roundvalue 命令
+roundvalue smoke --domain math
+roundvalue collect --benchmark benchmark/math/MATH-500.json \
+  --smoke-run-id <SMOKE_RUN_ID>
+roundvalue analyze --run-id <RUN_ID>
+roundvalue visualize --run-id <RUN_ID>
 ```
+
+`roundvalue` 只是四个 step 脚本的等价转发命令：`roundvalue smoke|collect|analyze|visualize`
+与 `python scripts/step*_*.py` 的参数、门禁和退出码完全一致，不新增第五步。原脚本方式
+仍然可用。运行依赖由 `pyproject.toml` 管理（`httpx`、`numpy`；重建基准另需可选组
+`benchmark-build`，即 `datasets>=3,<5`）。项目要求 Python 3.11+。
+
+每个数据集都是独立的自包含基准文件：`collect` 用 `--benchmark <数据集 json>` 选择，
+run 命名直接带数据集名称，任何 run 都不会混合两个数据集。`smoke` 用 `--domain math|code`
+选择验收域，collect 的 smoke run 必须同域；代码数据集还需在 smoke/collect/analyze 上传
+`--allow-local-code-evaluation`。
 
 ## 配置密钥
 
@@ -67,17 +77,24 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 | 脚本 | 职责 | 模型 API | 写入位置 |
 |---|---|---|---|
-| `step1_smoke.py` | 小规模通路测试：配置、完整一轮 Debate、数学/代码评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
-| `step2_collect.py` | 只收集第 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误） | 是 | `trajectories/<run_id>/` |
+| `step1_smoke.py` | 小规模通路测试：配置、完整一轮 Debate、`--domain` 指定域的评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
+| `step2_collect.py` | 只收集 `--benchmark` 指定单个数据集的 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误） | 是 | `trajectories/<run_id>/` |
 | `step3_analyze.py` | 完全离线：检查完整性、逐轮评分、`ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 否 | `results/<run_id>/` |
 | `step4_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 图表与简短结论 | 否 | `results/<run_id>/` |
 
 执行顺序是强制的：
 
-1. `step1_smoke` 的每道验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。
-2. `step2_collect` 必须用 `--smoke-run-id` 指向一个已通过的 smoke run，并校验该 smoke 已全部通过、且三份 config 与模型/拓扑选择未发生变化；不满足时拒绝开始。它只保存原始轨迹，不训练策略、不生成结论。给定已存在的 `--run-id` 时进入断点续跑，只重跑失败或缺失任务；失败任务 ID 输出到终端，原因写入 `results/<run>/failure_details.json`。
+1. `step1_smoke` 的每道验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。smoke 的 `--domain` 必须与后续 collect 相同。
+2. `step2_collect` 必须用 `--smoke-run-id` 指向一个已通过的**同域** smoke run，并校验该 smoke 已全部通过、且三份 config 与模型/拓扑选择未发生变化；不满足时拒绝开始。它只保存原始轨迹，不训练策略、不生成结论。给定已存在的 `--run-id` 时进入断点续跑，只重跑失败或缺失任务；失败任务 ID 输出到终端，原因写入 `results/<run>/failure_details.json`。
 3. `step3_analyze` 只读 trajectories，用确定性离线评分器对每一轮评分（代码任务需 `--allow-local-code-evaluation`），构建 `ΔQ/V/G` 标签，只在 Train 拟合、只在 Validation 选阈值、只在 Test 评估，并把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results。它绝不调用模型 API，也绝不回写 trajectories。
 4. `step4_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）与 `summary_conclusion.txt`。可视化不读取 trajectories，不可能反向影响评分或策略。
+
+`roundvalue smoke|collect|analyze|visualize` 分别转发到上述四个脚本的 `main`，不改变
+任何参数、强制顺序或门禁；`scripts/` 目录仍然只包含这四个用户入口。
+
+run 命名统一为 `YYYYMMDDHHMMSS_<数据集名称>_<hex>`：trajectories 与 results 使用
+完全相同的目录名，日期和时间连续书写。例如 MATH-500 的 collect run 是
+`20260814233402_MATH-500_15193d5a`，smoke run 用 `smoke` 作为数据集占位名。
 
 因此 `trajectories/` 是原始且尽量不被后续阶段修改的模型轨迹；`results/` 必须能由 trajectories 完全离线重建（重跑 step3）。`run_id` 是 step3/step4 唯一接受的实验标识，不要混用不同 run。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
 
@@ -93,34 +110,52 @@ Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的�
 
 ## Benchmark 边界
 
-`benchmark/test/` 是仓库独立验收题，只用于检查 API、DAG、JSON 输出、评分与落盘是否正常；它不从论文基准抽样，也不得出现在训练、验证、测试或论文结果中。`smoke` 默认运行其中的数学题；加 `--allow-local-code-evaluation` 才会同时运行代码验收题，因为这会执行模型生成的代码。
+`benchmark/test/` 是仓库独立验收题，只用于检查 API、DAG、JSON 输出、评分与落盘是否正常；它不从论文基准抽样，也不得出现在训练、验证、测试或论文结果中。`smoke --domain math` 只运行数学验收题；`smoke --domain code` 必须同时加 `--allow-local-code-evaluation`，因为这会执行模型生成的代码。
 
-论文主实验只使用 `benchmark/math/dataset_registry.json` 登记的 **MATH-100**，以及 `benchmark/code/dataset_registry.json` 登记的 **EvalPlus HumanEval+ / MBPP+**。registry 是来源和评测协议的清单；可直接运行的冻结任务集合是 `benchmark/formal_experiment_v1.json`。
+论文主实验使用三个**各自独立**的冻结数据集文件：`benchmark/math/MATH-500.json`、
+`benchmark/code/HumanEvalPlus.json` 与 `benchmark/code/MBPPPlus.json`。每个数据集文件
+自带 `dataset_id`、`domain`、划分与内嵌 provenance，彼此不混合；后续新增数据集时只需
+再加一个独立文件。
 
-## 正式真实数据基准（v1）
+## 正式真实数据基准（v3：按数据集独立）
 
-`benchmark/formal_experiment_v1.json` 固定包含 842 道真实题：
+每个数据集内部按统一比例 60/20/20 划分（余数计入 Test），并用固定种子确定性分配：
 
-| Split | 数据 | 题数 | 用途 |
-|---|---:|---:|---|
-| Train | MATH 开发题 | 140 | 拟合策略 |
-| Validation | MATH 开发题 | 60 | 选择阈值和偏好 |
-| Test | MATH-100（来自 MATH-500） | 100 | 数学测试 |
-| Test | EvalPlus HumanEval+ v0.1.10 | 164 | 代码测试 |
-| Test | EvalPlus MBPP+ v0.2.0 | 378 | 代码测试 |
+| 数据集 | 文件 | Train | Validation | Test | 合计 |
+|---|---|---:|---:|---:|---:|
+| MATH-500 | `benchmark/math/MATH-500.json` | 300 | 100 | 100 | 500 |
+| HumanEval+ v0.1.10 | `benchmark/code/HumanEvalPlus.json` | 98 | 32 | 34 | 164 |
+| MBPP+ v0.2.0 | `benchmark/code/MBPPPlus.json` | 226 | 75 | 77 | 378 |
 
-MATH-100 是从 MATH-500 以固定种子进行分层抽样得到的 100 道测试题。200 道数学开发题来自完整 MATH 镜像，并在抽样前排除了全部 MATH-500 题目；因此开发题与数学测试题不重叠。542 道代码题全部冻结为 Test：它们用于检验从数学开发题拟合出的跨领域策略，**不应表述为 EvalPlus 的训练/验证划分**。
+MATH-500 的 500 道题只在自己的 train/validation/test 三个互不相交分区之间流动；
+HumanEval+ 与 MBPP+ 也各自独立划分，绝不把不同数据集或不同域混在同一个 run 中。
 
 代码评分器 `evalplus_differential_v1` 使用官方 EvalPlus 发布的 base/plus 输入、canonical oracle 与容差字段进行差分比较；题面之外的测试输入和 oracle 不会提供给 Agent。它是 RoundValue 的可复现适配器，**不是**官方 `evalplus.evaluate`、官方容器或 leaderboard 成绩；正式报告应标注为“RoundValue EvalPlus differential adapter”。
 
 运行正式收集：
 
 ```powershell
-python scripts/step2_collect.py --benchmark benchmark/formal_experiment_v1.json \
-  --smoke-run-id <SMOKE_RUN_ID> --allow-local-code-evaluation
+# 先做同域 smoke
+roundvalue smoke --domain math
+roundvalue smoke --domain code --allow-local-code-evaluation
+
+# MATH-500
+roundvalue collect --benchmark benchmark/math/MATH-500.json \
+  --smoke-run-id <MATH_SMOKE_RUN_ID>
+
+# HumanEval+ / MBPP+（各自独立运行）
+roundvalue collect --benchmark benchmark/code/HumanEvalPlus.json \
+  --smoke-run-id <CODE_SMOKE_RUN_ID> --allow-local-code-evaluation
+roundvalue collect --benchmark benchmark/code/MBPPPlus.json \
+  --smoke-run-id <CODE_SMOKE_RUN_ID> --allow-local-code-evaluation
 ```
 
-每次运行还会冻结任务文件哈希。`benchmark/formal_experiment_v1.provenance.json` 固定记录生成器版本、MATH 的 Hugging Face revision、EvalPlus 官方 release URL 与 artifact SHA-256、原始记录 SHA-256、MATH-100 抽样种子和全部测试 task ID。若需从已固定来源重新构建数据，先 `python -m pip install 'datasets>=3,<5'`，再运行 `python src/build_real_benchmarks.py` 和 `python src/verify_real_benchmarks.py`。
+每个数据集的 provenance 都内嵌在任务文件本身的 `provenance` 字段里，固定记录生成器
+版本、来源 revision/URL 与 SHA-256、原始记录 SHA-256、划分种子与比例、以及该数据集
+的全部测试 task ID；collect 时整个文件（含 provenance）都会被冻结进 run 快照。若需
+从已固定来源重新构建数据，先
+`python -m pip install -e ".[benchmark-build]"`，再运行
+`python src/build_real_benchmarks.py` 和 `python src/verify_real_benchmarks.py`。
 
 ## 目录与产物
 
@@ -129,13 +164,18 @@ RoundValue/
 ├── benchmark/{code,math,test}/
 ├── configs/{agents.json,model_config.json,topology.json}
 ├── .secret/model_key.json              # 仅本地存在
-├── results/YYYY-MM-DD_HHMMSS_<run_id>/
-├── scripts/step1_smoke.py              # scripts/ 只含这四个用户入口
+├── pyproject.toml                      # 依赖管理 + roundvalue 控制台命令
+├── benchmark/math/MATH-500.json         # 一个数据集一个文件，provenance 内嵌
+├── benchmark/code/HumanEvalPlus.json
+├── benchmark/code/MBPPPlus.json
+├── results/YYYYMMDDHHMMSS_<数据集>_<hex>/
+├── scripts/step1_smoke.py              # scripts/ 只有这四个 Python 用户入口
 ├── scripts/step2_collect.py
 ├── scripts/step3_analyze.py
 ├── scripts/step4_visualize.py
 ├── src/                                # 底层模块 + pipeline 编排 + benchmark 构建/验证工具
-├── trajectories/YYYYMMDD_HHMMSS_<run_id>/
+│   └── roundvalue_cli.py               # roundvalue 子命令 → 四个 step 入口的转发
+├── trajectories/YYYYMMDDHHMMSS_<数据集>_<hex>/
 ├── EXPERIMENT_ARCHITECTURE.md
 └── README.md
 ```

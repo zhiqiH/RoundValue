@@ -1,12 +1,13 @@
-"""Verify the generated real-data benchmark before a formal collection run.
+"""Verify every generated per-dataset benchmark before a formal collection run.
 
 Run from the repository root with ``python src/verify_real_benchmarks.py``.
 
-The verification checks the manifest topology and privacy boundary, then runs
-canonical source against a representative set of the private EvalPlus
-differential inputs.  ``--all-code`` checks every generated canonical source;
-the one pinned upstream self-check exception is asserted explicitly rather
-than silently treated as a passing reference implementation.
+The verification checks each self-contained dataset document, its split
+partition, and the code privacy boundary, then runs canonical source against a
+representative set of the private EvalPlus differential inputs.  ``--all-code``
+checks every generated canonical source; the one pinned upstream self-check
+exception is asserted explicitly rather than silently treated as a passing
+reference implementation.
 """
 
 from __future__ import annotations
@@ -30,7 +31,11 @@ from benchmark_io import (  # noqa: E402
 )
 from scorer import score_code  # noqa: E402
 
-from build_real_benchmarks import KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS  # noqa: E402
+from build_real_benchmarks import (  # noqa: E402
+    DATASET_SPLIT_RATIOS,
+    KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS,
+    _split_sizes,
+)
 
 
 PRIVATE_EVALPLUS_FIELDS = {
@@ -60,10 +65,13 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _validate_task_documents(root: Path) -> None:
-    human = _read_json(root / "benchmark" / "code" / "HumanEvalPlus_tasks.json")
-    mbpp = _read_json(root / "benchmark" / "code" / "MBPPPlus_tasks.json")
+    human = _read_json(root / "benchmark" / "code" / "HumanEvalPlus.json")
+    mbpp = _read_json(root / "benchmark" / "code" / "MBPPPlus.json")
     if len(human.get("tasks", [])) != 164 or len(mbpp.get("tasks", [])) != 378:
         raise AssertionError("official EvalPlus task documents must contain 164 HumanEval+ and 378 MBPP+ tasks")
+    for document in (human, mbpp):
+        if document.get("domain") != "code":
+            raise AssertionError(f"{document.get('dataset_id')} must declare domain code")
     for document in (human, mbpp):
         task_ids = [task.get("task_id") for task in document["tasks"]]
         if len(task_ids) != len(set(task_ids)):
@@ -77,33 +85,68 @@ def _validate_task_documents(root: Path) -> None:
 
 def verify(*, all_code: bool) -> dict[str, Any]:
     root = PROJECT_ROOT.resolve()
-    _, _, tasks = load_benchmark(root, "benchmark/formal_experiment_v1.json")
-    counts = {
-        split: sum(task.get("split") == split for task in tasks)
+    specs = (
+        ("benchmark/math/MATH-500.json", "math", "MATH-500", 500),
+        ("benchmark/code/HumanEvalPlus.json", "code", "HumanEvalPlus", 164),
+        ("benchmark/code/MBPPPlus.json", "code", "MBPPPlus", 378),
+    )
+    tasks_by_dataset: dict[str, list[dict[str, Any]]] = {}
+    split_counts: dict[str, dict[str, int]] = {}
+    for relative, domain, dataset_id, expected_total in specs:
+        _, document, tasks = load_benchmark(root, relative)
+        if document.get("dataset_id") != dataset_id:
+            raise AssertionError(f"{relative} must declare dataset_id {dataset_id}")
+        if document.get("domain") != domain:
+            raise AssertionError(f"{relative} must declare domain {domain}")
+        if len(tasks) != expected_total:
+            raise AssertionError(f"{relative} must contain {expected_total} tasks")
+        if any(task.get("domain") != domain for task in tasks):
+            raise AssertionError(f"{relative} mixes domains")
+        if len({task["task_id"] for task in tasks}) != len(tasks):
+            raise AssertionError(f"{relative} contains duplicate task IDs")
+        counts = {
+            split: sum(task.get("split") == split for task in tasks)
+            for split in ("train", "validation", "test")
+        }
+        if counts != _split_sizes(expected_total, DATASET_SPLIT_RATIOS):
+            raise AssertionError(f"unexpected {dataset_id} split counts: {counts}")
+        provenance = document.get("provenance")
+        if not isinstance(provenance, dict):
+            raise AssertionError(f"{relative} must embed a provenance object")
+        if provenance.get("dataset_id") != dataset_id:
+            raise AssertionError(f"{relative} provenance dataset_id mismatch")
+        if provenance.get("domain") != domain:
+            raise AssertionError(f"{relative} provenance domain mismatch")
+        provenance_counts = provenance.get("split", {}).get("counts")
+        if provenance_counts != counts:
+            raise AssertionError(f"{relative} provenance split counts mismatch")
+        test_task_ids = provenance.get("test_task_ids")
+        if not isinstance(test_task_ids, list) or len(test_task_ids) != counts["test"]:
+            raise AssertionError(f"{relative} test_task_ids must list exactly {counts['test']} tasks")
+        tasks_by_dataset[dataset_id] = tasks
+        split_counts[dataset_id] = counts
+
+    math_tasks = tasks_by_dataset["MATH-500"]
+    math_prompt_sets = {
+        split: {
+            " ".join(task["prompt"].split())
+            for task in math_tasks
+            if task.get("split") == split
+        }
         for split in ("train", "validation", "test")
     }
-    if counts != {"train": 140, "validation": 60, "test": 642}:
-        raise AssertionError(f"unexpected split counts: {counts}")
-    if len({task["task_id"] for task in tasks}) != 842:
-        raise AssertionError("formal manifest must contain 842 globally unique tasks")
-    math_tasks = [task for task in tasks if task["domain"] == "math"]
-    if len(math_tasks) != 300:
-        raise AssertionError("formal manifest must contain 300 MATH tasks")
-    math_test_prompts = {
-        " ".join(task["prompt"].split())
-        for task in math_tasks
-        if task.get("split") == "test"
-    }
-    math_development_prompts = {
-        " ".join(task["prompt"].split())
-        for task in math_tasks
-        if task.get("split") in {"train", "validation"}
-    }
-    if len(math_test_prompts) != 100 or math_test_prompts & math_development_prompts:
-        raise AssertionError("MATH development tasks must be disjoint from the MATH-100 test subset")
-    code_tasks = [task for task in tasks if task["domain"] == "code"]
-    if len(code_tasks) != 542 or any(task.get("split") != "test" for task in code_tasks):
-        raise AssertionError("all 542 EvalPlus tasks must remain held-out test tasks")
+    if (
+        math_prompt_sets["train"] & math_prompt_sets["validation"]
+        or math_prompt_sets["train"] & math_prompt_sets["test"]
+        or math_prompt_sets["validation"] & math_prompt_sets["test"]
+    ):
+        raise AssertionError("MATH-500 splits must be disjoint partitions")
+
+    code_tasks = tasks_by_dataset["HumanEvalPlus"] + tasks_by_dataset["MBPPPlus"]
+    if len(code_tasks) != 542:
+        raise AssertionError("code datasets must contain 542 tasks in total")
+    if any(task.get("split") not in {"train", "validation", "test"} for task in code_tasks):
+        raise AssertionError("every code task must have a train/validation/test split")
     _validate_task_documents(root)
     for task in code_tasks:
         visible = public_task(task)
@@ -153,7 +196,7 @@ def verify(*, all_code: bool) -> dict[str, Any]:
         raise AssertionError(f"canonical EvalPlus verification failed: {failures[:10]}")
     return {
         "status": "verified",
-        "split_counts": counts,
+        "split_counts": split_counts,
         "canonical_code_checked": checked,
         "known_upstream_exceptions_verified": verified_exceptions,
     }
