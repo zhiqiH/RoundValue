@@ -130,11 +130,22 @@ def validate_output_contract(
     for field in required:
         specification = schema["properties"][field]
         value = output.get(field)
-        if specification["type"] == "string":
-            if not isinstance(value, str) or len(value.strip()) < specification["min_length"]:
-                return f"{label} {field} must be a non-empty string"
-        else:
+        if specification["type"] != "string":
             return f"unsupported configured output type for {label}.{field}"
+        text = value.strip() if isinstance(value, str) else ""
+        if not isinstance(value, str) or not text:
+            return f"{label} {field} must be a non-empty string"
+        max_length = specification.get("max_length")
+        if (
+            isinstance(max_length, int)
+            and not isinstance(max_length, bool)
+            and max_length > 0
+            and len(text) > max_length
+        ):
+            return (
+                f"{label} {field} must be at most {max_length} characters, "
+                f"got {len(text)}"
+            )
     return None
 
 

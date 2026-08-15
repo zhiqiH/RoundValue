@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 import json
+import math
 import time
 import traceback
 from typing import Any
@@ -39,10 +40,25 @@ class FixedDebateRunner:
         self.roles = {role["id"]: role for role in experiment["agents"]["roles"]}
         self.packet_nodes = {packet["id"]: packet for packet in self.topology["packets"]}
         self.format_retries = experiment["agents"].get("format_retries", 0)
-        if self.format_retries != 0:
-            raise ProtocolError(
-                "format_retries must be 0 in the fixed seven-call topology; change the topology before enabling it"
+        if (
+            isinstance(self.format_retries, bool)
+            or not isinstance(self.format_retries, int)
+            or self.format_retries < 0
+        ):
+            raise ProtocolError("format_retries must be a non-negative integer")
+        try:
+            self.format_budget_margin = float(
+                experiment["agents"].get("format_budget_margin", 2.0)
             )
+        except (TypeError, ValueError) as error:
+            raise ProtocolError(
+                "format_budget_margin must be a finite number"
+            ) from error
+        if (
+            not math.isfinite(self.format_budget_margin)
+            or self.format_budget_margin < 1.0
+        ):
+            raise ProtocolError("format_budget_margin must be a finite number >= 1.0")
 
     def _node_input(
         self,
@@ -67,8 +83,21 @@ class FixedDebateRunner:
             "instruction": "Return exactly one JSON object. Do not use Markdown fences or add text outside the object.",
         }
 
-    def _request_for_node(self, node_input: dict[str, Any], role_id: str, round_index: int, node_id: str) -> ModelRequest:
+    def _request_for_node(
+        self,
+        node_input: dict[str, Any],
+        role_id: str,
+        round_index: int,
+        node_id: str,
+        *,
+        token_budget: int | None,
+    ) -> ModelRequest:
         role = self.roles[role_id]
+        model_max = int(self.model["max_output_tokens"])
+        if token_budget is None:
+            max_output_tokens = model_max
+        else:
+            max_output_tokens = min(model_max, max(16, int(token_budget)))
         return ModelRequest(
             messages=[
                 {"role": "system", "content": role["system_prompt"]},
@@ -76,10 +105,76 @@ class FixedDebateRunner:
             ],
             model=self.model["model_name"],
             temperature=float(self.model["temperature"]),
-            max_output_tokens=int(self.model["max_output_tokens"]),
+            max_output_tokens=max_output_tokens,
             reasoning_enabled=bool(self.model["reasoning"]["enabled"]),
             metadata={"round_index": str(round_index), "node_id": node_id, "role": role_id},
         )
+
+    def _schema_token_budget(self, role_id: str) -> int:
+        """Derive the node output budget from its declared output schema.
+
+        The accepted output is already bounded by the per-field ``max_length``
+        values, so a global 4096-token allowance merely invites unbounded
+        rambling and the truncation failures that follow.  Convert the schema's
+        character budget plus JSON key overhead into tokens conservatively
+        (three characters per token covers dense LaTeX) and keep the configured
+        margin so a conforming reply is never cut off.
+        """
+
+        schema = self.roles[role_id]["output_schema"]
+        characters = 2  # opening/closing braces plus padding
+        for name in schema["required_fields"]:
+            specification = schema["properties"].get(name) or {}
+            max_length = specification.get("max_length")
+            if (
+                isinstance(max_length, int)
+                and not isinstance(max_length, bool)
+                and max_length > 0
+            ):
+                characters += max_length
+            characters += len(str(name)) + 6  # `"name": ` plus a comma
+        token_estimate = max(1, math.ceil(max(1, characters) / 3.0))
+        return max(16, math.ceil(token_estimate * self.format_budget_margin))
+
+    def _repair_message(
+        self,
+        role_id: str,
+        error_type: str,
+        message: str,
+        offending_text: str | None = None,
+    ) -> str:
+        """Give the model the concrete contract violation instead of a bare retry."""
+
+        schema = self.roles[role_id]["output_schema"]
+        budget = self._schema_token_budget(role_id)
+        lines = [
+            "Your previous response was rejected by the protocol and must be regenerated.",
+            f"Reason: {error_type} - {message}",
+        ]
+        if offending_text:
+            sample = offending_text.strip()
+            if len(sample) > 600:
+                sample = sample[:300] + " ... [omitted] ... " + sample[-300:]
+            lines.append(
+                f"The rejected output, which may be incomplete, was: {sample}"
+            )
+        lines.extend(
+            [
+            "Return exactly one JSON object and nothing else: no Markdown fences, no prose, no commentary outside the object, and do not echo the rejected text back.",
+            "Respect these declared field limits:",
+            ]
+        )
+        for name in schema["required_fields"]:
+            specification = schema["properties"][name]
+            lines.append(
+                f'- "{name}": a non-empty string of at most '
+                f'{specification["max_length"]} characters'
+            )
+        lines.append(
+            f"Keep the entire JSON response well below {budget} tokens; "
+            "do not restate the task and do not repeat earlier text."
+        )
+        return "\n".join(lines)
 
     def _validate_output(self, output: dict[str, Any], role_id: str) -> str | None:
         return validate_output_contract(output, self.roles[role_id]["output_schema"], role_id)
@@ -102,82 +197,127 @@ class FixedDebateRunner:
             previous_checkpoint=previous_checkpoint,
             visible_messages=visible_messages,
         )
-        request = self._request_for_node(node_input, role_id, round_index, node_id)
+        base_request = self._request_for_node(
+            node_input,
+            role_id,
+            round_index,
+            node_id,
+            token_budget=self._schema_token_budget(role_id),
+        )
         record: dict[str, Any] = {
             "node_id": node_id,
             "role": role_id,
             "round_index": round_index,
             "started_at": utc_now(),
             "input": node_input,
-            "request": request.log_view(),
+            "request": base_request.log_view(),
             "status": "started",
             "attempts": [],
         }
-        try:
-            response, attempts = self.provider.generate(request)
-        except ProviderError as error:
-            record.update(
+        repair_count = 0
+        repair_records: list[dict[str, Any]] = []
+        last_error: dict[str, Any] | None = None
+        last_response = None
+        parsed: dict[str, Any] | None = None
+        while True:
+            request = base_request
+            if repair_count:
+                request = ModelRequest(
+                    messages=[
+                        *base_request.messages,
+                        {
+                            "role": "user",
+                            "content": self._repair_message(
+                                role_id,
+                                str(last_error["type"]),
+                                str(last_error["message"]),
+                                response.text if repair_count else None,
+                            ),
+                        },
+                    ],
+                    model=base_request.model,
+                    temperature=base_request.temperature,
+                    max_output_tokens=base_request.max_output_tokens,
+                    reasoning_enabled=base_request.reasoning_enabled,
+                    metadata=base_request.metadata,
+                )
+            try:
+                response, attempts = self.provider.generate(request)
+            except ProviderError as error:
+                record.update(
+                    {
+                        "ended_at": utc_now(),
+                        "status": "provider_error",
+                        "attempts": [*record["attempts"], *error.attempts],
+                        "error": {"type": type(error).__name__, "message": str(error)},
+                    }
+                )
+                return record
+            except Exception as error:  # Keep unexpected local defects visible in a partial trajectory.
+                record.update(
+                    {
+                        "ended_at": utc_now(),
+                        "status": "internal_error",
+                        "error": {
+                            "type": type(error).__name__,
+                            "message": str(error),
+                            "traceback": traceback.format_exc(limit=5),
+                        },
+                    }
+                )
+                return record
+            record["attempts"].extend(attempts)
+            last_response = response
+            parsed = parse_json_object(response.text)
+            if response.finish_reason == "length":
+                # A provider-side token cutoff can still yield a parseable but
+                # truncated object; it must be repaired instead of scored.
+                parsed = None
+                last_error = {
+                    "type": "TruncatedOutput",
+                    "message": (
+                        "provider stopped with finish_reason=length before "
+                        "completing the JSON object"
+                    ),
+                }
+            elif parsed is None:
+                last_error = {
+                    "type": "InvalidJSON",
+                    "message": "model output was not a strict JSON object",
+                }
+            else:
+                output_error = self._validate_output(parsed, role_id)
+                if output_error:
+                    parsed = None
+                    last_error = {"type": "OutputSchemaError", "message": output_error}
+                else:
+                    last_error = None
+            if last_error is None or repair_count >= self.format_retries:
+                break
+            repair_records.append(
                 {
-                    "ended_at": utc_now(),
-                    "status": "provider_error",
-                    "attempts": error.attempts,
-                    "error": {"type": type(error).__name__, "message": str(error)},
+                    "repair_index": repair_count,
+                    "error": last_error,
+                    "response": response.log_view(),
+                    "raw_text": response.text,
                 }
             )
-            return record
-        except Exception as error:  # Keep unexpected local defects visible in a partial trajectory.
-            record.update(
-                {
-                    "ended_at": utc_now(),
-                    "status": "internal_error",
-                    "error": {
-                        "type": type(error).__name__,
-                        "message": str(error),
-                        "traceback": traceback.format_exc(limit=5),
-                    },
-                }
-            )
-            return record
-        parsed = parse_json_object(response.text)
+            repair_count += 1
         record.update(
             {
                 "ended_at": utc_now(),
-                "attempts": attempts,
-                "response": response.log_view(),
-                "raw_text": response.text,
+                "attempts": record["attempts"],
+                "format_repairs": repair_count,
+                "response": last_response.log_view() if last_response is not None else None,
+                "raw_text": last_response.text if last_response is not None else None,
             }
         )
-        if parsed is None:
-            record.update(
-                {
-                    "status": "format_error",
-                    "error": {"type": "InvalidJSON", "message": "model output was not a strict JSON object"},
-                }
-            )
-            return record
-        if response.finish_reason == "length":
-            # A provider-side token cutoff can still yield a parseable but
-            # truncated object; it must fail loudly instead of being scored.
-            record.update(
-                {
-                    "status": "format_error",
-                    "output": parsed,
-                    "error": {
-                        "type": "TruncatedOutput",
-                        "message": "provider stopped with finish_reason=length",
-                    },
-                }
-            )
-            return record
-        output_error = self._validate_output(parsed, role_id)
-        if output_error:
-            record.update(
-                {
-                    "status": "format_error",
-                    "output": parsed,
-                    "error": {"type": "OutputSchemaError", "message": output_error},
-                }
-            )
+        if repair_records:
+            record["repair_records"] = repair_records
+        if last_error is not None:
+            record.update({"status": "format_error", "error": last_error})
+            if parsed is not None:
+                record["output"] = parsed
             return record
         record.update({"status": "completed", "output": parsed})
         return record

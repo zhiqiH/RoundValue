@@ -22,7 +22,7 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 
 `P/A/C/W` 分别表示 Planner、Analyst、Critic、Writer。`D1` 与 `W-packet` 是确定性 JSON 聚合节点：不是 Agent、不请求模型、不改变 token 或成本。Writer 看到六条角色输出的固定顺序，且其 `final_answer` 是唯一可评分答案。
 
-一轮恒为 7 次逻辑模型调用：`P1,A1,C1,P2,A2,C2,W`。网络重试属于附属 API 尝试，完整保存在轨迹中并另行累积；它不改变每轮的逻辑调用数。P/A/C 同阶段并行，阶段 2 必须等待完整 D1，Writer 必须等待完整 W-packet。角色、边、可见性、顺序和最大轮数在运行中均不可变。
+一轮恒为 7 次逻辑模型调用：`P1,A1,C1,P2,A2,C2,W`。网络重试与格式修复重试都属于附属 API 尝试，完整保存在轨迹中并另行累积；它们不改变每轮的逻辑调用数。格式修复是有界的（`agents.json` 的 `format_retries`），把具体违规反馈给模型后重新采样同一节点，绝不静默改写字段；耗尽后该节点如实失败。P/A/C 同阶段并行，阶段 2 必须等待完整 D1，Writer 必须等待完整 W-packet。角色、边、可见性、顺序和最大轮数在运行中均不可变。
 
 ## 3. 可见性与防泄漏
 
@@ -34,7 +34,7 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 | 在线停止策略 | 题目、当前答案、可见消息、公开 verifier、已用预算 |
 | 离线评分/标签 | 参考答案、隐藏测试与离线 Judge（不可回流在线） |
 
-所有角色必须返回严格 JSON。格式错误会失败并如实记录；不得静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
+所有角色必须返回严格 JSON。节点输出预算由角色 output_schema 推导并逐节点限制 `max_output_tokens`；非法 JSON、`finish_reason=length` 截断或违反字段上限（含 `max_length`）会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录。重试耗尽时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
 
 Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。原 ID 与完整标签只保存在磁盘记录和离线评分中。
 

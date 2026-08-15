@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -65,6 +66,16 @@ def _validate_agents(config: dict[str, Any]) -> None:
     retries = config.get("format_retries", 0)
     if isinstance(retries, bool) or not isinstance(retries, int) or retries < 0:
         raise ConfigurationError("agents.json format_retries must be a non-negative integer")
+    margin = config.get("format_budget_margin", 2.0)
+    if (
+        isinstance(margin, bool)
+        or not isinstance(margin, (int, float))
+        or not math.isfinite(float(margin))
+        or float(margin) < 1.0
+    ):
+        raise ConfigurationError(
+            "agents.json format_budget_margin must be a finite number >= 1.0"
+        )
     roles = require_list(config.get("roles"), "agents.json roles")
     if len(roles) != 4:
         raise ConfigurationError("agents.json must define exactly four roles")

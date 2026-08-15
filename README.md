@@ -58,7 +58,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
                  Writer → final_answer
 ```
 
-`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 3 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。只有 Writer 的 `final_answer` 是可评分 checkpoint。格式错误会使该轮失败，不能静默修补输出。
+`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 3 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。只有 Writer 的 `final_answer` 是可评分 checkpoint。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量）；非法 JSON、截断输出或超长字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录。修复不静默改动任何字段，重试耗尽仍会如实失败。
 
 策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
 
@@ -68,7 +68,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 
 | 文件 | 作用 |
 |---|---|
-| `configs/agents.json` | 四个 Debate 角色的内嵌提示词与输出字段 |
+| `configs/agents.json` | 四个 Debate 角色的内嵌提示词、输出字段，以及 `format_retries` / `format_budget_margin` 修复协议 |
 | `configs/model_config.json` | Provider、模型、采样、重试、价格和密钥位置 |
 | `configs/topology.json` | 拓扑注册表：选择当前拓扑，并定义其节点、边、packet 与轮数 |
 
@@ -130,11 +130,13 @@ Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的�
 | 数据集 | 文件 | Train | Validation | Test | 合计 |
 |---|---|---:|---:|---:|---:|
 | MATH-500 | `benchmark/math/MATH-500.json` | 300 | 100 | 100 | 500 |
+| MATH-50 | `benchmark/math/MATH-50.json` | 30 | 10 | 10 | 50 |
 | HumanEval+ v0.1.10 | `benchmark/code/HumanEvalPlus.json` | 98 | 32 | 34 | 164 |
 | MBPP+ v0.2.0 | `benchmark/code/MBPPPlus.json` | 226 | 75 | 77 | 378 |
 
 MATH-500 的 500 道题只在自己的 train/validation/test 三个互不相交分区之间流动；
 HumanEval+ 与 MBPP+ 也各自独立划分，绝不把不同数据集或不同域混在同一个 run 中。
+MATH-50 是 MATH-500 的确定性分层子集（按学科比例、难度均匀抽样，60/20/20 划分），只用于快速验证；任务 ID、题面、参考答案与原集逐字一致，可用 `python src/build_math50.py` 重建。
 
 代码评分器 `evalplus_differential_v1` 使用官方 EvalPlus 发布的 base/plus 输入、canonical oracle 与容差字段进行差分比较；题面之外的测试输入和 oracle 不会提供给 Agent。它是 RoundValue 的可复现适配器，**不是**官方 `evalplus.evaluate`、官方容器或 leaderboard 成绩；正式报告应标注为“RoundValue EvalPlus differential adapter”。
 
