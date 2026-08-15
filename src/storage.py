@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 import importlib.metadata
 import json
 from pathlib import Path
@@ -12,11 +12,13 @@ import subprocess
 import sys
 import uuid
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from contracts import canonical_json, file_hash, json_hash, utc_now
 
 
 _RUN_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,119}\Z")
+RUN_ID_TIMEZONE = ZoneInfo("America/Chicago")
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -108,9 +110,9 @@ def _package_versions() -> dict[str, str | None]:
 
 
 def make_run_id() -> str:
-    """Compact contiguous timestamp; the dataset tag and entropy are added by create_run."""
+    """Local minute timestamp for Dallas; dataset tag and entropy come from create_run."""
 
-    return datetime.now(UTC).strftime("%Y%m%d%H%M%S")
+    return datetime.now(RUN_ID_TIMEZONE).strftime("%Y%m%d%H%M")
 
 
 def _validated_run_id(run_id: str) -> str:
@@ -145,7 +147,9 @@ def create_run(
     """Create matching raw-trajectory and aggregate-result directories."""
 
     root = root.resolve()
-    dataset_token = _validated_run_id(dataset_name)
+    # Run IDs contain exactly two underscores: after the timestamp and after
+    # the dataset.  Dataset names therefore cannot keep hyphens.
+    dataset_token = _validated_run_id(dataset_name.replace("-", ""))
     chosen_id = _validated_run_id(
         run_id
         or f"{make_run_id()}_{dataset_token}_{uuid.uuid4().hex[:8]}"

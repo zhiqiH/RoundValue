@@ -97,9 +97,10 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 `roundvalue smoke|collect|analyze|visualize` 分别转发到上述四个脚本的 `main`，不改变
 任何参数、强制顺序或门禁；`scripts/` 目录仍然只包含这四个用户入口。
 
-run 命名统一为 `YYYYMMDDHHMMSS_<数据集名称>_<hex>`：trajectories 与 results 使用
-完全相同的目录名，日期和时间连续书写。例如 MATH-500 的 collect run 是
-`20260814233402_MATH-500_15193d5a`，smoke run 用 `smoke` 作为数据集占位名。
+run 命名统一为 `YYYYMMDDHHMM_<数据集名称>_<hex>`：trajectories 与 results 使用
+完全相同的目录名，时间取达拉斯本地时区（America/Chicago），精确到分钟。例如
+MATH-500 的 collect run 是 `202608142334_MATH500_15193d5a`（数据集名中的连字符
+会被去掉，run 名只含两个下划线），smoke run 用 `smoke` 作为数据集占位名。
 
 因此 `trajectories/` 是原始且尽量不被后续阶段修改的模型轨迹；`results/` 必须能由 trajectories 完全离线重建（重跑 step3）。`run_id` 是 step3/step4 唯一接受的实验标识，不要混用不同 run。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
 
@@ -177,14 +178,14 @@ RoundValue/
 ├── benchmark/math/MATH-500.json         # 一个数据集一个文件，provenance 内嵌
 ├── benchmark/code/HumanEvalPlus.json
 ├── benchmark/code/MBPPPlus.json
-├── results/YYYYMMDDHHMMSS_<数据集>_<hex>/
+├── results/YYYYMMDDHHMM_<数据集>_<hex>/
 ├── scripts/step1_smoke.py              # scripts/ 只有这四个 Python 用户入口
 ├── scripts/step2_collect.py
 ├── scripts/step3_analyze.py
 ├── scripts/step4_visualize.py
 ├── src/                                # 底层模块 + pipeline 编排 + benchmark 构建/验证工具
 │   └── roundvalue_cli.py               # roundvalue 子命令 → 四个 step 入口的转发
-├── trajectories/YYYYMMDDHHMMSS_<数据集>_<hex>/
+├── trajectories/YYYYMMDDHHMM_<数据集>_<hex>/
 ├── EXPERIMENT_ARCHITECTURE.md
 └── README.md
 ```

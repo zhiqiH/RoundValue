@@ -53,8 +53,8 @@ scripts/step4_visualize.py
 pyproject.toml                    运行依赖管理 + roundvalue 控制台命令注册
 src/                              扁平模块 + pipeline 共享编排 + benchmark 构建/验证工具
 src/roundvalue_cli.py             roundvalue 子命令 → 四个 step 入口的等价转发
-trajectories/YYYYMMDDHHMMSS_<数据集>_<hex>/    任务级完整调用与 checkpoint 记录
-results/YYYYMMDDHHMMSS_<数据集>_<hex>/         聚合指标、置信区间、策略报告与 manifest
+trajectories/YYYYMMDDHHMM_<数据集>_<hex>/    任务级完整调用与 checkpoint 记录
+results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、策略报告与 manifest
 .secret/model_key.json            本地密钥，永不提交
 ```
 
