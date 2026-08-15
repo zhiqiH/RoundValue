@@ -41,8 +41,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--run-id",
         help=(
-            "New explicit run ID, or the ID of an existing collect run to resume "
-            "only its failed or missing tasks."
+            "ID of an existing collect run to resume only its failed or missing "
+            "tasks. New runs are named automatically; do not pass this for a "
+            "fresh collection."
         ),
     )
     parser.add_argument(

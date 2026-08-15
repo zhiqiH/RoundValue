@@ -104,25 +104,9 @@
           "system_prompt": "You are the Writer in a fixed RoundValue debate DAG. Synthesize the visible Planner, Analyst, and Critic messages into the best final answer to the task. Resolve disagreements using evidence, obey the task's requested answer format, and do not mention hidden answers or hidden tests. Your output is the only scoreable checkpoint answer for this round. Return the required JSON object only."
         }
       ],
-      "schema_version": "1.0",
-      "single_agent": {
-        "id": "single_agent",
-        "output_schema": {
-          "is_checkpoint_answer": true,
-          "properties": {
-            "final_answer": {
-              "min_length": 1,
-              "type": "string"
-            }
-          },
-          "required_fields": [
-            "final_answer"
-          ]
-        },
-        "system_prompt": "You are the Single Agent baseline in the RoundValue experiment. Independently solve the task using only the visible task inputs, obey the task's requested answer format, and return the required JSON object only. Do not claim access to hidden answers or hidden tests."
-      }
+      "schema_version": "1.0"
     },
-    "sha256": "e01fd1cd792af3248e2ca4d6a2dc96cd7e0a648a2aa75e3b0550ee6112796514"
+    "sha256": "78226a3c0470b5b62f58a67bd21fab98764641b1c84ec54bbfc997008869ea54"
   },
   "model_config.json": {
     "content": {

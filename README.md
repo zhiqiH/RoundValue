@@ -5,13 +5,18 @@ RoundValue 是一套为独立论文实验准备的、精简且可复现的固定
 用户配置密钥后按顺序运行四个入口：
 
 ```powershell
-python -m pip install -e .   # 安装 pyproject.toml 声明的依赖并注册 roundvalue 命令
+conda create -n roundvalue python=3.11 -y   # 首次创建环境；项目要求 Python 3.11+
+conda activate roundvalue
+python -m pip install -e .                  # 安装 pyproject.toml 声明的依赖并注册 roundvalue 命令
 roundvalue smoke --domain math
 roundvalue collect --benchmark benchmark/math/MATH-500.json \
   --smoke-run-id <SMOKE_RUN_ID>
 roundvalue analyze --run-id <RUN_ID>
 roundvalue visualize --run-id <RUN_ID>
 ```
+
+`python` 必须指向 3.11+ 解释器；macOS 系统自带的 `/usr/bin/python3` 可能是 3.9，
+请始终在 `conda activate roundvalue` 后运行以上命令。
 
 `roundvalue` 只是四个 step 脚本的等价转发命令：`roundvalue smoke|collect|analyze|visualize`
 与 `python scripts/step*_*.py` 的参数、门禁和退出码完全一致，不新增第五步。原脚本方式
@@ -85,7 +90,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 执行顺序是强制的：
 
 1. `step1_smoke` 的每道验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。smoke 的 `--domain` 必须与后续 collect 相同。
-2. `step2_collect` 必须用 `--smoke-run-id` 指向一个已通过的**同域** smoke run，并校验该 smoke 已全部通过、且三份 config 与模型/拓扑选择未发生变化；不满足时拒绝开始。它只保存原始轨迹，不训练策略、不生成结论。给定已存在的 `--run-id` 时进入断点续跑，只重跑失败或缺失任务；失败任务 ID 输出到终端，原因写入 `results/<run>/failure_details.json`。
+2. `step2_collect` 必须用 `--smoke-run-id` 指向一个已通过的**同域** smoke run，并校验该 smoke 已全部通过、且三份 config、源码快照与模型/拓扑选择未发生变化；不满足时拒绝开始。它只保存原始轨迹，不训练策略、不生成结论。新 run 自动命名，无需传 `--run-id`；给定一个已存在的 collect `--run-id` 时进入断点续跑，只重跑失败或缺失任务；失败任务 ID 输出到终端，原因写入 `results/<run>/failure_details.json`。
 3. `step3_analyze` 只读 trajectories，用确定性离线评分器对每一轮评分（代码任务需 `--allow-local-code-evaluation`），构建 `ΔQ/V/G` 标签，只在 Train 拟合、只在 Validation 选阈值、只在 Test 评估，并把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results。它绝不调用模型 API，也绝不回写 trajectories。
 4. `step4_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）与 `summary_conclusion.txt`。可视化不读取 trajectories，不可能反向影响评分或策略。
 
@@ -131,6 +136,10 @@ MATH-500 的 500 道题只在自己的 train/validation/test 三个互不相交�
 HumanEval+ 与 MBPP+ 也各自独立划分，绝不把不同数据集或不同域混在同一个 run 中。
 
 代码评分器 `evalplus_differential_v1` 使用官方 EvalPlus 发布的 base/plus 输入、canonical oracle 与容差字段进行差分比较；题面之外的测试输入和 oracle 不会提供给 Agent。它是 RoundValue 的可复现适配器，**不是**官方 `evalplus.evaluate`、官方容器或 leaderboard 成绩；正式报告应标注为“RoundValue EvalPlus differential adapter”。
+
+数学评分采用与 MATH-500 provenance 同源的 PRM800K/MATH 归一化约定（分数简写、`\sqrt`、度数、单位、`\%` 等先统一写法）做精确比较，并附一个只支持有限数值表达式与 `\frac` 的保守数值回退，数学题默认零容差。普通百分号不当作噪声删除（`5%` 不会误判成 `5`），而是经数值回退按 `/100` 解释（`50%` 与 `0.5` 等价）。该约定外的等价改写（例如 `14/3` 与 `4.666…` 互换）不会被自动判等价，以保证与公开 MATH-500 评分口径可比。
+
+策略默认 `λ_cost=μ_latency=0`：值函数 `G` 就是纯质量收益，阈值选择只在质量相同的情况下用更少 token 作为决胜项。质量—token 与质量—延迟的 Pareto、任务级配对置信区间和 Oracle regret 作为独立坐标报告，而不是把价格系数折叠进一个不可解释的标量。
 
 运行正式收集：
 

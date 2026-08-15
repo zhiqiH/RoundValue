@@ -42,17 +42,6 @@ DATASET_SPLIT_SEED = "roundvalue-dataset-splits-v1"
 DATASET_SPLIT_RATIOS = {"train": 0.6, "validation": 0.2, "test": 0.2}
 EVALPLUS_REFERENCE_IMPLEMENTATION = "evalplus==0.3.1"
 
-# The official HumanEval+ v0.1.10 canonical implementation for HumanEval/32
-# does not satisfy its own property oracle on plus input #119 at atol=1e-4.
-# Keep the task because the oracle checks a meaningful mathematical property,
-# but record the upstream self-check anomaly so validation does not disguise it.
-KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS = {
-    "humanevalplus::HumanEval_32": {
-        "source_task_id": "HumanEval/32",
-        "reason": "upstream canonical solution misses the find_zero property oracle on plus input 119",
-    }
-}
-
 # Revisions are source commits, not mutable branch names.  The MATH-500 mirror
 # reproduces OpenAI's PRM800K held-out split; the provenance document records
 # that upstream source and checksum alongside this exact mirror revision.
@@ -491,10 +480,6 @@ def build(
                 "comparison_reference": EVALPLUS_REFERENCE_IMPLEMENTATION,
                 "scope": "RoundValue local adapter; not the upstream container or leaderboard runner",
             }
-            if entry["dataset_id"] == "HumanEvalPlus":
-                provenance["known_canonical_self_check_exceptions"] = (
-                    KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS
-                )
 
         document["provenance"] = provenance
         output_dir = output_root / entry["directory"]

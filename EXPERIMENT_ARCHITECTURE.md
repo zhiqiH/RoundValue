@@ -80,8 +80,8 @@ collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照
 `roundvalue smoke|collect|analyze|visualize` 是这四个入口的等价转发命令，参数、门禁与退出码
 完全一致，不构成第五个实验步骤；`python scripts/step*_*.py` 形式保持不变。
 
-每个 run 保存配置快照和哈希、基准来源与哈希、Git 状态、源代码快照、命令行、模型响应名、API 尝试、checkpoint、评分、特征、标签和聚合结果。服务端即便在温度为零时仍可能变化，因此以任务级轨迹和聚类 bootstrap 报告不确定性，不宣称逐 token 完全确定。
+每个 run 保存配置快照和哈希、基准来源与哈希、Git 状态、源代码快照、命令行、模型响应名、API 尝试、checkpoint、评分、特征、标签和聚合结果。服务端即便在温度为零时仍可能变化，因此以任务级轨迹和配对 bootstrap 报告不确定性，不宣称逐 token 完全确定。
 
 ## 6. 论文结论的最低证据
 
-比较 Fixed-1/2/3、启发式、task-only、RoundValue、one-step Oracle 和 trajectory Oracle。启发式共识信号基于 Planner/Analyst/Critic 六条输出的 `candidate_answer`：至少 2/3 完全一致，或 Writer 答案跨轮稳定，才判定为共识。报告质量—成本 Pareto、任务级置信区间、Oracle regret 与 Repair/Neutral/Harm/Recovery。Oracle 只测量可达上界与后悔值，绝不可部署。
+比较 Fixed-1/2/3、启发式、task-only、RoundValue、one-step Oracle 和 trajectory Oracle。启发式共识信号基于 Planner/Analyst/Critic 六条输出的 `candidate_answer`：至少 2/3 完全一致，或 Writer 答案跨轮稳定，才判定为共识。默认 `λ_cost=μ_latency=0`，因此值函数 `G` 是纯质量收益、阈值选择只在质量相同时以更少 token 决胜；质量—成本与质量—延迟 Pareto、任务级配对置信区间、Oracle regret 与 Repair/Neutral/Harm/Recovery 作为独立坐标报告。Oracle 只测量可达上界与后悔值，绝不可部署。

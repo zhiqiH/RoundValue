@@ -31,6 +31,7 @@ from provider import build_provider  # noqa: E402
 from report import summarize_collection  # noqa: E402
 from scorer import score_trajectory  # noqa: E402
 from storage import (  # noqa: E402
+    _source_snapshot,
     create_run,
     open_run,
     read_json,
@@ -54,7 +55,7 @@ POLICY_SELECTION = {
     "mu_latency": 0.0,
     "target": "G",
     "ridge": 1e-6,
-    "threshold_candidates": [-0.05, 0.0, 0.05],
+    "threshold_candidates": [-0.15, -0.1, -0.05, 0.0, 0.05, 0.1, 0.15],
 }
 
 
@@ -338,7 +339,7 @@ def _validate_resume_consistency(
     manifest: Mapping[str, Any],
     split_by_task: Mapping[str, str],
 ) -> None:
-    """Refuse to resume against a changed benchmark or split assignment."""
+    """Refuse to resume against changed benchmark, split, or source code."""
 
     trajectory_dir = Path(manifest["trajectory_dir"])
     frozen = read_json(trajectory_dir / "frozen_splits.json")
@@ -352,6 +353,11 @@ def _validate_resume_consistency(
             raise ValueError(
                 f"resume aborted: benchmark source changed since the run started: {relative}"
             )
+    if manifest.get("source_snapshot_hash") != _source_snapshot(PROJECT_ROOT)["hash"]:
+        raise ValueError(
+            "resume aborted: source code changed since the run started; "
+            "start a new run so one run stays reproducible"
+        )
 
 
 def _verify_smoke_gate(
@@ -388,6 +394,10 @@ def _verify_smoke_gate(
     if smoke_manifest.get("config_hash") != json_hash(config_snapshot(PROJECT_ROOT)):
         raise ValueError(
             "configs changed since the smoke run; rerun step1_smoke.py first"
+        )
+    if smoke_manifest.get("source_snapshot_hash") != _source_snapshot(PROJECT_ROOT)["hash"]:
+        raise ValueError(
+            "source code changed since the smoke run; rerun step1_smoke.py first"
         )
     if smoke_manifest.get("selected_model_id") != experiment.get("model_id"):
         raise ValueError(
@@ -558,6 +568,11 @@ def _run_collect(
         _validate_resume_consistency(manifest, split_by_task)
         existing_records = read_task_records(manifest)
     else:
+        if args.run_id:
+            raise ValueError(
+                f"--run-id {args.run_id!r} does not match an existing collect run; "
+                "--run-id only resumes a previously started run"
+            )
         manifest = _create_run(args, experiment, state, dataset_name, domain)
         _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
         _write_frozen_splits(manifest, split_by_task)
@@ -877,7 +892,12 @@ def _run_analyze(
             record["task"].get("task_id") for record in validation_records
         ],
     }
-    replay = replay_policies(test_records, frozen)
+    replay = replay_policies(
+        test_records,
+        frozen,
+        bootstrap_seed=BOOTSTRAP_SEED,
+        bootstrap_samples=BOOTSTRAP_SAMPLES,
+    )
     replay.update(
         {
             "evaluated_at": utc_now(),

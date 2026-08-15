@@ -205,22 +205,146 @@ def _strip_math_delimiters(value: str) -> str:
     return value
 
 
+def _fix_fracs(value: str) -> str:
+    """Expand shorthand LaTeX fractions like ``\\frac12`` to ``\\frac{1}{2}``."""
+
+    substrs = value.split("\\frac")
+    new_str = substrs[0]
+    if len(substrs) > 1:
+        substrs = substrs[1:]
+        for substr in substrs:
+            new_str += "\\frac"
+            if not substr:
+                return value
+            if substr[0] == "{":
+                new_str += substr
+            else:
+                try:
+                    assert len(substr) >= 2
+                except AssertionError:
+                    return value
+                a = substr[0]
+                b = substr[1]
+                if b != "{":
+                    if len(substr) > 2:
+                        post_substr = substr[2:]
+                        new_str += "{" + a + "}{" + b + "}" + post_substr
+                    else:
+                        new_str += "{" + a + "}{" + b + "}"
+                else:
+                    if len(substr) > 2:
+                        post_substr = substr[2:]
+                        new_str += "{" + a + "}" + b + post_substr
+                    else:
+                        new_str += "{" + a + "}" + b
+    return new_str
+
+
+def _fix_a_slash_b(value: str) -> str:
+    """Convert a pure ``a/b`` integer form to ``\\frac{a}{b}``."""
+
+    if len(value.split("/")) != 2:
+        return value
+    a, b = value.split("/")
+    try:
+        a_int, b_int = int(a), int(b)
+        assert value == f"{a_int}/{b_int}"
+        return f"\\frac{{{a_int}}}{{{b_int}}}"
+    except (ValueError, AssertionError):
+        return value
+
+
+def _remove_right_units(value: str) -> str:
+    if "\\text{ " in value:
+        splits = value.split("\\text{ ")
+        if len(splits) == 2:
+            return splits[0]
+    return value
+
+
+def _fix_sqrt(value: str) -> str:
+    """Expand ``\\sqrt3`` to ``\\sqrt{3}`` while leaving braced forms intact."""
+
+    if "\\sqrt" not in value:
+        return value
+    splits = value.split("\\sqrt")
+    new_string = splits[0]
+    for split in splits[1:]:
+        if not split:
+            return value
+        if split[0] != "{":
+            new_substr = "\\sqrt{" + split[0] + "}" + split[1:]
+        else:
+            new_substr = "\\sqrt" + split
+        new_string += new_substr
+    return new_string
+
+
+def _strip_string(value: str) -> str:
+    """Canonical Hendrycks MATH / PRM800K answer normalization.
+
+    This is the grading convention used by the MATH-500 evaluation harness, so
+    aligning with it keeps RoundValue's math accuracy comparable to published
+    numbers.  Fractions, square roots, degrees, units and percentages are
+    canonicalized before the two answers are compared exactly.
+    """
+
+    value = value.replace("\n", "")
+    value = value.replace("\\!", "")
+    value = value.replace("\\\\", "\\")
+    value = value.replace("tfrac", "frac")
+    value = value.replace("dfrac", "frac")
+    value = value.replace("\\left", "")
+    value = value.replace("\\right", "")
+    value = value.replace("^{\\circ}", "")
+    value = value.replace("^\\circ", "")
+    value = value.replace("\\$", "")
+    value = _remove_right_units(value)
+    value = value.replace("\\%", "")
+    # A bare ``%`` is deliberately preserved: stripping it would turn a wrong
+    # ``5%`` into ``5`` and therefore into a false correct answer.  The
+    # numeric fallback still interprets a trailing percent as x/100, so
+    # ``50%`` and ``0.5`` remain equivalent while ``5%`` and ``5`` do not.
+    value = value.replace(" .", " 0.")
+    value = value.replace("{.", "{0.")
+    if not value:
+        return value
+    if value[0] == ".":
+        value = "0" + value
+    if len(value.split("=")) == 2 and len(value.split("=")[0]) <= 2:
+        value = value.split("=")[1]
+    value = _fix_sqrt(value)
+    value = value.replace(" ", "")
+    value = _fix_fracs(value)
+    if value == "0.5":
+        value = "\\frac{1}{2}"
+    value = _fix_a_slash_b(value)
+    return value
+
+
 def normalize_math_answer(value: str) -> str:
-    """Conservatively normalize a math answer before an equivalence check."""
+    """Normalize a math answer with the canonical MATH-500 convention.
+
+    The core transformation is the Hendrycks MATH / PRM800K normalization used
+    by the MATH-500 harness.  On top of it we keep only conservative, safe
+    extensions: NFKC unicode normalization, math-delimiter stripping, dash
+    unification, thousands-separator removal, and a trailing-period cleanup.
+    Case is preserved because it is meaningful for symbolic answers.
+    """
 
     text = unicodedata.normalize("NFKC", value)
     text = _strip_math_delimiters(text)
     text = text.replace("−", "-").replace("–", "-").replace("—", "-")
-    text = text.replace("\\left", "").replace("\\right", "")
-    text = text.replace("\\dfrac", "\\frac").replace("\\tfrac", "\\frac")
-    text = text.replace("\\,", "").replace("\\!", "")
+    match = re.search(r"^\\text\{(?P<text>.+?)\}$", text, re.S)
+    if match:
+        text = match.group("text").strip()
+    text = _strip_string(text)
+    if text.endswith(".") and not re.fullmatch(r"[+-]?\d+\.", text):
+        text = text[:-1]
     text = _THOUSANDS_SEPARATOR_RE.sub(
         lambda match: match.group(0).replace(",", ""), text
     )
-    text = "".join(text.split())
-    if text.endswith(".") and not re.fullmatch(r"[+-]?\d+\.", text):
-        text = text[:-1]
-    return text.casefold()
+    return text
 
 
 def _balanced_group(value: str, start: int) -> tuple[str, int] | None:
@@ -470,6 +594,10 @@ _CANDIDATE_ALLOWED_MODULES = (
 # in a real sandbox when that is required.
 _CODE_GUARD_TEMPLATE = r"""
 import ast
+import random
+
+
+random.seed(0)
 
 
 FORBIDDEN_NODES = (
@@ -893,11 +1021,7 @@ def check_outputs(dataset, entry_point, function, inputs, expected, atol):
                 output = function(*copy.deepcopy(item_input))
             exact_match = output == expected_output
             if dataset == "mbpp":
-                if entry_point == "are_equivalent":
-                    exact_match = exact_match or True
-                elif entry_point == "sum_div":
-                    exact_match = exact_match or output == 0
-                elif entry_point == "surface_Area":
+                if entry_point == "surface_Area":
                     exact_match = exact_match or abs(output - surface_area(*item_input)) <= effective_atol
                 elif entry_point == "digit_distance_nums":
                     exact_match = exact_match or output == digit_distance_nums(*item_input)
@@ -909,6 +1033,9 @@ def check_outputs(dataset, entry_point, function, inputs, expected, atol):
                     else:
                         exact_match = expected_output == (output is not None)
             if dataset == "humaneval" and entry_point == "find_zero":
+                # The plus split's intended semantic for find_zero is the
+                # polynomial property oracle (the returned value is a root),
+                # not bitwise agreement with the canonical implementation.
                 assert abs(poly(*item_input, output)) <= effective_atol
                 continue
             if effective_atol == 0 and is_floats(expected_output):

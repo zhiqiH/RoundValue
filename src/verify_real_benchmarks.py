@@ -5,9 +5,7 @@ Run from the repository root with ``python src/verify_real_benchmarks.py``.
 The verification checks each self-contained dataset document, its split
 partition, and the code privacy boundary, then runs canonical source against a
 representative set of the private EvalPlus differential inputs.  ``--all-code``
-checks every generated canonical source; the one pinned upstream self-check
-exception is asserted explicitly rather than silently treated as a passing
-reference implementation.
+checks every generated canonical source.
 """
 
 from __future__ import annotations
@@ -33,7 +31,6 @@ from scorer import score_code  # noqa: E402
 
 from build_real_benchmarks import (  # noqa: E402
     DATASET_SPLIT_RATIOS,
-    KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS,
     _split_sizes,
 )
 
@@ -47,7 +44,7 @@ PRIVATE_EVALPLUS_FIELDS = {
 }
 SAMPLE_TASK_IDS = {
     "humanevalplus::HumanEval_0",
-    "humanevalplus::HumanEval_32",  # explicit upstream self-check exception
+    "humanevalplus::HumanEval_32",  # find_zero is graded by its property oracle
     # Cover every MBPP JSON-to-Python input conversion family represented in
     # the released 378-task subset, plus all special-oracle families.
     "mbppplus::Mbpp/2", "mbppplus::Mbpp/63", "mbppplus::Mbpp/75",
@@ -167,7 +164,6 @@ def verify(*, all_code: bool) -> dict[str, Any]:
                 f"{visible_task_id}"
             )
 
-    known_exceptions = set(KNOWN_CANONICAL_SELF_CHECK_EXCEPTIONS)
     selected = code_tasks if all_code else [
         task for task in code_tasks if task["task_id"] in SAMPLE_TASK_IDS
     ]
@@ -175,7 +171,6 @@ def verify(*, all_code: bool) -> dict[str, Any]:
         raise AssertionError("canonical verification selection is incomplete")
     failures: list[dict[str, str]] = []
     checked = {"humanevalplus": 0, "mbppplus": 0}
-    verified_exceptions: list[str] = []
     for task in selected:
         source = str(task["public_metadata"]["source_dataset"])
         key = "humanevalplus" if source == "EvalPlus HumanEval+" else "mbppplus"
@@ -185,12 +180,7 @@ def verify(*, all_code: bool) -> dict[str, Any]:
             allow_local_code_execution=True,
         )
         checked[key] += 1
-        if task["task_id"] in known_exceptions:
-            if result.get("quality") == 0.0 and result.get("reason") == "evalplus_differential_failure":
-                verified_exceptions.append(task["task_id"])
-            else:
-                failures.append({"task_id": task["task_id"], "reason": "known_exception_changed"})
-        elif result.get("quality") != 1.0:
+        if result.get("quality") != 1.0:
             failures.append({"task_id": task["task_id"], "reason": str(result.get("reason"))})
     if failures:
         raise AssertionError(f"canonical EvalPlus verification failed: {failures[:10]}")
@@ -198,7 +188,6 @@ def verify(*, all_code: bool) -> dict[str, Any]:
         "status": "verified",
         "split_counts": split_counts,
         "canonical_code_checked": checked,
-        "known_upstream_exceptions_verified": verified_exceptions,
     }
 
 

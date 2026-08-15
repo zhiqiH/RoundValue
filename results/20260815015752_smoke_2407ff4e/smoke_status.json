@@ -1,15 +1,16 @@
 {
+  "domain": "code",
   "expected_logical_calls": 14,
   "max_rounds": 1,
   "mode": "smoke",
   "requires_quality_one": true,
   "schema_version": "1.0",
-  "skipped_code_task_ids": [
-    "test_code_001",
-    "test_code_002"
-  ],
-  "task_ids": [
+  "skipped_other_domain_task_ids": [
     "test_math_001",
     "test_math_002"
+  ],
+  "task_ids": [
+    "test_code_001",
+    "test_code_002"
   ]
 }

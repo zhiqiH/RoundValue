@@ -14,8 +14,10 @@ scikit-learn, or model-serving runtime is required.
 from __future__ import annotations
 
 import math
+import random
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from statistics import mean
 from typing import Any
 
 try:  # Works when imported as ``src.policy`` and when ``src`` is on sys.path.
@@ -987,7 +989,59 @@ def _apply_oracle_regret(
     return summaries
 
 
-def replay_policies(records: Any, policy_model: Mapping[str, Any] | None = None) -> dict[str, Any]:
+def _pairwise_bootstrap(
+    rows: Sequence[Mapping[str, Any]],
+    baseline_rows: Sequence[Mapping[str, Any]],
+    key: str,
+    *,
+    seed: int,
+    samples: int,
+) -> dict[str, float | int | None]:
+    """Paired per-task difference versus a baseline with bootstrap CI."""
+
+    baseline_by_key = {
+        f"{item.get('task_id')}::{item.get('trajectory_id')}": item
+        for item in baseline_rows
+        if item.get("available")
+    }
+    paired: list[float] = []
+    for row in rows:
+        if not row.get("available"):
+            continue
+        baseline = baseline_by_key.get(f"{row.get('task_id')}::{row.get('trajectory_id')}")
+        if baseline is None:
+            continue
+        value = _optional_number(row.get(key), f"policy {key}")
+        baseline_value = _optional_number(baseline.get(key), f"baseline {key}")
+        if value is not None and baseline_value is not None:
+            paired.append(value - baseline_value)
+    if not paired:
+        return {
+            "n_paired": 0,
+            "mean_difference": None,
+            "ci95_low": None,
+            "ci95_high": None,
+        }
+    rng = random.Random(seed)
+    size = len(paired)
+    means = sorted(mean(paired[rng.randrange(size)] for _ in range(size)) for _ in range(samples))
+    low_index = max(0, math.floor(0.025 * (samples - 1)))
+    high_index = min(samples - 1, math.ceil(0.975 * (samples - 1)))
+    return {
+        "n_paired": size,
+        "mean_difference": mean(paired),
+        "ci95_low": means[low_index],
+        "ci95_high": means[high_index],
+    }
+
+
+def replay_policies(
+    records: Any,
+    policy_model: Mapping[str, Any] | None = None,
+    *,
+    bootstrap_seed: int | None = None,
+    bootstrap_samples: int = 2000,
+) -> dict[str, Any]:
     """Replay all required stopping baselines on saved trajectory JSON.
 
     Returned policies are ``fixed_1``, ``fixed_2``, ``fixed_3``, ``consensus``,
@@ -999,11 +1053,25 @@ def replay_policies(records: Any, policy_model: Mapping[str, Any] | None = None)
     ``policy_model`` may contain ``lambda_cost``, ``mu_latency``, and nested
     ``roundvalue`` / ``task_only`` constant, mean, or linear descriptors.
     Everything returned is built from JSON-native values.
+
+    ``bootstrap_seed`` enables paired per-task bootstrap confidence intervals
+    for each policy's quality and total-token difference versus ``fixed_1``;
+    without it the replay stays a pure deterministic comparison.
     """
 
     normalized = normalize_records(records)
     if policy_model is not None and not isinstance(policy_model, Mapping):
         raise TypeError("policy_model must be a JSON object or None")
+    if bootstrap_seed is not None and (
+        isinstance(bootstrap_seed, bool) or not isinstance(bootstrap_seed, int)
+    ):
+        raise ValueError("bootstrap_seed must be an integer or None")
+    if (
+        isinstance(bootstrap_samples, bool)
+        or not isinstance(bootstrap_samples, int)
+        or bootstrap_samples < 2
+    ):
+        raise ValueError("bootstrap_samples must be an integer of at least 2")
     model = dict(policy_model) if policy_model is not None else None
     lambda_cost = _model_weight(model, "lambda_cost")
     mu_latency = _model_weight(model, "mu_latency")
@@ -1073,6 +1141,27 @@ def replay_policies(records: Any, policy_model: Mapping[str, Any] | None = None)
         metrics.update(regrets[name])
         policy_metrics[name] = metrics
         policies[name] = {"task_results": rows, "metrics": metrics}
+    pairwise = None
+    if bootstrap_seed is not None:
+        pairwise = {
+            name: {
+                "quality_difference": _pairwise_bootstrap(
+                    rows,
+                    policy_rows["fixed_1"],
+                    "quality",
+                    seed=bootstrap_seed,
+                    samples=bootstrap_samples,
+                ),
+                "total_tokens_difference": _pairwise_bootstrap(
+                    rows,
+                    policy_rows["fixed_1"],
+                    "total_tokens",
+                    seed=bootstrap_seed,
+                    samples=bootstrap_samples,
+                ),
+            }
+            for name, rows in policy_rows.items()
+        }
     return {
         "schema_version": POLICY_SCHEMA_VERSION,
         "policy_version": POLICY_VERSION,
@@ -1091,6 +1180,10 @@ def replay_policies(records: Any, policy_model: Mapping[str, Any] | None = None)
         "transition_metrics": _transition_metrics(all_labels),
         "policy_metrics": policy_metrics,
         "policies": policies,
+        "pairwise_vs_fixed_1": pairwise,
+        "bootstrap": {"seed": bootstrap_seed, "samples": bootstrap_samples}
+        if bootstrap_seed is not None
+        else None,
     }
 
 

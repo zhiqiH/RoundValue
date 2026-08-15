@@ -124,11 +124,10 @@ def _validated_run_id(run_id: str) -> str:
 
 
 def result_directory_name(run_id: str) -> str:
-    """Both output sides now share one compact timestamped ID.
+    """Trajectory and result directories share one validated run ID.
 
-    Run IDs look like ``20260814_195613_afbd99d4_math``: no hyphens in the date
-    and a trailing single-domain tag.  Keeping the directory names identical
-    makes trajectories and results easy to pair without fuzzy matching.
+    Keeping the directory names identical makes the two sides pair without
+    fuzzy matching; ``open_run`` always resolves through the trajectory side.
     """
 
     return run_id

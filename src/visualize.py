@@ -652,6 +652,7 @@ def build_analysis(
         },
         "policy_table": policy_table,
         "stop_round_matrix": stop_round_matrix,
+        "pairwise_vs_fixed_1": replay.get("pairwise_vs_fixed_1"),
         "quality_token_points": token_points,
         "quality_latency_points": latency_points,
         "task_rows": task_rows,
@@ -726,6 +727,16 @@ def _render_conclusion(analysis: Mapping[str, Any]) -> str:
             f"wall_clock_ms={_fmt(roundvalue.get('mean_wall_clock_ms'), 0)}, "
             f"stop_round={_fmt(roundvalue.get('mean_stop_round'), 2)}"
         )
+        pairwise = (analysis.get("pairwise_vs_fixed_1") or {}).get("roundvalue") or {}
+        quality_diff = pairwise.get("quality_difference") or {}
+        if quality_diff.get("n_paired"):
+            lines.append(
+                "RoundValue vs fixed-1 paired accuracy difference: "
+                f"mean={_fmt(quality_diff.get('mean_difference'))}, "
+                f"95% CI=[{_fmt(quality_diff.get('ci95_low'))}, "
+                f"{_fmt(quality_diff.get('ci95_high'))}], "
+                f"n_paired={quality_diff.get('n_paired')}"
+            )
     return "\n".join(lines) + "\n"
 
 

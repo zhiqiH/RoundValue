@@ -155,6 +155,20 @@ class FixedDebateRunner:
                 }
             )
             return record
+        if response.finish_reason == "length":
+            # A provider-side token cutoff can still yield a parseable but
+            # truncated object; it must fail loudly instead of being scored.
+            record.update(
+                {
+                    "status": "format_error",
+                    "output": parsed,
+                    "error": {
+                        "type": "TruncatedOutput",
+                        "message": "provider stopped with finish_reason=length",
+                    },
+                }
+            )
+            return record
         output_error = self._validate_output(parsed, role_id)
         if output_error:
             record.update(
