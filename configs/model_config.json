@@ -37,7 +37,7 @@
       "model_name": "deepseek-v4-flash",
       "temperature": 0.2,
       "reasoning": {
-        "enabled": true,
+        "enabled": false,
         "effort": "high"
       },
       "max_output_tokens": 32768,
@@ -62,7 +62,7 @@
         "enabled": true,
         "effort": "medium"
       },
-      "max_output_tokens": 32768,
+      "max_output_tokens":8192,
       "request_defaults": {
         "response_format": {
           "type": "json_object"
