@@ -237,7 +237,7 @@ roundvalue run --model-id gpt5_nano \
 roundvalue smoke --model-id gpt4o_mini
 roundvalue run --model-id gpt4o_mini \
   --benchmark benchmark/mmlu_pro/MMLU-Pro-50.json \
-  --smoke-run-id <GPT4O_MINI_SMOKE_RUN_ID>
+  --smoke-run-id 202608161658_gpt-4o-mini_SmokeTasks_8f378b9a
 
 # 单智能体基线无需单独命令：每个 run 自动收集，且与 Debate 基线同表同图
 roundvalue visualize --run-id <RUN_ID>
