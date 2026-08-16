@@ -58,7 +58,7 @@ results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、�
 .secret/model_key.json            本地密钥，永不提交
 ```
 
-三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 定义 `deepseek_flash`（默认）与 `gpt5_nano` 两个 profile。Debate 拓扑不可选；模型是唯一 run-level 选择，通过 `roundvalue smoke|run --model-id <id>` 指定，一个 run 内全部七类节点使用同一模型。任何 config/源码变更都会通过哈希与 smoke gate 强制重跑验收。DeepSeek 默认使用 `deepseek-v4-flash`、`temperature: 0.2`、`max_output_tokens: 32768`，适配器发送 `thinking: {"type":"enabled"}` 与 `reasoning_effort: "high"`；`gpt5_nano` 使用官方 `gpt-5-nano`（默认 snapshot `gpt-5-nano-2025-08-07`）、Chat Completions、`reasoning_effort: "medium"` 与 `max_completion_tokens`，不发送 DeepSeek 的 `thinking` toggle。
+三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 定义 `deepseek_flash`（默认）与 `gpt5_nano` 两个 profile。Debate 拓扑不可选；模型是唯一 run-level 选择，通过 `roundvalue smoke|run --model-id <id>` 指定，一个 run 内全部七类节点使用同一模型。任何 config/源码变更都会通过哈希与 smoke gate 强制重跑验收。DeepSeek 默认使用 `deepseek-v4-flash`、`temperature: 0.2`、`max_output_tokens: 32768`，适配器发送 `thinking: {"type":"enabled"}` 与 `reasoning_effort: "high"`；`gpt5_nano` 使用官方 `gpt-5-nano`（默认 snapshot `gpt-5-nano-2025-08-07`）、Chat Completions、`reasoning_effort: "medium"`、`temperature: 1`（该模型只接受默认值）与 `max_completion_tokens`，不发送 DeepSeek 的 `thinking` toggle。
 
 正式基准是两个 MMLU-Pro 数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
 确定性划分，余数计入 Test：MMLU-Pro-500（500 → 300/100/100）与

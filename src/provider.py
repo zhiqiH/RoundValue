@@ -229,6 +229,7 @@ class OpenAICompatibleProvider(ProviderAdapter):
             status_code = response.status_code
             if not 200 <= status_code <= 299:
                 retryable = self._is_retryable_status(status_code)
+                error_body = response.text[:2000] if response.text else None
                 record.update(
                     {
                         "ended_at": utc_now(),
@@ -238,6 +239,7 @@ class OpenAICompatibleProvider(ProviderAdapter):
                         "latency_ms": latency_ms,
                         "error_type": "HTTPStatusError",
                         "error_message": f"provider returned HTTP {status_code}",
+                        "error_body": redact(error_body),
                     }
                 )
                 attempts.append(record)

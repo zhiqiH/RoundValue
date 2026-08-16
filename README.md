@@ -82,7 +82,8 @@ profile（缺省 `deepseek_flash`，可选 `gpt5_nano`），一个 run 内所有
 默认 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 为 `0.2`（DeepSeek 思考模式下该参数会被静默忽略）、`max_output_tokens` 为 `32768`。DeepSeek 适配器显式开启思考模式（发送 `thinking: {"type": "enabled"}` 与 `reasoning_effort: "high"`），并把返回的 `reasoning_content` 长度与 `reasoning_tokens` 记入轨迹；推理内容不进入辩论消息，只出现在响应记录中。
 
 `gpt5_nano` profile 使用官方模型 ID `gpt-5-nano`（默认 snapshot `gpt-5-nano-2025-08-07`）、
-OpenAI Chat Completions 端点与 `reasoning_effort: "medium"`。OpenAI 路径不发送 DeepSeek 的
+OpenAI Chat Completions 端点、`reasoning_effort: "medium"` 与 `temperature: 1`（该模型只接受
+默认 temperature 值 1）。OpenAI 路径不发送 DeepSeek 的
 `thinking` toggle，输出上限使用 `max_completion_tokens`（DeepSeek 继续使用 `max_tokens`）；
 两个 profile 的采样、推理与价格参数彼此隔离，`run.json` 与轨迹的 `model_selection` /
 `configured_model` 记录实际 provider、model 与 reasoning/inference 配置。OpenAI key 通过

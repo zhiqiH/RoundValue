@@ -344,7 +344,7 @@ def _check_runner_model() -> None:
             "model_id": "gpt5_nano",
             "provider": "openai",
             "requested_model": "gpt-5-nano",
-            "temperature": 0.2,
+            "temperature": 1.0,
             "max_output_tokens": 32768,
             "reasoning_enabled": True,
             "reasoning_effort": "medium",

@@ -57,7 +57,7 @@
     "gpt5_nano": {
       "provider": "openai",
       "model_name": "gpt-5-nano",
-      "temperature": 0.2,
+      "temperature": 1.0,
       "reasoning": {
         "enabled": true,
         "effort": "medium"
