@@ -1,0 +1,101 @@
+{
+  "api_latency_ms": {
+    "ci95_high": 14686.0,
+    "ci95_low": 14555.0,
+    "mean": 14620.5,
+    "n": 2
+  },
+  "bootstrap": {
+    "samples": 2000,
+    "seed": 20260813
+  },
+  "cost_status": "configured",
+  "cost_usd": {
+    "ci95_high": 0.0005940200000000001,
+    "ci95_low": 0.0005583536,
+    "mean": 0.0005761868000000001,
+    "n": 2
+  },
+  "input_tokens": {
+    "ci95_high": 5850.0,
+    "ci95_low": 5671.0,
+    "mean": 5760.5,
+    "n": 2
+  },
+  "latency_ms": {
+    "ci95_high": 6823.0,
+    "ci95_low": 6609.0,
+    "mean": 6716.0,
+    "n": 2
+  },
+  "output_tokens": {
+    "ci95_high": 888.0,
+    "ci95_low": 854.0,
+    "mean": 871.0,
+    "n": 2
+  },
+  "quality": {
+    "ci95_high": 1.0,
+    "ci95_low": 1.0,
+    "mean": 1.0,
+    "n": 2
+  },
+  "resource_observation": {
+    "api_latency_ms": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "cost_usd": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "input_tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "latency_ms": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "output_tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "quality": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    },
+    "wall_clock_ms": {
+      "complete_observation": true,
+      "n_completed_tasks": 2,
+      "n_observed": 2
+    }
+  },
+  "schema_version": "1.0",
+  "tasks_complete": 2,
+  "tasks_failed": 0,
+  "tasks_total": 2,
+  "tokens": {
+    "ci95_high": 6738.0,
+    "ci95_low": 6525.0,
+    "mean": 6631.5,
+    "n": 2
+  },
+  "wall_clock_ms": {
+    "ci95_high": 6823.0,
+    "ci95_low": 6609.0,
+    "mean": 6716.0,
+    "n": 2
+  }
+}

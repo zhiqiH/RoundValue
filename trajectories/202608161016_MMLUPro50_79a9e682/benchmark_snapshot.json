@@ -1,0 +1,1464 @@
+{
+  "content": {
+    "benchmark_id": "MMLU-Pro-50-RoundValue-v1",
+    "dataset_id": "MMLU-Pro-50",
+    "domain": "mmlu_pro",
+    "generator": "roundvalue-mmlu-pro-v1",
+    "provenance": {
+      "dataset_id": "MMLU-Pro-50",
+      "domain": "mmlu_pro",
+      "generator": "roundvalue-mmlu-pro-v1",
+      "parent": {
+        "dataset_id": "MMLU-Pro-500",
+        "file": "benchmark/mmlu_pro/MMLU-Pro-500.json",
+        "sha256": "c1295e46ac0877335a0591ec9ac9ae6f7bb631fce35f1bca03a0fb2f4d7c9a9b"
+      },
+      "raw_source_record_sha256": {
+        "mmlu_pro": "3f22e18b9e944d8b76c92a32bfc7c872b5a6c2286eac68e819bad324008a98a0"
+      },
+      "schema_version": "1.0",
+      "selection": {
+        "category_counts": {
+          "biology": 3,
+          "business": 3,
+          "chemistry": 5,
+          "computer science": 2,
+          "economics": 3,
+          "engineering": 4,
+          "health": 3,
+          "history": 2,
+          "law": 5,
+          "math": 6,
+          "other": 4,
+          "philosophy": 2,
+          "physics": 5,
+          "psychology": 3
+        },
+        "method": "largest-remainder category counts; even-spaced sampling across src tags within each category",
+        "seed": "roundvalue-mmlupro50-selection-v1",
+        "src_counts": {
+          "ori_mmlu-abstract_algebra": 1,
+          "ori_mmlu-anatomy": 1,
+          "ori_mmlu-astronomy": 1,
+          "ori_mmlu-business_ethics": 1,
+          "ori_mmlu-college_biology": 1,
+          "ori_mmlu-college_chemistry": 1,
+          "ori_mmlu-college_computer_science": 1,
+          "ori_mmlu-econometrics": 1,
+          "ori_mmlu-electrical_engineering": 1,
+          "ori_mmlu-elementary_mathematics": 1,
+          "ori_mmlu-formal_logic": 1,
+          "ori_mmlu-global_facts": 1,
+          "ori_mmlu-high_school_european_history": 1,
+          "ori_mmlu-high_school_mathematics": 1,
+          "ori_mmlu-high_school_microeconomics": 1,
+          "ori_mmlu-high_school_physics": 1,
+          "ori_mmlu-high_school_psychology": 1,
+          "ori_mmlu-high_school_statistics": 1,
+          "ori_mmlu-international_law": 1,
+          "ori_mmlu-miscellaneous": 1,
+          "ori_mmlu-nutrition": 1,
+          "ori_mmlu-prehistory": 1,
+          "ori_mmlu-professional_accounting": 1,
+          "ori_mmlu-professional_law": 4,
+          "ori_mmlu-professional_psychology": 1,
+          "ori_mmlu-us_foreign_policy": 1,
+          "ori_mmlu-virology": 1,
+          "ori_mmlu-world_religions": 1,
+          "scibench-chemmc": 1,
+          "stemez-Biology": 1,
+          "stemez-Business": 1,
+          "stemez-Chemistry": 2,
+          "stemez-Economics": 1,
+          "stemez-Electromagnetics": 1,
+          "stemez-Genetics": 1,
+          "stemez-MachineDesign": 1,
+          "stemez-Optics": 1,
+          "stemez-PhysicalChemistry": 1,
+          "stemez-Physics": 1,
+          "stemez-Psychology": 1,
+          "stemez-TransportPhenomena": 1,
+          "theoremQA-EECS": 1,
+          "theoremQA-Finance": 1,
+          "theoremQA-Math": 2,
+          "theoremQA-Physics": 1
+        },
+        "total": 50
+      },
+      "sources": {
+        "mmlu_pro": {
+          "dataset": "TIGER-Lab/MMLU-Pro",
+          "paper": "arXiv:2406.01574",
+          "revision": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+          "split": "test",
+          "upstream": "https://github.com/TIGER-AI-Lab/MMLU-Pro"
+        }
+      },
+      "split": {
+        "counts": {
+          "test": 10,
+          "train": 30,
+          "validation": 10
+        },
+        "ratios": {
+          "test": 0.2,
+          "train": 0.6,
+          "validation": 0.2
+        },
+        "seed": "roundvalue-mmlupro50-splits-v1:124",
+        "stratification": "category-stratified subset of MMLU-Pro-500"
+      },
+      "test_task_ids": [
+        "mmlupro::test::2895",
+        "mmlupro::test::740",
+        "mmlupro::test::4097",
+        "mmlupro::test::11564",
+        "mmlupro::test::6418",
+        "mmlupro::test::968",
+        "mmlupro::test::8695",
+        "mmlupro::test::8526",
+        "mmlupro::test::5383",
+        "mmlupro::test::2130"
+      ]
+    },
+    "purpose": "A deterministic, category-stratified 50-task subset of MMLU-Pro-500, split 60/20/20, for fast validation runs before full collection.",
+    "schema_version": "1.0",
+    "split_protocol": {
+      "counts": {
+        "test": 10,
+        "train": 30,
+        "validation": 10
+      },
+      "ratios": {
+        "test": 0.2,
+        "train": 0.6,
+        "validation": 0.2
+      },
+      "seed": "roundvalue-mmlupro50-splits-v1:124",
+      "stratification": "category-stratified subset of MMLU-Pro-500"
+    },
+    "tasks": [
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "a large population",
+          "genetic drift",
+          "random mating",
+          "absence of selection"
+        ],
+        "prompt": "Hardy-Weinberg equilibrium generally assumes all of the following EXCEPT\n\nChoices:\n(A) a large population\n(B) genetic drift\n(C) random mating\n(D) absence of selection\n\nReturn only the letter of the correct choice (A-D).",
+        "public_metadata": {
+          "option_count": 4,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "3217",
+          "src": "ori_mmlu-college_biology",
+          "subject": "biology"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "mmlupro::test::3217"
+      },
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "Stomata open during the day to release excess oxygen and close at night to trap carbon dioxide for photosynthesis.",
+          "Stomata of a leaf open during the day for photosynthesis, enabling carbon dioxide intake and transpiration, and close at night to prevent water loss.",
+          "Stomata remain closed throughout the day and night to protect the leaf from pathogens.",
+          "Stomata open at night for photosynthesis and close during the day to prevent carbon dioxide loss.",
+          "Stomata are open during the day for respiration and close at night to allow photosynthesis.",
+          "Stomata open during the day to facilitate the intake of nitrogen for amino acid synthesis and close at night as it is not required.",
+          "Stomata open at night to absorb more moisture from the cool air and close during the hot day to avoid overheating.",
+          "Stomata open at midday when temperatures are highest to maximize water usage efficiency and close during the morning and evening.",
+          "Stomata close during the day to conserve water and open at night to allow oxygen release.",
+          "Stomata open and close randomly without any specific advantage."
+        ],
+        "prompt": "Explain why the stomata of a leaf tend to open up during the day and to close at night. What advantage is there in this?\n\nChoices:\n(A) Stomata open during the day to release excess oxygen and close at night to trap carbon dioxide for photosynthesis.\n(B) Stomata of a leaf open during the day for photosynthesis, enabling carbon dioxide intake and transpiration, and close at night to prevent water loss.\n(C) Stomata remain closed throughout the day and night to protect the leaf from pathogens.\n(D) Stomata open at night for photosynthesis and close during the day to prevent carbon dioxide loss.\n(E) Stomata are open during the day for respiration and close at night to allow photosynthesis.\n(F) Stomata open during the day to facilitate the intake of nitrogen for amino acid synthesis and close at night as it is not required.\n(G) Stomata open at night to absorb more moisture from the cool air and close during the hot day to avoid overheating.\n(H) Stomata open at midday when temperatures are highest to maximize water usage efficiency and close during the morning and evening.\n(I) Stomata close during the day to conserve water and open at night to allow oxygen release.\n(J) Stomata open and close randomly without any specific advantage.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "3223",
+          "src": "stemez-Biology",
+          "subject": "biology"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "mmlupro::test::3223"
+      },
+      {
+        "answer_index": 3,
+        "domain": "mmlu_pro",
+        "options": [
+          "the daughter of blood group O",
+          "The son with A blood type",
+          "the son of blood group O",
+          "the daughter who has blood group A",
+          "None of the children are adopted; a genetic mutation occurred",
+          "The daughter with AB blood type",
+          "the son who has B blood type",
+          "The son with AB blood type",
+          "The daughter with B blood type",
+          "The child with a rare blood type not listed"
+        ],
+        "prompt": "Consider the ABO blood group locus in humans, which has six (6) alleles reported for it, of which three are most prominent, I^A, I^B andi. The I^A and I^B alleles are both dominant toiandcodominantto each other. A woman of blood group O marries a man who has blood group B. There are four children in the family: a son and daughter of blood group O; a daughter who has A blood type; and a son who has B blood type. One of the children is adopted. Which child is the adopted child?\n\nChoices:\n(A) the daughter of blood group O\n(B) The son with A blood type\n(C) the son of blood group O\n(D) the daughter who has blood group A\n(E) None of the children are adopted; a genetic mutation occurred\n(F) The daughter with AB blood type\n(G) the son who has B blood type\n(H) The son with AB blood type\n(I) The daughter with B blood type\n(J) The child with a rare blood type not listed\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "2895",
+          "src": "stemez-Genetics",
+          "subject": "biology"
+        },
+        "reference_answer": "D",
+        "split": "test",
+        "task_id": "mmlupro::test::2895"
+      },
+      {
+        "answer_index": 8,
+        "domain": "mmlu_pro",
+        "options": [
+          "Social accounting, Environmental management initiatives.",
+          "Financial accounting, Environmental management initiatives",
+          "Social accounting, Annual report publication.",
+          "Annual report publication, Social accounting",
+          "Environmental management initiatives, Social accounting.",
+          "Environmental management initiatives, Financial accounting.",
+          "Annual report publication, Financial accounting.",
+          "Annual report publication, Environmental management initiatives.",
+          "Social accounting, Financial accounting.",
+          "Financial accounting, Social accounting."
+        ],
+        "prompt": "The focus on issues, the intended audience extending beyond shareholders and the voluntary nature of ___________ distinguish it from _________.\n\nChoices:\n(A) Social accounting, Environmental management initiatives.\n(B) Financial accounting, Environmental management initiatives\n(C) Social accounting, Annual report publication.\n(D) Annual report publication, Social accounting\n(E) Environmental management initiatives, Social accounting.\n(F) Environmental management initiatives, Financial accounting.\n(G) Annual report publication, Financial accounting.\n(H) Annual report publication, Environmental management initiatives.\n(I) Social accounting, Financial accounting.\n(J) Financial accounting, Social accounting.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "361",
+          "src": "ori_mmlu-business_ethics",
+          "subject": "business"
+        },
+        "reference_answer": "I",
+        "split": "train",
+        "task_id": "mmlupro::test::361"
+      },
+      {
+        "answer_index": 9,
+        "domain": "mmlu_pro",
+        "options": [
+          "$160",
+          "$195",
+          "$220",
+          "$185",
+          "$175",
+          "$200",
+          "$225",
+          "$210",
+          "$165",
+          "$180"
+        ],
+        "prompt": "The Colonial Cookie Company pays on a piece-rate basis at the rate of 80 centsa piece. Mrs. Batter completed the following number of acceptable pieces last week: Monday 45, Tuesday 41, Wednesday 49, Thursday 47, and Friday 43. What were her total earnings for the week?\n\nChoices:\n(A) $160\n(B) $195\n(C) $220\n(D) $185\n(E) $175\n(F) $200\n(G) $225\n(H) $210\n(I) $165\n(J) $180\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "740",
+          "src": "stemez-Business",
+          "subject": "business"
+        },
+        "reference_answer": "J",
+        "split": "test",
+        "task_id": "mmlupro::test::740"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "1.05",
+          "0.75",
+          "0.70",
+          "1.30",
+          "1.25",
+          "1.40",
+          "1.00",
+          "1.15",
+          "0.85",
+          "0.95"
+        ],
+        "prompt": "Estimate the PEG ratio for a firm that has the following characteristics:\nLength of high growth = five years\nGrowth rate in first five years = 25%\nPayout ratio in first five years = 20%\nGrowth rate after five years = 8%\nPayout ratio after five years = 50%\nBeta = 1.0 \nRisk-free rate = T-bond rate = 6%\nCost of equity = 6% + 1(5.5%) = 11.5%\nRisk premium = 5.5%\nWhat is the estimated PEG ratio for this firm?\n\nChoices:\n(A) 1.05\n(B) 0.75\n(C) 0.70\n(D) 1.30\n(E) 1.25\n(F) 1.40\n(G) 1.00\n(H) 1.15\n(I) 0.85\n(J) 0.95\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "370",
+          "src": "theoremQA-Finance",
+          "subject": "business"
+        },
+        "reference_answer": "H",
+        "split": "train",
+        "task_id": "mmlupro::test::370"
+      },
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "Al",
+          "Tl",
+          "C",
+          "B",
+          "Si",
+          "P",
+          "N",
+          "Ga",
+          "In",
+          "As"
+        ],
+        "prompt": "The +1 oxidation state is more stable than the +3 oxidation state for which group 13 element?\n\nChoices:\n(A) Al\n(B) Tl\n(C) C\n(D) B\n(E) Si\n(F) P\n(G) N\n(H) Ga\n(I) In\n(J) As\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "3540",
+          "src": "ori_mmlu-college_chemistry",
+          "subject": "chemistry"
+        },
+        "reference_answer": "B",
+        "split": "validation",
+        "task_id": "mmlupro::test::3540"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "4.2 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "7.2 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "5.0 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "3.3 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "7.7 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "2.1 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "5.5 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "6.6 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "8.8 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$",
+          "9.1 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$"
+        ],
+        "prompt": "What is the uncertainty of the momentum of an electron if we know its position is somewhere in a $10 \\mathrm{pm}$ interval?\n\nChoices:\n(A) 4.2 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(B) 7.2 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(C) 5.0 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(D) 3.3 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(E) 7.7 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(F) 2.1 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(G) 5.5 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(H) 6.6 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(I) 8.8 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n(J) 9.1 $10^{-23} \\mathrm{~kg} \\cdot \\mathrm{m} \\cdot \\mathrm{s}^{-1}$\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "4097",
+          "src": "scibench-chemmc",
+          "subject": "chemistry"
+        },
+        "reference_answer": "H",
+        "split": "test",
+        "task_id": "mmlupro::test::4097"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "1.5 × 10^3 kg of water",
+          "3.0 × 10^3 kg of water",
+          "2.5 × 10^3 kg of water",
+          "4.0 × 10^3 kg of water",
+          "1.8 × 10^3 kg of water",
+          "2.2 × 10^3 kg of water",
+          "3.5 × 10^3 kg of water",
+          "2.0 × 10^3 kg of water",
+          "1.0 × 10^3 kg of water",
+          "2.8 × 10^3 kg of water"
+        ],
+        "prompt": "A lunar module usedAerozine50 as fuel and nitrogen tetroxide (N_2 O_4, molecular weight = 92.0 g/mole) as oxidizer.Aerozine50 consists of 50 % by weight of hydrazine (N_2 H_4, molecular weight = 32.0 g/mole) and 50 % by weight of unsymmetricaldimethylhydrazine ((CH_3)_2 N_2 H_2, molecular weight = 60.0 g/mole). The chief exhaust product was water (H_2 O, molecular weight = 18.0 g/mole). Two of the reactions that led to the formation of water are the following: 2N_2 H_4 + N_2 O_4\\rightarrow3N_2 + 4H_2 O (CH_3)_2 N_2 H_2 + 2N_2 O_4\\rightarrow2CO_2 + 3N_2 + 4H_2 O. If we assume that these reactions were the only ones in which water was formed, how much water was produced by the ascent of the lunar module if 2200 kg ofAerozine50 were consumed in the process?\n\nChoices:\n(A) 1.5 × 10^3 kg of water\n(B) 3.0 × 10^3 kg of water\n(C) 2.5 × 10^3 kg of water\n(D) 4.0 × 10^3 kg of water\n(E) 1.8 × 10^3 kg of water\n(F) 2.2 × 10^3 kg of water\n(G) 3.5 × 10^3 kg of water\n(H) 2.0 × 10^3 kg of water\n(I) 1.0 × 10^3 kg of water\n(J) 2.8 × 10^3 kg of water\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "4556",
+          "src": "stemez-Chemistry",
+          "subject": "chemistry"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "mmlupro::test::4556"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "0.065%",
+          "0.18%",
+          "0.11%",
+          "0.14%",
+          "0.25%",
+          "0.032%",
+          "0.075%",
+          "0.466%",
+          "0.5%",
+          "0.20%"
+        ],
+        "prompt": "A tomato weighing 60.0 g is analyzed for sulfur content by digestion in concentrated HNO_3 followed by precipitation with Ba to form BaSO_4. 0.466 g of BaSO_4 is obtained. If all of the sulfur is converted to BaSO_4, what is the percentage of sulfur in the tomato?\n\nChoices:\n(A) 0.065%\n(B) 0.18%\n(C) 0.11%\n(D) 0.14%\n(E) 0.25%\n(F) 0.032%\n(G) 0.075%\n(H) 0.466%\n(I) 0.5%\n(J) 0.20%\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "4227",
+          "src": "stemez-Chemistry",
+          "subject": "chemistry"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "mmlupro::test::4227"
+      },
+      {
+        "answer_index": 8,
+        "domain": "mmlu_pro",
+        "options": [
+          "1.606 × 10^-19 erg gauss^-1, 1.258 × 10^-2",
+          "1.606 × 10^-18 erg gauss^-2, 1.258 × 10^-3",
+          "1.606 × 10^-20 erg gauss^-1, 1.258 × 10^-1",
+          "1.600 × 10^-20 erg gauss^-1, 1.250 × 10^-3",
+          "1.606 × 10^-19 erg gauss^-1, 1.258 × 10^-4",
+          "1.610 × 10^-20 erg gauss^-1, 1.260 × 10^-3",
+          "1.606 × 10^-21 erg gauss^-1, 1.258 × 10^-5",
+          "1.600 × 10^-19 erg gauss^-2, 1.250 × 10^-2",
+          "1.606 × 10^-20 erg gauss^-1, 1.258 × 10^-3",
+          "1.606 × 10^-20 erg gauss^-2, 1.258 × 10^-2"
+        ],
+        "prompt": "The ion Ti^3+ has one unpaired electron. Calculate the con-tribution of the spin of this electron (a) to the magnetic moment of the ion and (b) to the molar magnetic suscepti-bility of Ti^3+ at 298 K.\n\nChoices:\n(A) 1.606 × 10^-19 erg gauss^-1, 1.258 × 10^-2\n(B) 1.606 × 10^-18 erg gauss^-2, 1.258 × 10^-3\n(C) 1.606 × 10^-20 erg gauss^-1, 1.258 × 10^-1\n(D) 1.600 × 10^-20 erg gauss^-1, 1.250 × 10^-3\n(E) 1.606 × 10^-19 erg gauss^-1, 1.258 × 10^-4\n(F) 1.610 × 10^-20 erg gauss^-1, 1.260 × 10^-3\n(G) 1.606 × 10^-21 erg gauss^-1, 1.258 × 10^-5\n(H) 1.600 × 10^-19 erg gauss^-2, 1.250 × 10^-2\n(I) 1.606 × 10^-20 erg gauss^-1, 1.258 × 10^-3\n(J) 1.606 × 10^-20 erg gauss^-2, 1.258 × 10^-2\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "4401",
+          "src": "stemez-PhysicalChemistry",
+          "subject": "chemistry"
+        },
+        "reference_answer": "I",
+        "split": "train",
+        "task_id": "mmlupro::test::4401"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "0.8",
+          "0.3",
+          "0.9",
+          "0.2",
+          "0.1",
+          "0.7",
+          "0.6",
+          "0.5",
+          "0.4"
+        ],
+        "prompt": "Which of the following decimal numbers has an exact representation in binary notation?\n\nChoices:\n(A) 0.8\n(B) 0.3\n(C) 0.9\n(D) 0.2\n(E) 0.1\n(F) 0.7\n(G) 0.6\n(H) 0.5\n(I) 0.4\n\nReturn only the letter of the correct choice (A-I).",
+        "public_metadata": {
+          "option_count": 9,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "10447",
+          "src": "ori_mmlu-college_computer_science",
+          "subject": "computer science"
+        },
+        "reference_answer": "H",
+        "split": "train",
+        "task_id": "mmlupro::test::10447"
+      },
+      {
+        "answer_index": 3,
+        "domain": "mmlu_pro",
+        "options": [
+          "12500",
+          "18000",
+          "14000",
+          "16807",
+          "10000",
+          "20000",
+          "15000",
+          "17500",
+          "13000",
+          "12000"
+        ],
+        "prompt": "What is the number of labelled rooted forests on 6 vertices\n\nChoices:\n(A) 12500\n(B) 18000\n(C) 14000\n(D) 16807\n(E) 10000\n(F) 20000\n(G) 15000\n(H) 17500\n(I) 13000\n(J) 12000\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "10434",
+          "src": "theoremQA-EECS",
+          "subject": "computer science"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "mmlupro::test::10434"
+      },
+      {
+        "answer_index": 9,
+        "domain": "mmlu_pro",
+        "options": [
+          "Residuals appear to be negatively autocorrelated",
+          "There is a strong linear relationship between the variables",
+          "The regression model is incorrectly specified",
+          "The residuals are heteroscedastic",
+          "Residuals appear not to be autocorrelated",
+          "The residuals are homoscedastic",
+          "There is no relationship between the variables",
+          "Residuals appear to be positively autocorrelated",
+          "Residuals appear to be perfectly autocorrelated",
+          "The test result is inconclusive"
+        ],
+        "prompt": "Suppose that the Durbin Watson test is applied to a regression containing two explanatory variables plus a constant with 50 data points. The test statistic takes a value of 1.53. What is the appropriate conclusion?\n\nChoices:\n(A) Residuals appear to be negatively autocorrelated\n(B) There is a strong linear relationship between the variables\n(C) The regression model is incorrectly specified\n(D) The residuals are heteroscedastic\n(E) Residuals appear not to be autocorrelated\n(F) The residuals are homoscedastic\n(G) There is no relationship between the variables\n(H) Residuals appear to be positively autocorrelated\n(I) Residuals appear to be perfectly autocorrelated\n(J) The test result is inconclusive\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "6910",
+          "src": "ori_mmlu-econometrics",
+          "subject": "economics"
+        },
+        "reference_answer": "J",
+        "split": "train",
+        "task_id": "mmlupro::test::6910"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "Decrease capital and increase labor so that the marginal product of capital falls and the marginal product of labor rises.",
+          "Increase capital and decrease labor so that the marginal product of capital rises and the marginal product of labor falls.",
+          "Increase both labor and capital so that both the marginal product of capital and labor rises.",
+          "Increase labor and keep capital constant so that the marginal product of labor falls and the marginal product of capital remains the same.",
+          "Decrease both labor and capital so that both the marginal product of capital and labor falls.",
+          "Keep labor constant and decrease capital so that the marginal product of labor remains the same and the marginal product of capital falls.",
+          "Keep labor constant and increase capital so that the marginal product of labor remains the same and the marginal product of capital rises.",
+          "Decrease capital and increase labor so that the marginal product of capital rises and the marginal product of labor falls.",
+          "Decrease labor and increase capital so that the marginal product of labor rises and the marginal product of capital falls.",
+          "Increase capital and decrease labor so that the marginal product of capital falls and the marginal product of labor rises."
+        ],
+        "prompt": "The price of labor is $2, and the price of capital is $1. The marginal product of labor is 200, and the marginal product of capital is 50. What should the firm do?\n\nChoices:\n(A) Decrease capital and increase labor so that the marginal product of capital falls and the marginal product of labor rises.\n(B) Increase capital and decrease labor so that the marginal product of capital rises and the marginal product of labor falls.\n(C) Increase both labor and capital so that both the marginal product of capital and labor rises.\n(D) Increase labor and keep capital constant so that the marginal product of labor falls and the marginal product of capital remains the same.\n(E) Decrease both labor and capital so that both the marginal product of capital and labor falls.\n(F) Keep labor constant and decrease capital so that the marginal product of labor remains the same and the marginal product of capital falls.\n(G) Keep labor constant and increase capital so that the marginal product of labor remains the same and the marginal product of capital rises.\n(H) Decrease capital and increase labor so that the marginal product of capital rises and the marginal product of labor falls.\n(I) Decrease labor and increase capital so that the marginal product of labor rises and the marginal product of capital falls.\n(J) Increase capital and decrease labor so that the marginal product of capital falls and the marginal product of labor rises.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "7433",
+          "src": "ori_mmlu-high_school_microeconomics",
+          "subject": "economics"
+        },
+        "reference_answer": "H",
+        "split": "validation",
+        "task_id": "mmlupro::test::7433"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "GNP and NNP are always equal",
+          "NNP = GNP + (Depreciation * 2)",
+          "GNP = NNP + Depreciation",
+          "NNP = GNP - Depreciation",
+          "NNP and GNP are unrelated financial indicators",
+          "NNP = GNP + Depreciation",
+          "GNP = NNP - (Depreciation / 2)",
+          "NNP = GNP / Depreciation",
+          "GNP = NNP - Depreciation",
+          "GNP = NNP * Depreciation"
+        ],
+        "prompt": "What is the relationship between Net National Product and Gross National Product?\n\nChoices:\n(A) GNP and NNP are always equal\n(B) NNP = GNP + (Depreciation * 2)\n(C) GNP = NNP + Depreciation\n(D) NNP = GNP - Depreciation\n(E) NNP and GNP are unrelated financial indicators\n(F) NNP = GNP + Depreciation\n(G) GNP = NNP - (Depreciation / 2)\n(H) NNP = GNP / Depreciation\n(I) GNP = NNP - Depreciation\n(J) GNP = NNP * Depreciation\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "7471",
+          "src": "stemez-Economics",
+          "subject": "economics"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "mmlupro::test::7471"
+      },
+      {
+        "answer_index": 0,
+        "domain": "mmlu_pro",
+        "options": [
+          "It does not load the circuit at all.",
+          "It uses a potentiometer, which is more accurate than a voltmeter.",
+          "It uses a more precise measuring tool than a voltmeter.",
+          "It uses centre zero galvanometer instead of voltmeter.",
+          "It uses an ammeter instead of a voltmeter.",
+          "It applies less voltage to the circuit.",
+          "It loads the circuit to a minimum extent.",
+          "It loads the circuit moderately.",
+          "It loads the circuit to maximum extent.",
+          "It uses multiple measurement methods for accuracy."
+        ],
+        "prompt": "Potentiometer method of DC voltage measurement is more accurate than direct measurement using a voltmeter because\n\nChoices:\n(A) It does not load the circuit at all.\n(B) It uses a potentiometer, which is more accurate than a voltmeter.\n(C) It uses a more precise measuring tool than a voltmeter.\n(D) It uses centre zero galvanometer instead of voltmeter.\n(E) It uses an ammeter instead of a voltmeter.\n(F) It applies less voltage to the circuit.\n(G) It loads the circuit to a minimum extent.\n(H) It loads the circuit moderately.\n(I) It loads the circuit to maximum extent.\n(J) It uses multiple measurement methods for accuracy.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "11736",
+          "src": "ori_mmlu-electrical_engineering",
+          "subject": "engineering"
+        },
+        "reference_answer": "A",
+        "split": "train",
+        "task_id": "mmlupro::test::11736"
+      },
+      {
+        "answer_index": 3,
+        "domain": "mmlu_pro",
+        "options": [
+          "E = [(- 100) / r] r̂",
+          "E = [(- 100) / (3r^2)] r̂",
+          "E = [(- 200) / (2r^2)] r̂",
+          "E = [(- 200) / (3r^2)] r̂",
+          "E = [(- 100) / (4πr^2)] r̂",
+          "E = [100 / (1.5r^2)] r̂",
+          "E = [(100 - 0) / (1.5r)] r̂",
+          "E = [(0 - 100) / (r^2 - r)] r̂",
+          "E = [(- 300) / (3r^2)] r̂",
+          "E = [(- 50) / (2r^2)] r̂"
+        ],
+        "prompt": "Use Laplace's equation to find the electric field between two concentricspherical shells of radius 0.5 m and 2.0 m. The innersphere is at a potential of 0 volts while the outer sphere isat a potential of 100 volts.\n\nChoices:\n(A) E = [(- 100) / r] r̂\n(B) E = [(- 100) / (3r^2)] r̂\n(C) E = [(- 200) / (2r^2)] r̂\n(D) E = [(- 200) / (3r^2)] r̂\n(E) E = [(- 100) / (4πr^2)] r̂\n(F) E = [100 / (1.5r^2)] r̂\n(G) E = [(100 - 0) / (1.5r)] r̂\n(H) E = [(0 - 100) / (r^2 - r)] r̂\n(I) E = [(- 300) / (3r^2)] r̂\n(J) E = [(- 50) / (2r^2)] r̂\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "11396",
+          "src": "stemez-Electromagnetics",
+          "subject": "engineering"
+        },
+        "reference_answer": "D",
+        "split": "validation",
+        "task_id": "mmlupro::test::11396"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "Rope diameter = 1 in, Sheave diameter = 22 in, Number of bends to failure = 60,000",
+          "Rope diameter = 1/2 in, Sheave diameter = 18 in, Number of bends to failure = 30,000",
+          "Rope diameter = 7/8 in, Sheave diameter = 21 in, Number of bends to failure = 50,000",
+          "Rope diameter = 3/4 in, Sheave diameter = 20 in, Number of bends to failure = 45,000"
+        ],
+        "prompt": "A mine hoist can lift a maximum load of 5 tons. (a) For the hoist select a 6 × 19 plow steel wire rope and also specify the minimum diameter for the sheave. (b) For the rope and the sheave selected in (a) calculate the number of bends to failure.\n\nChoices:\n(A) Rope diameter = 1 in, Sheave diameter = 22 in, Number of bends to failure = 60,000\n(B) Rope diameter = 1/2 in, Sheave diameter = 18 in, Number of bends to failure = 30,000\n(C) Rope diameter = 7/8 in, Sheave diameter = 21 in, Number of bends to failure = 50,000\n(D) Rope diameter = 3/4 in, Sheave diameter = 20 in, Number of bends to failure = 45,000\n\nReturn only the letter of the correct choice (A-D).",
+        "public_metadata": {
+          "option_count": 4,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "11478",
+          "src": "stemez-MachineDesign",
+          "subject": "engineering"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "mmlupro::test::11478"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "19.4 psi and 1.15 hp for 10 lb/sec, 370.2 psi and 82.1 hp for 50 lb/sec",
+          "18.5 psi and 1.1 hp for 10 lb/sec, 360.5 psi and 75.5 hp for 50 lb/sec",
+          "21.3 psi and 0.95 hp for 10 lb/sec, 378.1 psi and 83.5 hp for 50 lb/sec",
+          "22.3 psi and 1.05 hp for 10 lb/sec, 385.1 psi and 90.5 hp for 50 lb/sec",
+          "17.9 psi and 0.92 hp for 10 lb/sec, 355.8 psi and 79.8 hp for 50 lb/sec",
+          "16.2 psi and 0.78 hp for 10 lb/sec, 365.9 psi and 77.2 hp for 50 lb/sec",
+          "23.8 psi and 0.9 hp for 10 lb/sec, 390.3 psi and 88.7 hp for 50 lb/sec",
+          "15.7 psi and 1.2 hp for 10 lb/sec, 380.2 psi and 85.6 hp for 50 lb/sec",
+          "25.1 psi and 1.05 hp for 10 lb/sec, 400.7 psi and 95.4 hp for 50 lb/sec",
+          "20.3 psi and 0.85 hp for 10 lb/sec, 375.1 psi and 80.5 hp for 50 lb/sec"
+        ],
+        "prompt": "Oil is to be pumped at a rate of 1) 10 lb/sec, 2) 50 lb/sec through a horizontal pipe of 4 in.diaand 5280 ft length. Calculate the drop in pressure and the theoretical horse-power developed, if the oil density is 59.3 lb/ft^3 and the viscosity is 50 cp. For the case of turbulent flow, assume the Darcy friction factor to be 10 per cent higher than calculated for a smooth pipe.\n\nChoices:\n(A) 19.4 psi and 1.15 hp for 10 lb/sec, 370.2 psi and 82.1 hp for 50 lb/sec\n(B) 18.5 psi and 1.1 hp for 10 lb/sec, 360.5 psi and 75.5 hp for 50 lb/sec\n(C) 21.3 psi and 0.95 hp for 10 lb/sec, 378.1 psi and 83.5 hp for 50 lb/sec\n(D) 22.3 psi and 1.05 hp for 10 lb/sec, 385.1 psi and 90.5 hp for 50 lb/sec\n(E) 17.9 psi and 0.92 hp for 10 lb/sec, 355.8 psi and 79.8 hp for 50 lb/sec\n(F) 16.2 psi and 0.78 hp for 10 lb/sec, 365.9 psi and 77.2 hp for 50 lb/sec\n(G) 23.8 psi and 0.9 hp for 10 lb/sec, 390.3 psi and 88.7 hp for 50 lb/sec\n(H) 15.7 psi and 1.2 hp for 10 lb/sec, 380.2 psi and 85.6 hp for 50 lb/sec\n(I) 25.1 psi and 1.05 hp for 10 lb/sec, 400.7 psi and 95.4 hp for 50 lb/sec\n(J) 20.3 psi and 0.85 hp for 10 lb/sec, 375.1 psi and 80.5 hp for 50 lb/sec\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "11564",
+          "src": "stemez-TransportPhenomena",
+          "subject": "engineering"
+        },
+        "reference_answer": "C",
+        "split": "test",
+        "task_id": "mmlupro::test::11564"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "hard palate.",
+          "hard palate, upper lip, and upper central incisor.",
+          "upper lip and upper central incisor.",
+          "hard palate, upper lip, and lower first molar.",
+          "hard palate and upper lip.",
+          "hard palate, upper lip and upper central incisor.",
+          "hard palate, upper central incisor and lower first molar.",
+          "hard palate, upper lip, upper central incisor and lower first molar.",
+          "upper lip and lower first molar.",
+          "upper lip, upper central incisor and lower first molar."
+        ],
+        "prompt": "You notice that your patient's submandibular lymph nodes are enlarged. You would look for potential infection sites in the\n\nChoices:\n(A) hard palate.\n(B) hard palate, upper lip, and upper central incisor.\n(C) upper lip and upper central incisor.\n(D) hard palate, upper lip, and lower first molar.\n(E) hard palate and upper lip.\n(F) hard palate, upper lip and upper central incisor.\n(G) hard palate, upper central incisor and lower first molar.\n(H) hard palate, upper lip, upper central incisor and lower first molar.\n(I) upper lip and lower first molar.\n(J) upper lip, upper central incisor and lower first molar.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "6418",
+          "src": "ori_mmlu-anatomy",
+          "subject": "health"
+        },
+        "reference_answer": "H",
+        "split": "test",
+        "task_id": "mmlupro::test::6418"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "Ubiquitin is only attached to proteins that are to be synthesized, not catabolised.",
+          "Proteolysis is the process of protein synthesis, not breakdown.",
+          "Proteolysis only occurs in animal cells.",
+          "All proteins that are to be catabolised are tagged with the peptide ubiquitin.",
+          "Lysosomal enzymes provide the only mechanism for tissue protein catabolism.",
+          "Proteolysis can only occur in the presence of light.",
+          "Proteolysis does not involve enzymatic processes.",
+          "The rate of tissue protein catabolism is more or less constant throughout the day.",
+          "All tissue proteins undergo catabolism at more or less the same rate.",
+          "All proteins are catabolised at the exact same time."
+        ],
+        "prompt": "Which of the following statements about proteolysis is correct?\n \n\nChoices:\n(A) Ubiquitin is only attached to proteins that are to be synthesized, not catabolised.\n(B) Proteolysis is the process of protein synthesis, not breakdown.\n(C) Proteolysis only occurs in animal cells.\n(D) All proteins that are to be catabolised are tagged with the peptide ubiquitin.\n(E) Lysosomal enzymes provide the only mechanism for tissue protein catabolism.\n(F) Proteolysis can only occur in the presence of light.\n(G) Proteolysis does not involve enzymatic processes.\n(H) The rate of tissue protein catabolism is more or less constant throughout the day.\n(I) All tissue proteins undergo catabolism at more or less the same rate.\n(J) All proteins are catabolised at the exact same time.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "6386",
+          "src": "ori_mmlu-nutrition",
+          "subject": "health"
+        },
+        "reference_answer": "H",
+        "split": "train",
+        "task_id": "mmlupro::test::6386"
+      },
+      {
+        "answer_index": 4,
+        "domain": "mmlu_pro",
+        "options": [
+          "Spherical with a lipid membrane",
+          "Numerous small particles",
+          "Lipid membrane free icosahedron",
+          "Double shelled icosahedron",
+          "Flexuous and filamentous morphology",
+          "Double shelled dodecahedron",
+          "Amorphous and irregular morphology",
+          "Numerous large particles",
+          "Cylindrical and filamentous morphology"
+        ],
+        "prompt": "What is the morphology of the Dane particle?\n\nChoices:\n(A) Spherical with a lipid membrane\n(B) Numerous small particles\n(C) Lipid membrane free icosahedron\n(D) Double shelled icosahedron\n(E) Flexuous and filamentous morphology\n(F) Double shelled dodecahedron\n(G) Amorphous and irregular morphology\n(H) Numerous large particles\n(I) Cylindrical and filamentous morphology\n\nReturn only the letter of the correct choice (A-I).",
+        "public_metadata": {
+          "option_count": 9,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "6774",
+          "src": "ori_mmlu-virology",
+          "subject": "health"
+        },
+        "reference_answer": "E",
+        "split": "validation",
+        "task_id": "mmlupro::test::6774"
+      },
+      {
+        "answer_index": 4,
+        "domain": "mmlu_pro",
+        "options": [
+          "Nineteenth-century United States",
+          "Eighteenth-century Austria",
+          "Fifteenth-century England",
+          "Sixteenth-century Spain",
+          "Nineteenth-century Prussia",
+          "Twentieth-century Russia",
+          "Eighteenth-century France",
+          "Fourteenth-century Italy",
+          "Seventeenth-century Ottoman Empire",
+          "Seventeenth-century Netherlands"
+        ],
+        "prompt": "This question refers to the following information.\n\"Buckingham Palace, 10th May 1839.\nThe Queen forgot to ask Lord Melbourne if he thought there would be any harm in her writing to the Duke of Cambridge that she really was fearful of fatiguing herself, if she went out to a party at Gloucester House on Tuesday, an Ancient Concert on Wednesday, and a ball at Northumberland House on Thursday, considering how much she had to do these last four days. If she went to the Ancient Concert on Wednesday, having besides a concert of her own here on Monday, it would be four nights of fatigue, really exhausted as the Queen is.\nBut if Lord Melbourne thinks that as there are only to be English singers at the Ancient Concert, she ought to go, she could go there for one act; but she would much rather, if possible, get out of it, for it is a fatiguing time&….\nAs the negotiations with the Tories are quite at an end, and Lord Melbourne has been here, the Queen hopes Lord Melbourne will not object to dining with her on Sunday?\"\nThe Letters of Queen Victoria, Volume 1 (of 3), 1837-1843: A Selection from Her Majesty's Correspondence Between the Years 1837 and 1861\nA similar fondness for entertainment amongst the nobility was taken to its most outrageous degree in which of the following eras and places?\n\nChoices:\n(A) Nineteenth-century United States\n(B) Eighteenth-century Austria\n(C) Fifteenth-century England\n(D) Sixteenth-century Spain\n(E) Nineteenth-century Prussia\n(F) Twentieth-century Russia\n(G) Eighteenth-century France\n(H) Fourteenth-century Italy\n(I) Seventeenth-century Ottoman Empire\n(J) Seventeenth-century Netherlands\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "4826",
+          "src": "ori_mmlu-high_school_european_history",
+          "subject": "history"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "mmlupro::test::4826"
+      },
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "50,000 people.",
+          "200,000 people.",
+          "500,000 people.",
+          "1,000,000 people."
+        ],
+        "prompt": "At its peak, the population of the city of Teotihuacán may have reached:\n\nChoices:\n(A) 50,000 people.\n(B) 200,000 people.\n(C) 500,000 people.\n(D) 1,000,000 people.\n\nReturn only the letter of the correct choice (A-D).",
+        "public_metadata": {
+          "option_count": 4,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "4839",
+          "src": "ori_mmlu-prehistory",
+          "subject": "history"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "mmlupro::test::4839"
+      },
+      {
+        "answer_index": 4,
+        "domain": "mmlu_pro",
+        "options": [
+          "It is jurisdiction based on the nationality of the victim",
+          "It is jurisdiction in order to protect state sovereignty",
+          "It is jurisdiction based on the severity of the crime committed",
+          "It is jurisdiction in order to uphold international law",
+          "It is jurisdiction based on the harm to national interests by conduct committed abroad",
+          "It is jurisdiction based on the location of the crime committed",
+          "It is jurisdiction based on the nationality of the offender",
+          "It is jurisdiction in order to protect international human rights",
+          "It is jurisdiction to protect the interests of foreign nationals within the country",
+          "It is jurisdiction in order to protect one's nationals abroad"
+        ],
+        "prompt": "What is the protective principle of jurisdiction?\n\nChoices:\n(A) It is jurisdiction based on the nationality of the victim\n(B) It is jurisdiction in order to protect state sovereignty\n(C) It is jurisdiction based on the severity of the crime committed\n(D) It is jurisdiction in order to uphold international law\n(E) It is jurisdiction based on the harm to national interests by conduct committed abroad\n(F) It is jurisdiction based on the location of the crime committed\n(G) It is jurisdiction based on the nationality of the offender\n(H) It is jurisdiction in order to protect international human rights\n(I) It is jurisdiction to protect the interests of foreign nationals within the country\n(J) It is jurisdiction in order to protect one's nationals abroad\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "1850",
+          "src": "ori_mmlu-international_law",
+          "subject": "law"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "mmlupro::test::1850"
+      },
+      {
+        "answer_index": 6,
+        "domain": "mmlu_pro",
+        "options": [
+          "The uncle is entitled to a share of the profits from the best friend's crops, but not the rent paid by the teacher.",
+          "The best friend is entitled to all profits and rents due to his continuous possession and maintenance of the estate.",
+          "The uncle is entitled to no share of any of the monies raised because the uncle's lack of contact with the best friend will be deemed a waiver.",
+          "The uncle has forfeited all claims to the property and its profits due to his lack of interest and engagement.",
+          "The best friend is entitled to all monies raised due to his investment in the property, regardless of the uncle's claim.",
+          "The uncle is entitled to all profits and rents due to his blood relation to the deceased homeowner.",
+          "As a cotenant in possession, the best friend retains the profits from his crops, and the uncle is entitled to a share of the rent paid by the teacher.",
+          "As a cotenant in possession, the best friend retains the profits from his crops and the rents paid by the teacher.",
+          "The uncle is entitled to a share of the rent that the teacher paid and the profits from the best friend's crops.",
+          "The uncle and best friend must evenly split all profits and rents, regardless of who has been maintaining the property."
+        ],
+        "prompt": "A homeowner died in 1985. His will devised his estate in a southern state to his uncle and his best friend \"to share and share alike as tenants in common. \"At the time of the homeowner's death, the uncle lived in a different part of the southern state (in which the estate was located), while the best friend resided in a northern state. After the homeowner's funeral, the uncle returned to his own residence, but the best friend decided to occupy the estate. He put his name on the mailbox and has paid the taxes and maintenance expenses. To earn extra money, the best friend rented a small house on the property to a teacher and received a monthly rental payment from her. The best friend also grew fruits on the property and sold them at a stand on Fridays. The uncle has been generally aware of this, but because he cared little about the estate, the uncle has never pressed the best friend about the property. Since 1985 the uncle has not paid any rent or other compensation to the best friend, nor has the best friend requested such payment. In January 2010, a series of disputes arose between the uncle and the best friend for the first time concerning their respective rights to the estate. The state in which the property is located recognizes the usual common law types of cotenancies and follows majority rules on rents and profits. There is no applicable legislation on the subject. The uncle brings an appropriate action for a portion of the proceeds that the best friend received from his fruit stand and a portion of the rent that the teacher paid. If the best friend contests the apportionment of the monies he received, judgment should be for whom?\n\nChoices:\n(A) The uncle is entitled to a share of the profits from the best friend's crops, but not the rent paid by the teacher.\n(B) The best friend is entitled to all profits and rents due to his continuous possession and maintenance of the estate.\n(C) The uncle is entitled to no share of any of the monies raised because the uncle's lack of contact with the best friend will be deemed a waiver.\n(D) The uncle has forfeited all claims to the property and its profits due to his lack of interest and engagement.\n(E) The best friend is entitled to all monies raised due to his investment in the property, regardless of the uncle's claim.\n(F) The uncle is entitled to all profits and rents due to his blood relation to the deceased homeowner.\n(G) As a cotenant in possession, the best friend retains the profits from his crops, and the uncle is entitled to a share of the rent paid by the teacher.\n(H) As a cotenant in possession, the best friend retains the profits from his crops and the rents paid by the teacher.\n(I) The uncle is entitled to a share of the rent that the teacher paid and the profits from the best friend's crops.\n(J) The uncle and best friend must evenly split all profits and rents, regardless of who has been maintaining the property.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "1621",
+          "src": "ori_mmlu-professional_law",
+          "subject": "law"
+        },
+        "reference_answer": "G",
+        "split": "train",
+        "task_id": "mmlupro::test::1621"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "inadmissible, because the team physician is not a radiologist capable of interpreting MRI results.",
+          "admissible, if the football player confirms that the physician's diagnosis was shared with him.",
+          "admissible, provided that the other doctor testifies as to the validity of the MRI test results.",
+          "admissible, provided that the team physician has been practicing for more than 10 years.",
+          "inadmissible, because the team physician's opinion was not based in part upon his own firsthand observation of the player's physical condition.",
+          "inadmissible, because neither the x-rays nor the MRI test results had been admitted into evidence at the time he formulated his opinion.",
+          "admissible, only if the x-rays and MRI test results are presented during the trial.",
+          "admissible, provided the team physician based his opinion on data reasonably relied upon by other orthopedic physicians in the field.",
+          "inadmissible, as the team physician has a possible bias towards the football team.",
+          "inadmissible, because the team physician should have conducted the MRI test himself."
+        ],
+        "prompt": "A football player sued a football team for breach of contract. He was a star player for the team before suffering a serious hip injury. Although the player attempted to continue playing for the team, he failed a physical examination and was cut from the team roster. After failing his physical, the team discontinued making contract payments to the player as per the terms of his employment contract. In his lawsuit, the player claimed that he was physically fit to continue playing but that he was cut from the team because they wanted to stop making contract payments. At trial, the team called its physician, an orthopedist, to testify that the player's hip injury was, in fact, career-threatening and, in his opinion, sufficiently serious to warrant failing his physical. The team physician stated during his testimony that his diagnosis was based, in part, upon an examination of the player's x-rays and review of an MRI test conducted by another doctor. Neither the x-rays nor the MRI test results have been admitted into evidence. In all likelihood, the team physician's testimony should be\n\nChoices:\n(A) inadmissible, because the team physician is not a radiologist capable of interpreting MRI results.\n(B) admissible, if the football player confirms that the physician's diagnosis was shared with him.\n(C) admissible, provided that the other doctor testifies as to the validity of the MRI test results.\n(D) admissible, provided that the team physician has been practicing for more than 10 years.\n(E) inadmissible, because the team physician's opinion was not based in part upon his own firsthand observation of the player's physical condition.\n(F) inadmissible, because neither the x-rays nor the MRI test results had been admitted into evidence at the time he formulated his opinion.\n(G) admissible, only if the x-rays and MRI test results are presented during the trial.\n(H) admissible, provided the team physician based his opinion on data reasonably relied upon by other orthopedic physicians in the field.\n(I) inadmissible, as the team physician has a possible bias towards the football team.\n(J) inadmissible, because the team physician should have conducted the MRI test himself.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "968",
+          "src": "ori_mmlu-professional_law",
+          "subject": "law"
+        },
+        "reference_answer": "H",
+        "split": "test",
+        "task_id": "mmlupro::test::968"
+      },
+      {
+        "answer_index": 6,
+        "domain": "mmlu_pro",
+        "options": [
+          "the farmer would lose, because he had abandoned the property for over 20 years.",
+          "the farmer would win, because the man had not paid property taxes during his occupancy.",
+          "the farmer would lose, because the man's possession was open, hostile, and continuous.",
+          "the farmer would lose, because the man had fulfilled the required statutory period to become an adverse possessor.",
+          "the farmer would win, because the man did not have legal documentation of ownership.",
+          "the farmer would win, because the man had left the property for a year.",
+          "the farmer would win, because the man's possession was not continuous.",
+          "the farmer would lose, because the man was the current resident of the property.",
+          "the farmer would win, because he is the titleholder of record.",
+          "the farmer would lose, because the man had made improvements on the land."
+        ],
+        "prompt": "A farmer was the fee-simple owner of a tract of land inthe country. The farmer moved to the city in 1986. Aman took possession of the land in 1987 as an adversepossessor and remained on the land from 1987 to 1997;he then left the property to care for his sick mother forone year, returning the following year, 1999. Assume that the statutory period for adverse possession in this state is 20 years. In 2010, the farmer wanted to move back to the tract because he desired to return to the country. Finding the man in possession, the farmer initiated a suit in ejectment against the man. The most probable judicial determination would be\n\nChoices:\n(A) the farmer would lose, because he had abandoned the property for over 20 years.\n(B) the farmer would win, because the man had not paid property taxes during his occupancy.\n(C) the farmer would lose, because the man's possession was open, hostile, and continuous.\n(D) the farmer would lose, because the man had fulfilled the required statutory period to become an adverse possessor.\n(E) the farmer would win, because the man did not have legal documentation of ownership.\n(F) the farmer would win, because the man had left the property for a year.\n(G) the farmer would win, because the man's possession was not continuous.\n(H) the farmer would lose, because the man was the current resident of the property.\n(I) the farmer would win, because he is the titleholder of record.\n(J) the farmer would lose, because the man had made improvements on the land.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "1739",
+          "src": "ori_mmlu-professional_law",
+          "subject": "law"
+        },
+        "reference_answer": "G",
+        "split": "train",
+        "task_id": "mmlupro::test::1739"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "The gardener could not provide a warranty for the installation.",
+          "The gardener was not insured to carry out the task.",
+          "Half of the sprinkler heads installed by the gardener were determined to be defective, and the gardener refused to replace the sprinkler heads.",
+          "The owner found a cheaper alternative to complete the job.",
+          "The gardener was using subpar materials for the installation.",
+          "The gardener had been adjudicated bankrupt onApril 12.",
+          "The gardener had only completed 33 percent of the installation work when he was discharged.",
+          "The contract between the owner and the gardener was not in writing.",
+          "The gardener did not have a valid license to do the job.",
+          "The gardener failed to finish the job by April 19."
+        ],
+        "prompt": "On April 10, the owner of a golf course entered into an oral agreement with a gardener whereby the gardener promised to install all new sprinkler heads on the sprinkler system at the 18-hole golf course. In return, the owner promised to pay the gardener $2,400 upon completion of the job. Since a golf tournament was scheduled for the weekend of April 20 21, the gardener agreed to replace all the sprinkler heads no later than April 19. Before accepting the job, the gardener had inspected the golf course and determined that 240 sprinkler heads had to be replaced. By April 14, the gardener had installed 80 new sprinkler heads on the first six holes of the 18-hole golf course. That afternoon, however, the owner learned that the gardener had been adjudicated bankrupt on April 12, so he notified the gardener to discontinue the job. The next day, the owner hired a landscaper to complete the installation work at $8 per head. The landscaper installed the remaining 160 sprinkler heads and completed the work on April 19. Despite making reasonable efforts, the gardener was unable to find any gainful employment during the period. Also, the gardener's application for unemployment compensation was rejected at the same time. Which of the following statements, if found to be true, would provide the owner with legally justifiable grounds for discharging the gardener?\n\nChoices:\n(A) The gardener could not provide a warranty for the installation.\n(B) The gardener was not insured to carry out the task.\n(C) Half of the sprinkler heads installed by the gardener were determined to be defective, and the gardener refused to replace the sprinkler heads.\n(D) The owner found a cheaper alternative to complete the job.\n(E) The gardener was using subpar materials for the installation.\n(F) The gardener had been adjudicated bankrupt onApril 12.\n(G) The gardener had only completed 33 percent of the installation work when he was discharged.\n(H) The contract between the owner and the gardener was not in writing.\n(I) The gardener did not have a valid license to do the job.\n(J) The gardener failed to finish the job by April 19.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "1915",
+          "src": "ori_mmlu-professional_law",
+          "subject": "law"
+        },
+        "reference_answer": "C",
+        "split": "validation",
+        "task_id": "mmlupro::test::1915"
+      },
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "partial order relation",
+          "transitive",
+          "equivalence relation",
+          "symmetric",
+          "not anti-symmetric",
+          "reflexive"
+        ],
+        "prompt": "If A = (1, 2, 3, 4). Let ~= {(1, 2), (1, 3), (4, 2)}. Then ~ is\n\nChoices:\n(A) partial order relation\n(B) transitive\n(C) equivalence relation\n(D) symmetric\n(E) not anti-symmetric\n(F) reflexive\n\nReturn only the letter of the correct choice (A-F).",
+        "public_metadata": {
+          "option_count": 6,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "7896",
+          "src": "ori_mmlu-abstract_algebra",
+          "subject": "math"
+        },
+        "reference_answer": "B",
+        "split": "validation",
+        "task_id": "mmlupro::test::7896"
+      },
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "The number of yards run by a player in a game",
+          "The number of people at a professional football game",
+          "The length of a football in inches",
+          "The weight of a professional football player in pounds",
+          "The number of touchdowns in a professional football season",
+          "The age of a professional football player in days",
+          "The height of a professional football player in inches",
+          "The length of a football field in yards",
+          "The duration of a professional football game in minutes",
+          "The diameter of a football in centimeters"
+        ],
+        "prompt": "Which measurement would best be rounded to the nearest thousand?\n\nChoices:\n(A) The number of yards run by a player in a game\n(B) The number of people at a professional football game\n(C) The length of a football in inches\n(D) The weight of a professional football player in pounds\n(E) The number of touchdowns in a professional football season\n(F) The age of a professional football player in days\n(G) The height of a professional football player in inches\n(H) The length of a football field in yards\n(I) The duration of a professional football game in minutes\n(J) The diameter of a football in centimeters\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "8695",
+          "src": "ori_mmlu-elementary_mathematics",
+          "subject": "math"
+        },
+        "reference_answer": "B",
+        "split": "test",
+        "task_id": "mmlupro::test::8695"
+      },
+      {
+        "answer_index": 6,
+        "domain": "mmlu_pro",
+        "options": [
+          "59",
+          "80",
+          "70",
+          "54",
+          "90",
+          "65",
+          "78",
+          "60",
+          "85",
+          "75"
+        ],
+        "prompt": "At noon, an experimenter has 50 grams of a radioactive isotope. At noon 9 days later only 45 grams remain. To the nearest day, how many days after the experiment started will there be only 20 grams?\n\nChoices:\n(A) 59\n(B) 80\n(C) 70\n(D) 54\n(E) 90\n(F) 65\n(G) 78\n(H) 60\n(I) 85\n(J) 75\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "7842",
+          "src": "ori_mmlu-high_school_mathematics",
+          "subject": "math"
+        },
+        "reference_answer": "G",
+        "split": "train",
+        "task_id": "mmlupro::test::7842"
+      },
+      {
+        "answer_index": 3,
+        "domain": "mmlu_pro",
+        "options": [
+          "Yes, because the control group is necessary for comparison.",
+          "Yes.",
+          "No, because without blinding, there is a strong chance of a placebo effect.",
+          "No, because grade level is a lurking variable which may well be confounded with the variables under consideration.",
+          "No, because while this design may point out an association between reading and GPA, it cannot establish a cause-and-effect relationship.",
+          "No, because the experiment does not account for the varying reading levels of the students.",
+          "Yes, because the independent variable is manipulated by the researcher.",
+          "No, because the experimental design does not include a double-blind procedure.",
+          "Yes, because it tests the effect of different amounts of reading on GPA.",
+          "No, because the sample size of each group is not large enough."
+        ],
+        "prompt": "A reading specialist in a large public school system believes that the more time students spend reading, the better they will do in school. She plans a middle school experiment in which an SRS of 30 eighth graders will be assigned four extra hours of reading per week, an SRS of 30 seventh graders will be assigned two extra hours of reading per week, and an SRS of 30 sixth graders with no extra assigned reading will be a control group. After one school year, the mean GPAs from each group will be compared. Is this a good experimental design?\n\nChoices:\n(A) Yes, because the control group is necessary for comparison.\n(B) Yes.\n(C) No, because without blinding, there is a strong chance of a placebo effect.\n(D) No, because grade level is a lurking variable which may well be confounded with the variables under consideration.\n(E) No, because while this design may point out an association between reading and GPA, it cannot establish a cause-and-effect relationship.\n(F) No, because the experiment does not account for the varying reading levels of the students.\n(G) Yes, because the independent variable is manipulated by the researcher.\n(H) No, because the experimental design does not include a double-blind procedure.\n(I) Yes, because it tests the effect of different amounts of reading on GPA.\n(J) No, because the sample size of each group is not large enough.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "8442",
+          "src": "ori_mmlu-high_school_statistics",
+          "subject": "math"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "mmlupro::test::8442"
+      },
+      {
+        "answer_index": 9,
+        "domain": "mmlu_pro",
+        "options": [
+          "4.764",
+          "5.019",
+          "5.202",
+          "4.928",
+          "5.231",
+          "5.075",
+          "5.345",
+          "4.987",
+          "4.856",
+          "5.113"
+        ],
+        "prompt": "Use Euler's method to find the solution to the differential equation dy/dx=y^2e^x at x=6 with the initial condition y(0)=0.01 and step size h=0.5. What is y(6)?\n\nChoices:\n(A) 4.764\n(B) 5.019\n(C) 5.202\n(D) 4.928\n(E) 5.231\n(F) 5.075\n(G) 5.345\n(H) 4.987\n(I) 4.856\n(J) 5.113\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "8526",
+          "src": "theoremQA-Math",
+          "subject": "math"
+        },
+        "reference_answer": "J",
+        "split": "test",
+        "task_id": "mmlupro::test::8526"
+      },
+      {
+        "answer_index": 9,
+        "domain": "mmlu_pro",
+        "options": [
+          "2023",
+          "2",
+          "-Infinity",
+          "Infinity",
+          "-1",
+          "1/2",
+          "1/3",
+          "1",
+          "3",
+          "0"
+        ],
+        "prompt": "Suppose g(x) is the horizontal asymptote of function f(x) = (3^x)/(1+3^{-x}). What are possible values of g(2023)?\n\nChoices:\n(A) 2023\n(B) 2\n(C) -Infinity\n(D) Infinity\n(E) -1\n(F) 1/2\n(G) 1/3\n(H) 1\n(I) 3\n(J) 0\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "7961",
+          "src": "theoremQA-Math",
+          "subject": "math"
+        },
+        "reference_answer": "J",
+        "split": "validation",
+        "task_id": "mmlupro::test::7961"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "20%",
+          "30%",
+          "60%",
+          "100%",
+          "40%",
+          "10%",
+          "80%",
+          "90%",
+          "70%",
+          "50%"
+        ],
+        "prompt": "In 1935 roughly how many Americans were in favor of Social Security act?\n\nChoices:\n(A) 20%\n(B) 30%\n(C) 60%\n(D) 100%\n(E) 40%\n(F) 10%\n(G) 80%\n(H) 90%\n(I) 70%\n(J) 50%\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "5532",
+          "src": "ori_mmlu-global_facts",
+          "subject": "other"
+        },
+        "reference_answer": "H",
+        "split": "train",
+        "task_id": "mmlupro::test::5532"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "Eighteen feet",
+          "one foot",
+          "twenty feet",
+          "Twenty-five feet",
+          "twelve feet",
+          "Two feet",
+          "Fifteen feet",
+          "five feet",
+          "Thirty feet",
+          "Ten feet"
+        ],
+        "prompt": "In an adult human how long is the large intestine?\n\nChoices:\n(A) Eighteen feet\n(B) one foot\n(C) twenty feet\n(D) Twenty-five feet\n(E) twelve feet\n(F) Two feet\n(G) Fifteen feet\n(H) five feet\n(I) Thirty feet\n(J) Ten feet\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "5383",
+          "src": "ori_mmlu-miscellaneous",
+          "subject": "other"
+        },
+        "reference_answer": "H",
+        "split": "test",
+        "task_id": "mmlupro::test::5383"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "April.",
+          "June.",
+          "January.",
+          "May.",
+          "July.",
+          "February.",
+          "September.",
+          "December.",
+          "August.",
+          "March."
+        ],
+        "prompt": "On January 1, a company enters into an operating lease for office space and receives control of the property to make leasehold improvements. The company begins alterations to the property on March 1 and the company’s staff moves into the property on May 1. The monthly rental payments begin on July 1. The recognition of rental expense for the new offices should begin in which of the following months?\n\nChoices:\n(A) April.\n(B) June.\n(C) January.\n(D) May.\n(E) July.\n(F) February.\n(G) September.\n(H) December.\n(I) August.\n(J) March.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "5632",
+          "src": "ori_mmlu-professional_accounting",
+          "subject": "other"
+        },
+        "reference_answer": "C",
+        "split": "validation",
+        "task_id": "mmlupro::test::5632"
+      },
+      {
+        "answer_index": 2,
+        "domain": "mmlu_pro",
+        "options": [
+          "Geographic location",
+          "Age of the state",
+          "Regime type",
+          "Wealth/GDP",
+          "Receipt of sensitive nuclear assistance",
+          "Rivalry with a nuclear state"
+        ],
+        "prompt": "Which of the following is NOT a good predictor of which states will get nuclear weapons?\n\nChoices:\n(A) Geographic location\n(B) Age of the state\n(C) Regime type\n(D) Wealth/GDP\n(E) Receipt of sensitive nuclear assistance\n(F) Rivalry with a nuclear state\n\nReturn only the letter of the correct choice (A-F).",
+        "public_metadata": {
+          "option_count": 6,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "5135",
+          "src": "ori_mmlu-us_foreign_policy",
+          "subject": "other"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "mmlupro::test::5135"
+      },
+      {
+        "answer_index": 8,
+        "domain": "mmlu_pro",
+        "options": [
+          "Invalid. Counterexample when O is true and P is true",
+          "Invalid. Counterexample when O and P are false",
+          "Invalid. Counterexample when P is false and O is false",
+          "Invalid. Counterexample when both O and P are simultaneously true and false",
+          "Invalid. Counterexample when O and P are true",
+          "Invalid. Counterexample when O is true and P is false",
+          "Invalid. Counterexample when P is false and O is true",
+          "Invalid. Counterexample when P is true and O is false",
+          "Valid"
+        ],
+        "prompt": "Construct a complete truth table for the following argument. Then, using the truth table, determine whether the argument is valid or invalid. If the argument is invalid, choose an option which presents a counterexample. (There may be other counterexamples as well.)\n(O ≡ P) ∨ P / P ∨ ~O\n\nChoices:\n(A) Invalid. Counterexample when O is true and P is true\n(B) Invalid. Counterexample when O and P are false\n(C) Invalid. Counterexample when P is false and O is false\n(D) Invalid. Counterexample when both O and P are simultaneously true and false\n(E) Invalid. Counterexample when O and P are true\n(F) Invalid. Counterexample when O is true and P is false\n(G) Invalid. Counterexample when P is false and O is true\n(H) Invalid. Counterexample when P is true and O is false\n(I) Valid\n\nReturn only the letter of the correct choice (A-I).",
+        "public_metadata": {
+          "option_count": 9,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "11261",
+          "src": "ori_mmlu-formal_logic",
+          "subject": "philosophy"
+        },
+        "reference_answer": "I",
+        "split": "train",
+        "task_id": "mmlupro::test::11261"
+      },
+      {
+        "answer_index": 6,
+        "domain": "mmlu_pro",
+        "options": [
+          "Pongal",
+          "Ganesh Chaturthi",
+          "Janmashtami",
+          "Holi",
+          "Karva Chauth",
+          "Makar Sankranti",
+          "Deepavali",
+          "Navaratri",
+          "Raksha Bandhan"
+        ],
+        "prompt": " Which Hindu festival involves decorating the house with lights, setting off firecrackers and wearing new clothes?\n\nChoices:\n(A) Pongal\n(B) Ganesh Chaturthi\n(C) Janmashtami\n(D) Holi\n(E) Karva Chauth\n(F) Makar Sankranti\n(G) Deepavali\n(H) Navaratri\n(I) Raksha Bandhan\n\nReturn only the letter of the correct choice (A-I).",
+        "public_metadata": {
+          "option_count": 9,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "10972",
+          "src": "ori_mmlu-world_religions",
+          "subject": "philosophy"
+        },
+        "reference_answer": "G",
+        "split": "train",
+        "task_id": "mmlupro::test::10972"
+      },
+      {
+        "answer_index": 8,
+        "domain": "mmlu_pro",
+        "options": [
+          "The Moon and Earth have nearly identical isotopic compositions.",
+          "The Moon's orbit is not in the same plane as Earth's equator.",
+          "The Moon's crust is thicker on the far side than the near side.",
+          "The Moon has a much smaller iron core than the Earth even considering its size.",
+          "The Moon was once entirely molten.",
+          "The Moon has a lower density than Earth.",
+          "The Moon's gravitational pull causes tides on Earth.",
+          "The Moon has no atmosphere.",
+          "Most rocks on the Moon’s surface are older than those on the Earth’s surface.",
+          "The relative size of the Moon to the size of Earth is large compared to most planets and their moon."
+        ],
+        "prompt": "All of the following have been cited as evidence for the Giant Impact Hypothesis except:\n\nChoices:\n(A) The Moon and Earth have nearly identical isotopic compositions.\n(B) The Moon's orbit is not in the same plane as Earth's equator.\n(C) The Moon's crust is thicker on the far side than the near side.\n(D) The Moon has a much smaller iron core than the Earth even considering its size.\n(E) The Moon was once entirely molten.\n(F) The Moon has a lower density than Earth.\n(G) The Moon's gravitational pull causes tides on Earth.\n(H) The Moon has no atmosphere.\n(I) Most rocks on the Moon’s surface are older than those on the Earth’s surface.\n(J) The relative size of the Moon to the size of Earth is large compared to most planets and their moon.\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "9877",
+          "src": "ori_mmlu-astronomy",
+          "subject": "physics"
+        },
+        "reference_answer": "I",
+        "split": "train",
+        "task_id": "mmlupro::test::9877"
+      },
+      {
+        "answer_index": 4,
+        "domain": "mmlu_pro",
+        "options": [
+          "6 s",
+          "2 s",
+          "7 s",
+          "5 s",
+          "4 s",
+          "1 s",
+          "10 s",
+          "8 s",
+          "9 s",
+          "3 s"
+        ],
+        "prompt": "A stone is thrown horizontally with an initial speed of 10 m/s from a bridge. Assuming that air resistance is negligible, how long would it take the stone to strike the water 80 m below the bridge?\n\nChoices:\n(A) 6 s\n(B) 2 s\n(C) 7 s\n(D) 5 s\n(E) 4 s\n(F) 1 s\n(G) 10 s\n(H) 8 s\n(I) 9 s\n(J) 3 s\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "10162",
+          "src": "ori_mmlu-high_school_physics",
+          "subject": "physics"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "mmlupro::test::10162"
+      },
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "Angular magnification is 5, Image height is 2 inches",
+          "Angular magnification is 5, Image height is 1.5 inches",
+          "Angular magnification is 10, Image height is 1.5 inches",
+          "Angular magnification is 3, Image height is 1 inch",
+          "Angular magnification is 8, Image height is 2.5 inches",
+          "Angular magnification is 2, Image height is 1.5 inches",
+          "Angular magnification is 4, Image height is 3 inches",
+          "Angular magnification is 10, Image height is 2 inches",
+          "Angular magnification is 2, Image height is 2 inches",
+          "Angular magnification is 5, Image height is 0.5 inches"
+        ],
+        "prompt": "A crude telescope is constructed of two spectacle lenses of focal lengths 100 cm and 20 cm respectively, a) Find its angular magnification. b) Find the height of the image formed by the objective of a building 200 ft high and one mile distant.\n\nChoices:\n(A) Angular magnification is 5, Image height is 2 inches\n(B) Angular magnification is 5, Image height is 1.5 inches\n(C) Angular magnification is 10, Image height is 1.5 inches\n(D) Angular magnification is 3, Image height is 1 inch\n(E) Angular magnification is 8, Image height is 2.5 inches\n(F) Angular magnification is 2, Image height is 1.5 inches\n(G) Angular magnification is 4, Image height is 3 inches\n(H) Angular magnification is 10, Image height is 2 inches\n(I) Angular magnification is 2, Image height is 2 inches\n(J) Angular magnification is 5, Image height is 0.5 inches\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "9986",
+          "src": "stemez-Optics",
+          "subject": "physics"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "mmlupro::test::9986"
+      },
+      {
+        "answer_index": 0,
+        "domain": "mmlu_pro",
+        "options": [
+          "20.64 hr",
+          "10.32 hr",
+          "15.48 hr",
+          "30.75 hr",
+          "14.29 hr",
+          "22.58 hr",
+          "8.16 hr",
+          "18.50 hr",
+          "25.80 hr",
+          "12.40 hr"
+        ],
+        "prompt": "A cubical tank of water of volume 1 m^3 is kept at a steady temperature of 65°C by a 1-kW heater. The heater is switched off. How long does the tank take to cool down to 50° C if the room temperature is 15°C?\n\nChoices:\n(A) 20.64 hr\n(B) 10.32 hr\n(C) 15.48 hr\n(D) 30.75 hr\n(E) 14.29 hr\n(F) 22.58 hr\n(G) 8.16 hr\n(H) 18.50 hr\n(I) 25.80 hr\n(J) 12.40 hr\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "9515",
+          "src": "stemez-Physics",
+          "subject": "physics"
+        },
+        "reference_answer": "A",
+        "split": "train",
+        "task_id": "mmlupro::test::9515"
+      },
+      {
+        "answer_index": 1,
+        "domain": "mmlu_pro",
+        "options": [
+          "2.67",
+          "1.33",
+          "0.89",
+          "1.75",
+          "1.50",
+          "0.67",
+          "3.00",
+          "0.50",
+          "2.10",
+          "2.45"
+        ],
+        "prompt": "The mass of one of the small spheres of a Cavendish balance is 0.0100 kg, the mass of the nearest large sphere is 0.500 kg, and the center-to-center distance between them is 0.0500 m. Assuming the gravitational force on each sphere due to the other is $X * 10^{-10}$ N, what is X?\n\nChoices:\n(A) 2.67\n(B) 1.33\n(C) 0.89\n(D) 1.75\n(E) 1.50\n(F) 0.67\n(G) 3.00\n(H) 0.50\n(I) 2.10\n(J) 2.45\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "9553",
+          "src": "theoremQA-Physics",
+          "subject": "physics"
+        },
+        "reference_answer": "B",
+        "split": "validation",
+        "task_id": "mmlupro::test::9553"
+      },
+      {
+        "answer_index": 8,
+        "domain": "mmlu_pro",
+        "options": [
+          "developed the first standardized test for elementary school children",
+          "introduced the concept of emotional intelligence in education",
+          "created a widely used classification system for learning disabilities",
+          "developed a version of the thematic apperception test appropriate for use with children",
+          "identified the four major periods of cognitive development",
+          "advocated for the inclusion of special needs students in mainstream classrooms",
+          "established the ethical standards of the National Association of School Psychologists",
+          "pioneered the use of psychoanalysis in school settings",
+          "devised a prototypical normative assessment for infants and young children",
+          "established the first school psychology graduate program"
+        ],
+        "prompt": "Arnold Gesell is significant to the history of school psychology because he\n\nChoices:\n(A) developed the first standardized test for elementary school children\n(B) introduced the concept of emotional intelligence in education\n(C) created a widely used classification system for learning disabilities\n(D) developed a version of the thematic apperception test appropriate for use with children\n(E) identified the four major periods of cognitive development\n(F) advocated for the inclusion of special needs students in mainstream classrooms\n(G) established the ethical standards of the National Association of School Psychologists\n(H) pioneered the use of psychoanalysis in school settings\n(I) devised a prototypical normative assessment for infants and young children\n(J) established the first school psychology graduate program\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "2032",
+          "src": "ori_mmlu-high_school_psychology",
+          "subject": "psychology"
+        },
+        "reference_answer": "I",
+        "split": "train",
+        "task_id": "mmlupro::test::2032"
+      },
+      {
+        "answer_index": 7,
+        "domain": "mmlu_pro",
+        "options": [
+          "secondary intervention.",
+          "quaternary prevention.",
+          "secondary prevention.",
+          "psychological intervention.",
+          "advanced prevention.",
+          "primary prevention.",
+          "primary intervention.",
+          "tertiary prevention.",
+          "medical intervention."
+        ],
+        "prompt": "Providing education and job training to adolescents and young adults who have recently been released from a drug treatment program is an example of:\n\nChoices:\n(A) secondary intervention.\n(B) quaternary prevention.\n(C) secondary prevention.\n(D) psychological intervention.\n(E) advanced prevention.\n(F) primary prevention.\n(G) primary intervention.\n(H) tertiary prevention.\n(I) medical intervention.\n\nReturn only the letter of the correct choice (A-I).",
+        "public_metadata": {
+          "option_count": 9,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "2771",
+          "src": "ori_mmlu-professional_psychology",
+          "subject": "psychology"
+        },
+        "reference_answer": "H",
+        "split": "validation",
+        "task_id": "mmlupro::test::2771"
+      },
+      {
+        "answer_index": 4,
+        "domain": "mmlu_pro",
+        "options": [
+          "Chiropractic adjustments, detox cleanses, vitamin injections, light therapy",
+          "Hypnotherapy, art therapy, music therapy, exercise programs",
+          "Homeopathic remedies, meditation, yoga, aromatherapy",
+          "Surgery",
+          "Drug therapy, psychiatric interviews, milieu therapy, social-learning or behavioral approaches",
+          "Nutritional therapy",
+          "Gene therapy, cybernetic implants, nanotechnology treatments, virtual reality therapy",
+          "Physical therapy",
+          "Biofeedback, neurofeedback, craniosacral therapy, floatation tanks",
+          "Acupuncture, herbal supplements, reflexology, reiki"
+        ],
+        "prompt": "What are the general methods currently used in the treatment of functional psychoses?\n\nChoices:\n(A) Chiropractic adjustments, detox cleanses, vitamin injections, light therapy\n(B) Hypnotherapy, art therapy, music therapy, exercise programs\n(C) Homeopathic remedies, meditation, yoga, aromatherapy\n(D) Surgery\n(E) Drug therapy, psychiatric interviews, milieu therapy, social-learning or behavioral approaches\n(F) Nutritional therapy\n(G) Gene therapy, cybernetic implants, nanotechnology treatments, virtual reality therapy\n(H) Physical therapy\n(I) Biofeedback, neurofeedback, craniosacral therapy, floatation tanks\n(J) Acupuncture, herbal supplements, reflexology, reiki\n\nReturn only the letter of the correct choice (A-J).",
+        "public_metadata": {
+          "option_count": 10,
+          "source_dataset": "MMLU-Pro",
+          "source_task_id": "2130",
+          "src": "stemez-Psychology",
+          "subject": "psychology"
+        },
+        "reference_answer": "E",
+        "split": "test",
+        "task_id": "mmlupro::test::2130"
+      }
+    ]
+  },
+  "source_path": "C:\\Users\\zhiqi\\Documents\\RoundValue\\benchmark\\mmlu_pro\\MMLU-Pro-50.json",
+  "source_sha256": "8cfbdefb490c942dd798e635d1f5a4a88fb9da265c3f1a3f85dfdf94dca57439"
+}
