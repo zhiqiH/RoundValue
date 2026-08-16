@@ -46,7 +46,7 @@ benchmark/math/MATH-50.json       MATH-500 分层验证子集（30/10/10），pr
 benchmark/test/                   独立仓库验收题；不来自主基准且不用于论文结果
 configs/                          agents.json, model_config.json, topology.json
 scripts/step1_smoke.py            三个顺序用户入口（scripts/ 只有这三个 Python 入口）
-scripts/step2_collect_analyze.py
+scripts/step2_run.py
 scripts/step3_visualize.py
 pyproject.toml                    运行依赖管理 + roundvalue 控制台命令注册
 src/                              扁平模块 + pipeline 共享编排 + benchmark 构建/验证工具
@@ -68,14 +68,14 @@ collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照
 ## 5. 实验链路
 
 1. `step1_smoke.py`：运行独立数学验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
-2. `step2_collect_analyze.py`：用 `--benchmark` 选择单个数学数据集文件，校验 smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
+2. `step2_run.py`：用 `--benchmark` 选择单个数学数据集文件，校验 smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
 3. `step3_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 报告、5 张 PNG 图表与简短结论。
 
-`roundvalue smoke|collect-analyze|visualize` 是这三个入口的等价转发命令，参数、门禁与退出码
+`roundvalue smoke|run|visualize` 是这三个入口的等价转发命令，参数、门禁与退出码
 完全一致，不构成第五个实验步骤；`python scripts/step*_*.py` 形式保持不变。
 
 每个 run 保存配置快照和哈希、基准来源与哈希、Git 状态、源代码快照、命令行、模型响应名、API 尝试、checkpoint、评分、特征、标签和聚合结果。服务端即便在温度为零时仍可能变化，因此以任务级轨迹和配对 bootstrap 报告不确定性，不宣称逐 token 完全确定。
 
 ## 6. 论文结论的最低证据
 
-比较 Fixed-1/2/3、启发式、task-only、RoundValue、one-step Oracle 和 trajectory Oracle。启发式共识信号基于 Planner/Analyst/Critic 六条输出的 `candidate_answer`：至少 2/3 完全一致，或 Writer 答案跨轮稳定，才判定为共识。默认 `λ_cost=μ_latency=0`，因此值函数 `G` 是纯质量收益、阈值选择只在质量相同时以更少 token 决胜；质量—成本与质量—延迟 Pareto、任务级配对置信区间、Oracle regret 与 Repair/Neutral/Harm/Recovery 作为独立坐标报告。Oracle 只测量可达上界与后悔值，绝不可部署。
+比较 Fixed-1/2/3、task-only、RoundValue 和 trajectory Oracle。默认 `λ_cost=μ_latency=0`，因此值函数 `G` 是纯质量收益、阈值选择只在质量相同时以更少 token 决胜；质量—成本与质量—延迟 Pareto、任务级配对置信区间、Oracle regret 与 Repair/Neutral/Harm/Recovery 作为独立坐标报告。Oracle 只测量可达上界与后悔值，绝不可部署。

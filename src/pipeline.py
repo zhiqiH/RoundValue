@@ -722,7 +722,7 @@ def _run_analyze(
     manifest = _require_existing_run(args, state)
     if manifest.get("mode") != "collect":
         raise ValueError(
-            "analysis requires a run collected by step2_collect_analyze "
+            "analysis requires a run collected by step2_run "
             f"(mode={manifest.get('mode')!r})"
         )
     records = read_task_records(manifest)
@@ -740,7 +740,7 @@ def _run_analyze(
     if missing or extra:
         raise ValueError(
             "trajectory coverage mismatch: "
-            f"missing={missing}, extra={extra}; resume with step2_collect_analyze.py"
+            f"missing={missing}, extra={extra}; resume with step2_run.py"
         )
     incomplete = [
         str(record.get("task", {}).get("task_id"))
@@ -750,7 +750,7 @@ def _run_analyze(
     ]
     if incomplete:
         raise ValueError(
-            f"incomplete trajectories: {incomplete}; resume with step2_collect_analyze.py"
+            f"incomplete trajectories: {incomplete}; resume with step2_run.py"
         )
     selection = _selection_config()
     lambda_cost = float(selection["lambda_cost"])

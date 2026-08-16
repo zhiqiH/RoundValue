@@ -1,0 +1,8 @@
+RoundValue summary for run 202608152044_MATH50_36be0bbd
+tasks: 50 total, 50 complete, 0 failed
+round 1: accuracy=0.680, tasks=50, tokens=7395, wall_clock_ms=5780, logical_calls=7
+round 2: accuracy=0.660, tasks=50, tokens=7462, wall_clock_ms=5462, logical_calls=7
+round 3: accuracy=0.680, tasks=50, tokens=7591, wall_clock_ms=5587, logical_calls=7
+transitions: repair=1, neutral=96, harm=2, recovery=1
+RoundValue policy: accuracy=0.500, tokens=22348, wall_clock_ms=18063, stop_round=3.00
+RoundValue vs fixed-1 paired accuracy difference: mean=0.000, 95% CI=[0.000, 0.000], n_paired=10

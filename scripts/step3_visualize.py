@@ -1,6 +1,6 @@
 """Step 3: render saved analysis results into readable artifacts.
 
-Reads only ``results/<run_id>/`` (analysis.json written by step2_collect_analyze) and
+Reads only ``results/<run_id>/`` (analysis.json written by step2_run) and
 writes ``task_level_results.csv``, a self-contained ``report.html`` with the
 per-round accuracy, token, wall-clock latency, Repair/Neutral/Harm/Recovery,
 stop-round, and policy-comparison tables plus SVG charts, and a short
@@ -28,7 +28,7 @@ import pipeline as tb  # noqa: E402
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run-id", required=True, help="Run analyzed by step2_collect_analyze.")
+    parser.add_argument("--run-id", required=True, help="Run analyzed by step2_run.")
     args = parser.parse_args(argv)
     args.mode = "visualize"
     state: dict = {"manifest": None}

@@ -24,7 +24,7 @@ for directory in (SRC_DIRECTORY, SCRIPTS_DIRECTORY):
         sys.path.insert(0, str(directory))
 
 from step1_smoke import main as smoke_main  # noqa: E402
-from step2_collect_analyze import main as collect_analyze_main  # noqa: E402
+from step2_run import main as run_main  # noqa: E402
 from step3_visualize import main as visualize_main  # noqa: E402
 
 STEP_ENTRIES: dict[str, tuple[str, Callable[[list[str]], int]]] = {
@@ -32,10 +32,10 @@ STEP_ENTRIES: dict[str, tuple[str, Callable[[list[str]], int]]] = {
         "Run the small real-API acceptance gate (scripts/step1_smoke.py).",
         smoke_main,
     ),
-    "collect-analyze": (
-        "Collect trajectories, then run offline analysis in one step "
-        "(scripts/step2_collect_analyze.py).",
-        collect_analyze_main,
+    "run": (
+        "Run the main experiment: collect benchmark trajectories, then run "
+        "offline analysis (scripts/step2_run.py).",
+        run_main,
     ),
     "visualize": (
         "Render CSV, HTML/SVG and PNG charts, and a conclusion "

@@ -37,10 +37,8 @@ POLICY_ORDER = (
     "fixed_1",
     "fixed_2",
     "fixed_3",
-    "consensus",
     "task_only",
     "roundvalue",
-    "oracle_one_step",
     "oracle",
 )
 
@@ -48,23 +46,19 @@ POLICY_DISPLAY_NAMES: dict[str, str] = {
     "fixed_1": "Fixed-1",
     "fixed_2": "Fixed-2",
     "fixed_3": "Fixed-3",
-    "consensus": "Consensus",
     "task_only": "Task-only",
     "roundvalue": "RoundValue",
-    "oracle_one_step": "Oracle one-step",
     "oracle": "Oracle",
 }
 
-PAIRED_BASELINE_ORDER = ("fixed_1", "fixed_2", "fixed_3", "consensus", "task_only")
-ADAPTIVE_STOP_ORDER = ("consensus", "task_only", "roundvalue", "oracle_one_step", "oracle")
+PAIRED_BASELINE_ORDER = ("fixed_1", "fixed_2", "fixed_3", "task_only")
+ADAPTIVE_STOP_ORDER = ("task_only", "roundvalue", "oracle")
 ORACLE_REGRET_ORDER = (
     "fixed_1",
     "fixed_2",
     "fixed_3",
-    "consensus",
     "task_only",
     "roundvalue",
-    "oracle_one_step",
 )
 
 
@@ -391,7 +385,11 @@ def _build_policy_chart_data(replay: Mapping[str, Any]) -> dict[str, Any]:
         bootstrap = {}
     seed = int(_number(bootstrap.get("seed")) or 20260813)
     samples = int(_number(bootstrap.get("samples")) or 2000)
-    task_rows = _policy_task_rows(replay)
+    task_rows = {
+        name: rows
+        for name, rows in _policy_task_rows(replay).items()
+        if name in POLICY_ORDER
+    }
     policy_metrics = replay.get("policy_metrics", {})
     if not isinstance(policy_metrics, Mapping):
         policy_metrics = {}
@@ -998,7 +996,7 @@ def _render_png_charts(
                 alpha=0.75,
             )
 
-        for name, marker in (("consensus", "^"), ("task_only", "s")):
+        for name, marker in (("task_only", "s"),):
             point = points_by_name.get(name)
             if point is None:
                 continue
@@ -1043,7 +1041,7 @@ def _render_png_charts(
                     zorder=5,
                 )
 
-        for name, marker in (("oracle_one_step", "D"), ("oracle", "*")):
+        for name, marker in (("oracle", "*"),):
             point = points_by_name.get(name)
             if point is None:
                 continue
@@ -1126,16 +1124,6 @@ def _render_png_charts(
             Line2D(
                 [0],
                 [0],
-                marker="^",
-                color="none",
-                markersize=8,
-                markerfacecolor=adaptive_color,
-                markeredgecolor=adaptive_color,
-                label="Consensus",
-            ),
-            Line2D(
-                [0],
-                [0],
                 marker="s",
                 color="none",
                 markersize=7,
@@ -1152,16 +1140,6 @@ def _render_png_charts(
                 markerfacecolor=accent_color,
                 markeredgecolor=accent_color,
                 label="RoundValue",
-            ),
-            Line2D(
-                [0],
-                [0],
-                marker="D",
-                color="none",
-                markersize=8,
-                markerfacecolor="white",
-                markeredgecolor=oracle_edge,
-                label="Oracle one-step",
             ),
             Line2D(
                 [0],

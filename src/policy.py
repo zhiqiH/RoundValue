@@ -29,7 +29,7 @@ except ImportError:  # pragma: no cover - exercised by the flat user entry point
 
 
 POLICY_SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "roundvalue-replay-v1"
+POLICY_VERSION = "roundvalue-replay-v2"
 ROUNDVALUE_FEATURES: tuple[str, ...] = (
     "round_index",
     "prompt_length",
@@ -329,28 +329,6 @@ def _node_agreement(checkpoint: Mapping[str, Any]) -> float:
     return max(answers.count(value) for value in set(answers)) / len(answers)
 
 
-def consensus_signal(
-    checkpoint: Mapping[str, Any], previous_checkpoint: Mapping[str, Any] | None = None
-) -> tuple[bool, str]:
-    """Return a public, prefix-only consensus signal and its audit reason.
-
-    The six Planner/Analyst/Critic outputs in a round each carry a
-    ``candidate_answer`` under the frozen agent contract, so agreement is the
-    largest fraction of those six answers that are identical, requiring at
-    least 2/3 for consensus.  Older saved trajectories whose Planner/Critic
-    nodes lack that field degrade gracefully to Analyst-only agreement.
-    """
-
-    if _node_agreement(checkpoint) >= 2.0 / 3.0:
-        return True, "node_answer_agreement"
-    if previous_checkpoint is not None:
-        current = _normalized_answer(_checkpoint_answer(checkpoint))
-        previous = _normalized_answer(_checkpoint_answer(previous_checkpoint))
-        if current and current == previous:
-            return True, "writer_answer_stable"
-    return False, "no_consensus_signal"
-
-
 def build_policy_features(
     task_record: Mapping[str, Any],
     checkpoint: Mapping[str, Any],
@@ -635,42 +613,6 @@ def _replay_fixed(
     )
 
 
-def _replay_consensus(
-    record: Mapping[str, Any],
-    position: int,
-    checkpoints: Sequence[Mapping[str, Any]],
-    labels: Mapping[int, Mapping[str, Any]],
-) -> dict[str, Any]:
-    trace: list[dict[str, Any]] = []
-    selected = checkpoints[-1]
-    reason = "max_available_round"
-    for index, checkpoint in enumerate(checkpoints[:-1]):
-        previous = checkpoints[index - 1] if index else None
-        signal, signal_reason = consensus_signal(checkpoint, previous)
-        round_index = _positive_integer(checkpoint.get("round_index", checkpoint.get("round")))
-        trace.append(
-            {
-                "round_index": round_index,
-                "decision": "STOP" if signal else "CONTINUE",
-                "reason": signal_reason,
-                "consensus_signal": signal,
-            }
-        )
-        if signal:
-            selected = checkpoint
-            reason = "consensus_stop"
-            break
-    else:
-        final_round = _positive_integer(selected.get("round_index", selected.get("round")))
-        trace.append(
-            {"round_index": final_round, "decision": "FORCED_STOP", "reason": "max_available_round"}
-        )
-    round_index = _positive_integer(selected.get("round_index", selected.get("round")))
-    return _selected_result(
-        record, position, "consensus", selected, labels[round_index], reason, trace
-    )
-
-
 def _replay_predicted(
     record: Mapping[str, Any],
     position: int,
@@ -779,48 +721,6 @@ def _replay_oracle(
         labels[selected_round],
         "trajectory_oracle_max_utility",
         [{"round_index": selected_round, "decision": "STOP", "reason": "trajectory_oracle"}],
-    )
-
-
-def _replay_one_step_oracle(
-    record: Mapping[str, Any],
-    position: int,
-    checkpoints: Sequence[Mapping[str, Any]],
-    labels: Mapping[int, Mapping[str, Any]],
-) -> dict[str, Any]:
-    trace: list[dict[str, Any]] = []
-    selected = checkpoints[-1]
-    reason = "max_available_round"
-    for checkpoint in checkpoints[:-1]:
-        round_index = _positive_integer(checkpoint.get("round_index", checkpoint.get("round")))
-        one_step_value = _optional_number(labels[round_index].get("V"), "oracle one_step_value")
-        if one_step_value is None:
-            raise ValueError(
-                "oracle one-step value is unavailable because a weighted cost or latency delta is unknown"
-            )
-        should_continue = one_step_value > 0.0
-        trace.append(
-            {
-                "round_index": round_index,
-                "decision": "CONTINUE" if should_continue else "STOP",
-                "oracle_one_step_value": one_step_value,
-                "reason": "positive_one_step_value"
-                if should_continue
-                else "nonpositive_one_step_value",
-            }
-        )
-        if not should_continue:
-            selected = checkpoint
-            reason = "oracle_one_step_stop"
-            break
-    else:
-        final_round = _positive_integer(selected.get("round_index", selected.get("round")))
-        trace.append(
-            {"round_index": final_round, "decision": "FORCED_STOP", "reason": "max_available_round"}
-        )
-    selected_round = _positive_integer(selected.get("round_index", selected.get("round")))
-    return _selected_result(
-        record, position, "oracle_one_step", selected, labels[selected_round], reason, trace
     )
 
 
@@ -1030,11 +930,11 @@ def replay_policies(
 ) -> dict[str, Any]:
     """Replay all required stopping baselines on saved trajectory JSON.
 
-    Returned policies are ``fixed_1``, ``fixed_2``, ``fixed_3``, ``consensus``,
-    ``task_only``, ``roundvalue``, the full-trajectory ``oracle``, and a
-    ``oracle_one_step`` diagnostic.  If no frozen model is supplied, task-only
-    and RoundValue explicitly continue to the final saved checkpoint; they do
-    *not* fit on the records being evaluated.
+    Returned policies are ``fixed_1``, ``fixed_2``, ``fixed_3``,
+    ``task_only``, ``roundvalue``, and the full-trajectory ``oracle``.  If no
+    frozen model is supplied, task-only and RoundValue explicitly continue to
+    the final saved checkpoint; they do *not* fit on the records being
+    evaluated.
 
     ``policy_model`` may contain ``lambda_cost``, ``mu_latency``, and nested
     ``roundvalue`` / ``task_only`` constant, mean, or linear descriptors.
@@ -1065,11 +965,9 @@ def replay_policies(
         "fixed_1": [],
         "fixed_2": [],
         "fixed_3": [],
-        "consensus": [],
         "task_only": [],
         "roundvalue": [],
         "oracle": [],
-        "oracle_one_step": [],
     }
     all_labels: list[list[dict[str, Any]]] = []
     for position, record in enumerate(normalized):
@@ -1089,9 +987,6 @@ def replay_policies(
             policy_rows[f"fixed_{stop_round}"].append(
                 _replay_fixed(record, position, checkpoints, labels_by_round, stop_round)
             )
-        policy_rows["consensus"].append(
-            _replay_consensus(record, position, checkpoints, labels_by_round)
-        )
         policy_rows["task_only"].append(
             _replay_predicted(
                 record,
@@ -1115,9 +1010,6 @@ def replay_policies(
             )
         )
         policy_rows["oracle"].append(_replay_oracle(record, position, checkpoints, labels_by_round))
-        policy_rows["oracle_one_step"].append(
-            _replay_one_step_oracle(record, position, checkpoints, labels_by_round)
-        )
 
     regrets = _apply_oracle_regret(policy_rows)
     policy_metrics: dict[str, dict[str, Any]] = {}
@@ -1359,7 +1251,6 @@ __all__ = [
     "ROUNDVALUE_FEATURES",
     "TASK_ONLY_FEATURES",
     "build_policy_features",
-    "consensus_signal",
     "fit_linear_policy",
     "fit_policy_models",
     "normalize_records",
