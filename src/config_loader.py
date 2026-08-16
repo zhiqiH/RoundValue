@@ -112,8 +112,12 @@ def _validate_agents(config: dict[str, Any]) -> None:
     if found != ROLE_IDS:
         raise ConfigurationError("agents.json must include planner, analyst, critic, and writer")
     writer = next(role for role in roles if role["id"] == "writer")
-    if "final_answer" not in writer["output_schema"]["required_fields"]:
-        raise ConfigurationError("Writer output_schema must require final_answer")
+    if "answer" not in writer["output_schema"]["required_fields"]:
+        raise ConfigurationError("Writer output_schema must require answer")
+    if "reasoning_summary" not in writer["output_schema"]["required_fields"]:
+        raise ConfigurationError(
+            "Writer output_schema must require reasoning_summary"
+        )
     if writer["output_schema"].get("is_checkpoint_answer") is not True:
         raise ConfigurationError("Writer must be explicitly marked as the only checkpoint answer")
     for role in roles:
@@ -186,8 +190,8 @@ def _validate_debate_topology(topology: dict[str, Any], topology_id: str) -> Non
 
     if topology.get("runner") != "two_stage_pac_writer":
         raise ConfigurationError(f"topology {topology_id} must use runner two_stage_pac_writer")
-    if topology.get("max_rounds") != 3:
-        raise ConfigurationError(f"topology {topology_id}.max_rounds must be exactly 3")
+    if topology.get("max_rounds") != 5:
+        raise ConfigurationError(f"topology {topology_id}.max_rounds must be exactly 5")
     nodes = require_list(topology.get("nodes"), f"topology {topology_id}.nodes")
     node_ids = {
         require_string(require_object(node, "topology node").get("id"), "topology node.id")

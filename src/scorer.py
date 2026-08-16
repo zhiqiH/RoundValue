@@ -106,10 +106,10 @@ def _last_boxed_value(text: str) -> str | None:
 def extract_final_answer(value: Any) -> str | None:
     """Extract a Writer answer from a JSON object, scalar, or text response.
 
-    Writer output is expected to be ``{"final_answer": ...}``, but old saved
-    records sometimes put the answer under ``answer``, ``content``, or a nested
-    ``writer`` object.  The function is intentionally read-only and does not
-    attempt to repair malformed JSON.
+    Writer output is expected to be ``{"answer": ..., "reasoning_summary": ...}``,
+    but compatibility readers also accept older ``final_answer`` / ``answer`` /
+    ``content`` fields and nested ``writer`` objects.  The function is
+    intentionally read-only and does not attempt to repair malformed JSON.
     """
 
     value_map = _mapping(value)
@@ -122,7 +122,9 @@ def extract_final_answer(value: Any) -> str | None:
                 ("writer", "final_answer"),
                 ("writer", "answer"),
                 ("writer_output", "final_answer"),
+                ("writer_output", "answer"),
                 ("output", "final_answer"),
+                ("output", "answer"),
                 ("response", "final_answer"),
                 ("content",),
                 ("text",),
@@ -617,11 +619,14 @@ def _checkpoint_answer(checkpoint: Mapping[str, Any]) -> Any:
     return _nested_value(
         checkpoint,
         (
-            ("final_answer",),
-            ("writer", "final_answer"),
-            ("writer_output", "final_answer"),
-            ("output", "final_answer"),
             ("answer",),
+            ("final_answer",),
+            ("writer", "answer"),
+            ("writer", "final_answer"),
+            ("writer_output", "answer"),
+            ("writer_output", "final_answer"),
+            ("output", "answer"),
+            ("output", "final_answer"),
             ("answer_text",),
         ),
     )
@@ -665,7 +670,7 @@ def score_trajectory(
           "task": {...}, "split": "test",
           "trajectory": {
             "status": "complete", "trajectory_id": "...",
-            "checkpoints": [{"round_index": 1, "final_answer": "..."}, ...]
+            "checkpoints": [{"round_index": 1, "answer": "...", ...}, ...]
           }
         }
 

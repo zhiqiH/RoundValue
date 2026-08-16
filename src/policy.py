@@ -29,7 +29,7 @@ except ImportError:  # pragma: no cover - exercised by the flat user entry point
 
 
 POLICY_SCHEMA_VERSION = "1.0"
-POLICY_VERSION = "roundvalue-replay-v2"
+POLICY_VERSION = "roundvalue-replay-v3"
 ROUNDVALUE_FEATURES: tuple[str, ...] = (
     "round_index",
     "prompt_length",
@@ -463,7 +463,7 @@ def _decision(
     policy_name: str,
 ) -> tuple[bool, float | None, str]:
     if spec is None:
-        return True, None, "no_frozen_model_fallback_fixed_3"
+        return True, None, "no_frozen_model_fallback_continue"
     predicted = predict_policy_value(spec, features)
     threshold = _required_number(spec.get("threshold", 0.0), "policy threshold")
     if predicted > threshold:
@@ -633,7 +633,7 @@ def _replay_predicted(
             should_continue, prediction, decision_reason = (
                 True,
                 None,
-                "no_frozen_model_fallback_fixed_3",
+                "no_frozen_model_fallback_continue",
             )
         else:
             try:
@@ -930,7 +930,8 @@ def replay_policies(
 ) -> dict[str, Any]:
     """Replay all required stopping baselines on saved trajectory JSON.
 
-    Returned policies are ``fixed_1``, ``fixed_2``, ``fixed_3``,
+    Returned policies are one ``fixed_k`` baseline for every checkpoint depth
+    present in the records (currently ``fixed_1`` through ``fixed_5``),
     ``task_only``, ``roundvalue``, and the full-trajectory ``oracle``.  If no
     frozen model is supplied, task-only and RoundValue explicitly continue to
     the final saved checkpoint; they do *not* fit on the records being
@@ -961,13 +962,21 @@ def replay_policies(
     model = dict(policy_model) if policy_model is not None else None
     lambda_cost = _model_weight(model, "lambda_cost")
     mu_latency = _model_weight(model, "mu_latency")
+    max_round = 0
+    for record in normalized:
+        for checkpoint in _ordered_checkpoints(record):
+            round_index = _positive_integer(
+                checkpoint.get("round_index", checkpoint.get("round"))
+            )
+            if round_index is not None:
+                max_round = max(max_round, round_index)
+    if max_round < 1:
+        raise ValueError("records contain no positive checkpoint round indices")
+    fixed_names = tuple(
+        f"fixed_{round_index}" for round_index in range(1, max_round + 1)
+    )
     policy_rows: dict[str, list[dict[str, Any]]] = {
-        "fixed_1": [],
-        "fixed_2": [],
-        "fixed_3": [],
-        "task_only": [],
-        "roundvalue": [],
-        "oracle": [],
+        name: [] for name in (*fixed_names, "task_only", "roundvalue", "oracle")
     }
     all_labels: list[list[dict[str, Any]]] = []
     for position, record in enumerate(normalized):
@@ -983,7 +992,7 @@ def replay_policies(
         if checkpoint_rounds != set(labels_by_round):
             raise ValueError(f"record {position} checkpoint and label rounds differ")
         all_labels.append(labels)
-        for stop_round in (1, 2, 3):
+        for stop_round in range(1, max_round + 1):
             policy_rows[f"fixed_{stop_round}"].append(
                 _replay_fixed(record, position, checkpoints, labels_by_round, stop_round)
             )
@@ -1044,6 +1053,7 @@ def replay_policies(
         "schema_version": POLICY_SCHEMA_VERSION,
         "policy_version": POLICY_VERSION,
         "n_records": len(normalized),
+        "max_rounds": max_round,
         "replay_mode": "offline_saved_trajectories_only",
         "label_parameters": {"lambda_cost": lambda_cost, "mu_latency": mu_latency},
         "model_status": {

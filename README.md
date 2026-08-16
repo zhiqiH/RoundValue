@@ -53,12 +53,12 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
                      ↓
  W-packet = [P1, A1, C1, P2, A2, C2]（固定顺序）
                      ↓
-                 Writer → final_answer
+        Writer → {answer, reasoning_summary}
 ```
 
-`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 3 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。只有 Writer 的 `final_answer` 是可评分 checkpoint。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量），这是硬的有界性保证；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 的回退不产生占位（`final_answer` 是真实答案），非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
+`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 5 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。Writer checkpoint 是两个语义分离的字段：`answer` 是本轮规范答案、也是唯一可评分字段；`reasoning_summary` 是对外可读的紧凑推理摘要（关键证据、选项间区分、假设与剩余不确定性），供下一轮 Agent 审阅、挑战或精化，不参与评分。第 `t` 轮的 `{answer_t, reasoning_summary_t}` 会作为 `previous_writer_checkpoint` 传入第 `t+1` 轮的全部 Planner/Analyst/Critic/Writer，而不是只传给最终 Writer。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量），这是硬的有界性保证；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 回退时 `answer` 是真实答案、`reasoning_summary` 被显式占位，非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
 
-策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
+策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`：第 1–4 轮之后都可以继续，第 5 轮是最终轮、没有继续决策。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
 
 ## 三份实验配置
 
@@ -82,7 +82,7 @@ Debate 模块已被固化为一个整体：`topology.json` 只保留唯一且无
 | 脚本 | 职责 | 模型 API | 写入位置 |
 |---|---|---|---|
 | `step1_smoke.py` | 小规模真实 API 通路测试：配置、完整一轮 Debate、评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
-| `step2_run.py` | 跑主实验：收集 `--benchmark` 指定单个数据集的 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误）；全部完成后立即检查完整性、逐轮评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 收集阶段是 | `trajectories/<run_id>/` 与 `results/<run_id>/` |
+| `step2_run.py` | 跑主实验：收集 `--benchmark` 指定单个数据集的 1–5 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误）；全部完成后立即检查完整性、逐轮评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 收集阶段是 | `trajectories/<run_id>/` 与 `results/<run_id>/` |
 | `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 报告、`charts/` 下 5 张 policy-level PNG 图表（质量-token、质量-延迟、RoundValue vs baseline、自适应停止分布、oracle regret）与简短结论 | 否 | `results/<run_id>/` |
 
 执行顺序是强制的：
@@ -102,11 +102,16 @@ MMLU-Pro-500 的 collect run 是 `202608142334_MMLUPro500_15193d5a`（数据集�
 
 因此 `trajectories/` 是原始且尽量不被后续阶段修改的模型轨迹；`results/` 必须能由 trajectories 完全离线重建（重跑 step3）。`run_id` 是 step3/step4 唯一接受的实验标识，不要混用不同 run。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
 
+历史兼容：此前 3 轮 answer-only 轨迹的 checkpoint 使用 `final_answer` 且没有
+`reasoning_summary`。离线评分与策略重放仍会原样读取它们，并按历史语义处理——不会
+为其补造推理摘要，旧 3 轮 run 只重放 Fixed-1/2/3；新 run 一律生成
+`answer + reasoning_summary` 的 1–5 轮 checkpoint，旧新语义不会静默混用。
+
 延迟统计保留两个字段：`wall_clock_ms` 是真实的墙钟等待时间（并行的 P/A/C 请求只计一次），`api_latency_ms` 是全部 API 尝试的服务时间总和（含重试）。离线标签、报告图表与策略的时间成本使用墙钟；旧轨迹只有服务时间总和时按未知处理，不用服务时间冒充墙钟。
 
 ### 防泄漏与 Agent 可见信息
 
-Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的公开元数据。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。MMLU-Pro 的题干与全部选项已内嵌在 `prompt` 中，而 `answer_index`、`reference_answer`、参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
+Agent 只能看到 `task_id`、`domain`、`prompt`、上一轮 Writer 的 `answer` 与 `reasoning_summary`，以及少量明确允许的公开元数据。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。MMLU-Pro 的题干与全部选项已内嵌在 `prompt` 中，而 `answer_index`、`reference_answer`、参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
 
 ## Benchmark 边界
 
@@ -194,4 +199,4 @@ RoundValue/
 
 每个 run 冻结三份配置、基准来源与哈希、命令行、模型 profile、Git 状态、源代码快照。`trajectories/` 保存任务级原始记录（调用尝试、原始响应、checkpoint、token、延迟、重试与错误）；`results/` 保存由 step3 离线派生的评分、标签、策略、比较与汇总，可由 trajectories 重建。二者是可追溯的实验产物，默认可纳入 Git；提交前仍应确认不含密钥、个人数据或不应公开的模型输出。
 
-正式报告应比较 Fixed-1/2/3、task-only、RoundValue 与 trajectory Oracle，并报告质量—成本 Pareto、任务级置信区间、Oracle regret、Repair/Neutral/Harm/Recovery。Oracle 仅用于诊断上界，绝不用于部署策略。
+正式报告应比较 Fixed-1/2/3/4/5、task-only、RoundValue 与 trajectory Oracle（Oracle 覆盖全部五个 checkpoint），并报告质量—成本 Pareto、任务级置信区间、Oracle regret、Repair/Neutral/Harm/Recovery。Oracle 仅用于诊断上界，绝不用于部署策略。

@@ -4,7 +4,7 @@
   "topologies": {
     "debate": {
       "runner": "two_stage_pac_writer",
-      "max_rounds": 3,
+      "max_rounds": 5,
       "nodes": [
         {"id": "planner_stage_1", "role": "planner", "stage": 1, "parallel_group": "stage_1"},
         {"id": "analyst_stage_1", "role": "analyst", "stage": 1, "parallel_group": "stage_1"},

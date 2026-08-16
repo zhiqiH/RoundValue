@@ -1,7 +1,7 @@
 """Step 2: run the main experiment (benchmark collection + offline analysis).
 
 This entry merges the former ``step2_collect`` and ``step3_analyze`` stages
-into one command.  It first collects the raw one-to-three-round trajectories
+into one command.  It first collects the raw one-to-five-round trajectories
 into ``trajectories/<run_id>/`` under the step1 smoke gate, and then, only if
 every task completed, runs the deterministic offline scoring, label building,
 policy fitting, threshold selection, and Test evaluation into

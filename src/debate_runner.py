@@ -140,7 +140,10 @@ class FixedDebateRunner:
         """Return the one field whose content is the node's candidate answer."""
 
         required = self.roles[role_id]["output_schema"]["required_fields"]
-        return "final_answer" if "final_answer" in required else "candidate_answer"
+        for field in ("answer", "final_answer", "candidate_answer"):
+            if field in required:
+                return field
+        return "candidate_answer"
 
     def _attempt_budgets(self, role_id: str) -> list[int]:
         """Escalate the full-schema attempts downward before the fallback.
@@ -630,7 +633,8 @@ class FixedDebateRunner:
             return round_record
         checkpoint = {
             "round_index": round_index,
-            "final_answer": writer["output"]["final_answer"],
+            "answer": writer["output"]["answer"],
+            "reasoning_summary": writer["output"]["reasoning_summary"],
             "writer_node_id": "writer",
             "writer_output": writer["output"],
             "nodes": round_record["nodes"],
@@ -640,7 +644,8 @@ class FixedDebateRunner:
             {
                 "task_id": task["task_id"],
                 "round_index": round_index,
-                "final_answer": checkpoint["final_answer"],
+                "answer": checkpoint["answer"],
+                "reasoning_summary": checkpoint["reasoning_summary"],
                 "writer_output": checkpoint["writer_output"],
             }
         )
@@ -721,7 +726,8 @@ class FixedDebateRunner:
             trajectory["checkpoints"].append(checkpoint)
             previous_checkpoint = {
                 "round_index": checkpoint["round_index"],
-                "final_answer": checkpoint["final_answer"],
+                "answer": checkpoint["answer"],
+                "reasoning_summary": checkpoint["reasoning_summary"],
                 "checkpoint_hash": checkpoint["checkpoint_hash"],
             }
         trajectory.update(

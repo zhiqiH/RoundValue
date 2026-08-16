@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -47,7 +48,10 @@ ROLE_OUTPUTS = {
         "revision_advice": "none",
         "candidate_answer": "5",
     },
-    "writer": {"final_answer": "5"},
+    "writer": {
+        "answer": "C",
+        "reasoning_summary": "2 + 2 = 4, and 4 is option C; no other choice is plausible.",
+    },
 }
 
 
@@ -150,8 +154,11 @@ def main() -> int:
     experiment = load_experiment_config(PROJECT_ROOT)
 
     valid = json.dumps(ROLE_OUTPUTS["writer"], separators=(",", ":"))
-    truncated = '{"final_answer": "5"'
-    overlong = json.dumps({"final_answer": "x" * 600}, separators=(",", ":"))
+    truncated = '{"answer": "C"'
+    overlong = json.dumps(
+        {"answer": "x" * 600, "reasoning_summary": "ok"},
+        separators=(",", ":"),
+    )
     missing_field = "{}"
 
     record, provider = _node_result(
@@ -175,8 +182,13 @@ def main() -> int:
     )
     check(record["status"] == "completed", "repeated truncation recovered by shrinking budget")
     check(record["format_repairs"] == 2, "two shrinking repairs recorded")
+    budget_runner = FixedDebateRunner(dict(experiment), None)
+    expected_budgets = [
+        *budget_runner._attempt_budgets("writer"),
+        budget_runner._answer_only_budget(),
+    ]
     check(
-        [request.max_output_tokens for request in provider.requests] == [348, 174, 128],
+        [request.max_output_tokens for request in provider.requests] == expected_budgets,
         "full-schema budgets shrink, then the answer-only fallback takes over",
     )
     check(
@@ -185,7 +197,7 @@ def main() -> int:
     )
     check(
         record["fallback"]["type"] == "answer_only"
-        and record["output"]["final_answer"] == "5",
+        and record["output"]["answer"] == "C",
         "answer-only fallback completes the writer schema deterministically",
     )
 
@@ -194,7 +206,11 @@ def main() -> int:
         [("stop", "not json"), ("stop", "still bad"), ("stop", '"63"')],
     )
     check(record["status"] == "completed", "fallback accepts a bare JSON-string answer")
-    check(record["output"]["final_answer"] == "63", "fallback answer is preserved")
+    check(record["output"]["answer"] == "63", "fallback answer is preserved")
+    check(
+        "[answer-only fallback" in record["output"]["reasoning_summary"],
+        "fallback reasoning summary is an explicit recorded placeholder",
+    )
     check(record["fallback"]["answer"] == "63", "fallback provenance records the answer")
 
     record, provider = _node_result(
@@ -261,8 +277,95 @@ def main() -> int:
         previous_checkpoint=None,
     )
     check(round_record["status"] == "completed", "full seven-node round completes")
-    check(round_record["checkpoint"]["final_answer"] == "5", "writer checkpoint preserved")
-    check(all(request.max_output_tokens < 4096 for request in provider.requests), "every node request uses a schema-derived budget")
+    checkpoint = round_record["checkpoint"]
+    check(
+        checkpoint["answer"] == "C"
+        and "reasoning_summary" in checkpoint
+        and checkpoint["writer_output"]["answer"] == "C"
+        and checkpoint["writer_output"]["reasoning_summary"],
+        "writer checkpoint stores answer separately from reasoning_summary",
+    )
+    check(
+        all(request.max_output_tokens < 4096 for request in provider.requests),
+        "every node request uses a schema-derived budget",
+    )
+
+    # Collect a complete five-round trajectory with the same deterministic
+    # fake provider and verify the cross-round checkpoint contract end to end.
+    trajectory_provider = FakeProvider([], by_node=full_by_node)
+    trajectory_runner = FixedDebateRunner(dict(experiment), trajectory_provider)
+    trajectory = trajectory_runner.run_trajectory(
+        task=_task(),
+        run_id="dev-selfcheck-five-rounds",
+        max_rounds=5,
+    )
+    check(trajectory["status"] == "complete", "five-round trajectory completes")
+    check(len(trajectory["checkpoints"]) == 5, "five Writer checkpoints collected")
+    check(
+        [item["round_index"] for item in trajectory["checkpoints"]] == [1, 2, 3, 4, 5],
+        "checkpoint rounds are exactly 1 through 5",
+    )
+    check(
+        len({item["checkpoint_hash"] for item in trajectory["checkpoints"]}) == 5,
+        "every round produces a distinct checkpoint hash",
+    )
+    check(
+        trajectory["checkpoints"][-1]["cumulative"]["logical_calls"] == 35,
+        "five rounds account for 35 logical model calls",
+    )
+
+    # Persist and reload the real trajectory document so the JSON boundary is
+    # exercised, not only the in-memory dictionary path.
+    with tempfile.TemporaryDirectory() as temporary:
+        trajectory_path = Path(temporary) / "trajectory.json"
+        trajectory_path.write_text(
+            json.dumps(trajectory, ensure_ascii=False, sort_keys=True),
+            encoding="utf-8",
+        )
+        reloaded = json.loads(trajectory_path.read_text(encoding="utf-8"))
+    check(
+        reloaded["status"] == "complete"
+        and len(reloaded["checkpoints"]) == 5
+        and reloaded["checkpoints"][1]["answer"] == "C"
+        and reloaded["checkpoints"][1]["reasoning_summary"],
+        "serialized five-round trajectory round-trips answer and reasoning_summary",
+    )
+
+    inputs_by_round: dict[tuple[int, str], dict[str, Any]] = {}
+    for request in trajectory_provider.requests:
+        round_index = int(request.metadata.get("round_index"))
+        node_id = request.metadata.get("node_id")
+        inputs_by_round[(round_index, node_id)] = json.loads(
+            request.messages[1]["content"]
+        )
+
+    first_input = inputs_by_round[(1, "planner_stage_1")]
+    check(
+        first_input.get("previous_writer_checkpoint") is None,
+        "round 1 receives no previous checkpoint",
+    )
+    for round_index in range(2, 6):
+        node_input = inputs_by_round[(round_index, "planner_stage_1")]
+        previous = node_input.get("previous_writer_checkpoint")
+        check(
+            isinstance(previous, dict) and previous.get("round_index") == round_index - 1,
+            f"round {round_index} stage-1 node receives the round {round_index - 1} checkpoint",
+        )
+        check(
+            previous.get("answer") == "C" and previous.get("reasoning_summary"),
+            f"round {round_index} sees the previous answer and reasoning summary",
+        )
+        public = node_input.get("task", {})
+        check(
+            "reference_answer" not in public
+            and "answer_index" not in public
+            and "options" not in public,
+            f"round {round_index} public task hides gold answer fields",
+        )
+        check(
+            node_input.get("visible_messages") == [],
+            f"round {round_index} stage-1 node receives no future-round transcript",
+        )
 
     print("PASS all self-checks")
     return 0

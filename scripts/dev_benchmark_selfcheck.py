@@ -27,7 +27,7 @@ if str(SRC_DIRECTORY) not in sys.path:
 
 from benchmark_io import load_benchmark, public_task  # noqa: E402
 from labels import build_labels  # noqa: E402
-from policy import fit_policy_models, replay_policies  # noqa: E402
+from policy import build_policy_features, fit_policy_models, replay_policies  # noqa: E402
 from scorer import normalize_mc_answer, score_task, score_trajectory  # noqa: E402
 from visualize import build_analysis  # noqa: E402
 import verify_real_benchmarks  # noqa: E402
@@ -76,20 +76,47 @@ def _check_normalization() -> None:
     for text, expected, label in cases:
         check(normalize_mc_answer(text) == expected, f"normalize {label}")
 
-    score = score_task(task, {"final_answer": "B"})
+    score = score_task(task, {"answer": "B", "reasoning_summary": "Four equals two plus two, so choose B."})
     check(score["quality"] == 1.0 and score["reason"] == "exact_option_match", "correct option scores 1")
-    score = score_task(task, {"final_answer": "Answer: (B)"})
+    score = score_task(task, {"answer": "Answer: (B)", "reasoning_summary": "format tolerance"})
     check(score["quality"] == 1.0, "formatted correct option scores 1")
-    score = score_task(task, {"final_answer": "A"})
+    score = score_task(task, {"answer": "A", "reasoning_summary": "The reasoning claims B is right."})
     check(score["quality"] == 0.0 and score["reason"] == "option_mismatch", "wrong option scores 0")
+    score = score_task(
+        task,
+        {
+            "answer": "A",
+            "reasoning_summary": "B is the canonical answer and is fully supported by the evidence.",
+        },
+    )
+    check(
+        score["quality"] == 0.0,
+        "reasoning_summary content cannot rescue an incorrect answer",
+    )
+    score = score_task(
+        task,
+        {
+            "answer": "B",
+            "reasoning_summary": "placeholder reasoning that is not informative",
+        },
+    )
+    check(
+        score["quality"] == 1.0,
+        "correctness depends only on the canonical answer field",
+    )
+    score = score_task(task, {"final_answer": "B"})
+    check(
+        score["quality"] == 1.0,
+        "legacy answer-only final_answer records remain scoreable",
+    )
     for malformed in ("B and C", "5", "none of the above", "1.0"):
-        score = score_task(task, {"final_answer": malformed})
+        score = score_task(task, {"answer": malformed, "reasoning_summary": "reason"})
         check(
             score["quality"] == 0.0
             and score["reason"] == "ambiguous_or_missing_option",
             f"malformed answer rejected conservatively: {malformed!r}",
         )
-    score = score_task(task, {"final_answer": ""})
+    score = score_task(task, {"answer": "", "reasoning_summary": "reason"})
     check(score["quality"] == 0.0 and score["reason"] == "missing_final_answer", "empty answer rejected")
     score = score_task(task, "\\boxed{B}")
     check(score["quality"] == 1.0, "boxed canonical label accepted")
@@ -144,6 +171,13 @@ def _check_manifests() -> None:
         "every MMLU-Pro task carries 3-10 options matching its metadata",
     )
 
+    _, _, smoke_tasks = load_benchmark(root, "benchmark/test/smoke_tasks.json")
+    check(
+        len(smoke_tasks) == 2
+        and all(task["domain"] == "mmlu_pro" for task in smoke_tasks),
+        "the lightweight smoke benchmark loads as MMLU-Pro tasks",
+    )
+
 
 def _synthetic_record(
     task: dict[str, Any], split: str, qualities: tuple[int, ...], index: int
@@ -154,7 +188,11 @@ def _synthetic_record(
         checkpoints.append(
             {
                 "round_index": round_index,
-                "final_answer": answer,
+                "answer": answer,
+                "reasoning_summary": (
+                    f"selfcheck reasoning for round {round_index}: "
+                    "evidence, assumptions, and option distinctions"
+                ),
                 "checkpoint_hash": f"selfcheck-{index}-{round_index}",
                 "nodes": [
                     {
@@ -197,7 +235,7 @@ def _synthetic_record(
             "task_id": task["task_id"],
             "domain": task["domain"],
             "status": "complete",
-            "max_rounds": 3,
+            "max_rounds": 5,
             "rounds": [],
             "checkpoints": checkpoints,
         },
@@ -207,11 +245,82 @@ def _synthetic_record(
     return record
 
 
+def _check_legacy_records() -> None:
+    """Old three-round answer-only records stay readable but carry no summary."""
+
+    task = _mc_task("dev::legacy::record")
+    checkpoints = []
+    for round_index, answer in enumerate(("B", "A", "B"), start=1):
+        checkpoints.append(
+            {
+                "round_index": round_index,
+                "final_answer": answer,
+                "cumulative": {
+                    "input_tokens": 100 * round_index,
+                    "output_tokens": 10 * round_index,
+                    "cost_usd": 0.001 * round_index,
+                    "latency_ms": 100.0 * round_index,
+                    "wall_clock_ms": 90 * round_index,
+                    "api_latency_ms": 110 * round_index,
+                    "logical_calls": 7 * round_index,
+                },
+            }
+        )
+    record: dict[str, Any] = {
+        "schema_version": "1.0",
+        "task": dict(task),
+        "split": "test",
+        "trajectory": {
+            "schema_version": "1.0",
+            "trajectory_id": "legacy-trajectory",
+            "task_id": task["task_id"],
+            "domain": task["domain"],
+            "status": "complete",
+            "max_rounds": 3,
+            "rounds": [],
+            "checkpoints": checkpoints,
+        },
+    }
+    scores = score_trajectory(record)
+    check(
+        [score["quality"] for score in scores] == [1.0, 0.0, 1.0],
+        "legacy final_answer checkpoints score without a reasoning summary",
+    )
+    labels = build_labels(record | {"scores": scores}, lambda_cost=0.0, mu_latency=0.0)
+    check(len(labels) == 3 and all(label["G"] is not None for label in labels), "legacy labels build without summaries")
+    replay = replay_policies([record | {"scores": scores, "labels": labels}], None)
+    check(
+        set(replay["policy_metrics"])
+        == {"fixed_1", "fixed_2", "fixed_3", "task_only", "roundvalue", "oracle"}
+        and replay.get("max_rounds") == 3,
+        "legacy three-round records replay with Fixed-1..3 only",
+    )
+
+
 def _check_pipeline() -> None:
     patterns = {
-        "train": [(0, 1, 1), (1, 1, 1), (0, 0, 0), (1, 0, 1), (0, 0, 1), (1, 1, 0), (0, 1, 0), (1, 0, 0)],
-        "validation": [(0, 1, 1), (1, 0, 1), (1, 1, 1), (0, 0, 0)],
-        "test": [(1, 0, 1), (0, 0, 1), (1, 1, 0), (0, 1, 0)],
+        "train": [
+            (0, 1, 1, 1, 1),
+            (1, 1, 1, 1, 1),
+            (0, 0, 0, 0, 0),
+            (1, 0, 1, 0, 1),
+            (0, 0, 1, 0, 1),
+            (1, 1, 0, 1, 0),
+            (0, 1, 0, 1, 0),
+            (1, 0, 0, 0, 1),
+        ],
+        "validation": [
+            (0, 1, 1, 0, 1),
+            (1, 0, 1, 1, 1),
+            (1, 1, 1, 1, 1),
+            (0, 0, 0, 0, 0),
+        ],
+        "test": [
+            (1, 0, 1, 0, 1),
+            (0, 0, 1, 1, 0),
+            (1, 1, 0, 0, 1),
+            (0, 1, 0, 1, 1),
+        ],
     }
     records: dict[str, list[dict[str, Any]]] = {}
     for split, split_patterns in patterns.items():
@@ -235,6 +344,24 @@ def _check_pipeline() -> None:
     check(
         set(fitted) >= {"roundvalue", "task_only"},
         "policy fit returns RoundValue and task-only descriptors",
+    )
+    first_checkpoint = records["train"][0]["trajectory"]["checkpoints"][0]
+    first_label = next(
+        label
+        for label in records["train"][0]["labels"]
+        if label["round_index"] == 1
+    )
+    stopping_features = build_policy_features(
+        records["train"][0],
+        first_checkpoint,
+        first_label,
+        None,
+    )
+    check(
+        "quality" not in stopping_features
+        and "G" not in stopping_features
+        and "delta_q" not in stopping_features,
+        "online stopping features exclude gold and future-round value targets",
     )
 
     candidates = [-0.1, 0.0, 0.1]
@@ -273,8 +400,31 @@ def _check_pipeline() -> None:
     )
     check(
         set(replay["policy_metrics"])
-        == {"fixed_1", "fixed_2", "fixed_3", "task_only", "roundvalue", "oracle"},
-        "replay emits exactly the active comparison set",
+        == {
+            "fixed_1",
+            "fixed_2",
+            "fixed_3",
+            "fixed_4",
+            "fixed_5",
+            "task_only",
+            "roundvalue",
+            "oracle",
+        },
+        "replay emits Fixed-1..Fixed-5, task-only, RoundValue, and Oracle",
+    )
+    check(
+        replay.get("max_rounds") == 5,
+        "replay records the five-round horizon",
+    )
+    check(
+        replay["policy_metrics"]["fixed_4"]["mean_stop_round"] == 4
+        and replay["policy_metrics"]["fixed_5"]["mean_stop_round"] == 5,
+        "fixed-round baselines stop at rounds 4 and 5",
+    )
+    oracle_row = replay["policies"]["oracle"]["task_results"][0]
+    check(
+        oracle_row["stop_round"] == 1,
+        "trajectory Oracle selects the best utility across all five checkpoints",
     )
     transitions = replay["transition_metrics"]["transition_counts"]
     check(
@@ -301,11 +451,41 @@ def _check_pipeline() -> None:
         ),
         "analysis reports numeric policy accuracies",
     )
+    check(
+        analysis["max_rounds"] == 5
+        and len(analysis["per_round"]) == 5,
+        "analysis reports all five rounds",
+    )
+
+    # Without a frozen model the learned policy continues after rounds 1-4
+    # and is forced to stop after round 5; its decision trace must never
+    # contain a future-round decision.
+    no_model = replay_policies([records["test"][0]], None)
+    trace = no_model["policies"]["task_only"]["task_results"][0]["decision_trace"]
+    check(
+        [item["round_index"] for item in trace] == [1, 2, 3, 4, 5]
+        and [item["decision"] for item in trace]
+        == ["CONTINUE", "CONTINUE", "CONTINUE", "CONTINUE", "FORCED_STOP"],
+        "continuation is possible after rounds 1-4 but not after round 5",
+    )
+
+    late_record = _synthetic_record(
+        _mc_task("dev::oracle::late"),
+        "test",
+        (0, 0, 0, 0, 1),
+        999,
+    )
+    late_replay = replay_policies([late_record], None)
+    check(
+        late_replay["policies"]["oracle"]["task_results"][0]["stop_round"] == 5,
+        "trajectory Oracle selects the fifth checkpoint when it is the best",
+    )
 
 
 def main() -> int:
     _check_normalization()
     _check_manifests()
+    _check_legacy_records()
     _check_pipeline()
     print("PASS all MMLU-Pro benchmark self-checks")
     return 0

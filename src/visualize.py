@@ -33,10 +33,10 @@ from labels import build_labels
 from storage import read_json, write_json
 
 
+FIXED_POLICY_NAMES = tuple(f"fixed_{round_index}" for round_index in range(1, 6))
+
 POLICY_ORDER = (
-    "fixed_1",
-    "fixed_2",
-    "fixed_3",
+    *FIXED_POLICY_NAMES,
     "task_only",
     "roundvalue",
     "oracle",
@@ -46,17 +46,17 @@ POLICY_DISPLAY_NAMES: dict[str, str] = {
     "fixed_1": "Fixed-1",
     "fixed_2": "Fixed-2",
     "fixed_3": "Fixed-3",
+    "fixed_4": "Fixed-4",
+    "fixed_5": "Fixed-5",
     "task_only": "Task-only",
     "roundvalue": "RoundValue",
     "oracle": "Oracle",
 }
 
-PAIRED_BASELINE_ORDER = ("fixed_1", "fixed_2", "fixed_3", "task_only")
+PAIRED_BASELINE_ORDER = (*FIXED_POLICY_NAMES, "task_only")
 ADAPTIVE_STOP_ORDER = ("task_only", "roundvalue", "oracle")
 ORACLE_REGRET_ORDER = (
-    "fixed_1",
-    "fixed_2",
-    "fixed_3",
+    *FIXED_POLICY_NAMES,
     "task_only",
     "roundvalue",
 )
@@ -323,6 +323,42 @@ def _policy_task_rows(replay: Mapping[str, Any]) -> dict[str, list[dict[str, Any
     return rows_by_policy
 
 
+def _replay_horizon(replay: Mapping[str, Any]) -> int:
+    """Resolve the checkpoint horizon from a replay document.
+
+    New replays carry ``max_rounds`` explicitly.  Older replay documents lack
+    the field, so the horizon falls back to the largest observed stop round;
+    the fallback value of 3 matches the legacy protocol.
+    """
+
+    configured = replay.get("max_rounds")
+    if (
+        isinstance(configured, int)
+        and not isinstance(configured, bool)
+        and configured >= 1
+    ):
+        return configured
+    rounds: set[int] = set()
+    policies = replay.get("policies", {})
+    if isinstance(policies, Mapping):
+        for item in policies.values():
+            if not isinstance(item, Mapping):
+                continue
+            metrics = item.get("metrics")
+            counts = (
+                metrics.get("stop_round_counts")
+                if isinstance(metrics, Mapping)
+                else None
+            )
+            if isinstance(counts, Mapping):
+                for key in counts:
+                    try:
+                        rounds.add(int(key))
+                    except (TypeError, ValueError):
+                        continue
+    return max(rounds, default=3)
+
+
 def _paired_differences(
     rows: Sequence[Mapping[str, Any]],
     baseline_rows: Sequence[Mapping[str, Any]],
@@ -393,6 +429,7 @@ def _build_policy_chart_data(replay: Mapping[str, Any]) -> dict[str, Any]:
     policy_metrics = replay.get("policy_metrics", {})
     if not isinstance(policy_metrics, Mapping):
         policy_metrics = {}
+    max_rounds = _replay_horizon(replay)
 
     policy_points: list[dict[str, Any]] = []
     for name in POLICY_ORDER:
@@ -451,7 +488,7 @@ def _build_policy_chart_data(replay: Mapping[str, Any]) -> dict[str, Any]:
             str(round_index): counts.get(str(round_index), 0) / total * 100.0
             if total
             else 0.0
-            for round_index in range(1, 4)
+            for round_index in range(1, max_rounds + 1)
         }
 
     return {
@@ -460,6 +497,7 @@ def _build_policy_chart_data(replay: Mapping[str, Any]) -> dict[str, Any]:
         "roundvalue_vs_baselines": baselines,
         "oracle_regret": regrets,
         "stop_distribution": stop_distribution,
+        "max_rounds": max_rounds,
         "bootstrap": {"seed": seed, "samples": samples},
     }
 
@@ -528,7 +566,13 @@ def _svg_scatter(
     def py(value: float) -> float:
         return margin["top"] + (y_max - value) / (y_max - y_min) * plot_height
 
-    colors = {1: "#2563eb", 2: "#dc2626", 3: "#16a34a"}
+    colors = {
+        1: "#2563eb",
+        2: "#dc2626",
+        3: "#16a34a",
+        4: "#9333ea",
+        5: "#ea580c",
+    }
     parts = [
         f'<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
         'xmlns="http://www.w3.org/2000/svg" role="img">',
@@ -574,7 +618,8 @@ def _svg_scatter(
         f'{margin["top"] + plot_height / 2})">{html.escape(y_label)}</text>'
     )
     legend_x = margin["left"] + plot_width - 150
-    for round_index, color in colors.items():
+    for round_index in sorted({int(point["round_index"]) for point in points}):
+        color = colors.get(round_index, "#6b7280")
         parts.append(f'<circle cx="{legend_x}" cy="{margin["top"] + 14 + round_index * 18}" r="4" fill="{color}"/>')
         parts.append(
             f'<text x="{legend_x + 10}" y="{margin["top"] + 18 + round_index * 18}" '
@@ -951,7 +996,14 @@ def _render_png_charts(
     adaptive_color = "#9ca3af"
     oracle_edge = "#4b5563"
     accent_color = "#d97706"
-    round_colors = {1: "#0072B2", 2: "#E69F00", 3: "#009E73"}
+    round_colors = {
+        1: "#0072B2",
+        2: "#E69F00",
+        3: "#009E73",
+        4: "#CC79A7",
+        5: "#56B4E9",
+    }
+    light_rounds = frozenset({2, 4, 5})
 
     def resource_value(point: Mapping[str, Any], key: str) -> float | None:
         value = _number(point.get(key))
@@ -967,7 +1019,7 @@ def _render_png_charts(
         fig, ax = plt.subplots(figsize=(8.6, 5.0))
 
         fixed_points: list[tuple[float, float]] = []
-        for name in ("fixed_1", "fixed_2", "fixed_3"):
+        for name in FIXED_POLICY_NAMES:
             point = points_by_name.get(name)
             if point is None:
                 continue
@@ -1281,6 +1333,7 @@ def _render_png_charts(
         stop = chart_data.get("stop_distribution")
         if not isinstance(stop, Mapping) or not stop:
             return
+        horizon = int(_number(chart_data.get("max_rounds")) or 3)
         names = [name for name in ADAPTIVE_STOP_ORDER if name in stop]
         if not names:
             return
@@ -1293,14 +1346,14 @@ def _render_png_charts(
             if not isinstance(values, Mapping):
                 continue
             left = 0.0
-            for round_index in (1, 2, 3):
+            for round_index in range(1, horizon + 1):
                 percent = _number(values.get(str(round_index))) or 0.0
                 if percent <= 0:
                     continue
                 color = round_colors.get(round_index, "#6b7280")
                 ax.barh(y_position, percent, left=left, color=color, height=0.6, zorder=2)
                 if percent >= 8:
-                    text_color = "#111827" if round_index == 2 else "white"
+                    text_color = "#111827" if round_index in light_rounds else "white"
                     ax.text(
                         left + percent / 2,
                         y_position,
@@ -1326,7 +1379,7 @@ def _render_png_charts(
                     facecolor=round_colors[round_index],
                     label=f"Stop after Round {round_index}",
                 )
-                for round_index in (1, 2, 3)
+                for round_index in range(1, horizon + 1)
             ],
             loc="lower right",
             fontsize=9,
