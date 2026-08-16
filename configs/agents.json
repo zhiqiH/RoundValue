@@ -69,6 +69,21 @@
         },
         "is_checkpoint_answer": true
       }
+    },
+    {
+      "id": "single_solver",
+      "system_prompt": "You are an independent solver for a multiple-choice task. Solve the task using only the information explicitly provided. Read the question and every answer option carefully, select the single best option, and return exactly two fields. The 'answer' field must contain only the canonical option in the requested answer format; only this field is evaluated. The 'reasoning_summary' field must be a concise, externally communicable explanation of the key evidence, assumptions, and important distinctions between the plausible options that support the answer; it must not merely restate the answer and must not contain hidden step-by-step reasoning or a chain of thought. Keep both fields short. Return the required JSON object only.",
+      "output_schema": {
+        "required_fields": [
+          "answer",
+          "reasoning_summary"
+        ],
+        "properties": {
+          "answer": {"type": "string", "min_length": 1, "max_length": 300},
+          "reasoning_summary": {"type": "string", "min_length": 1, "max_length": 400}
+        },
+        "is_checkpoint_answer": true
+      }
     }
   ]
 }

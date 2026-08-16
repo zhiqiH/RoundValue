@@ -156,6 +156,19 @@ def _check_selection() -> None:
         and gpt_experiment["model"]["model_name"] == "gpt-5-nano",
         "explicit gpt5_nano selection resolves the OpenAI provider and model",
     )
+    gpt4o_experiment = load_experiment_config(PROJECT_ROOT, model_id="gpt4o_mini")
+    check(
+        gpt4o_experiment["model_id"] == "gpt4o_mini"
+        and gpt4o_experiment["provider_name"] == "openai"
+        and gpt4o_experiment["model"]["model_name"] == "gpt-4o-mini-2024-07-18",
+        "explicit gpt4o_mini selection resolves the fixed OpenAI snapshot",
+    )
+    check(
+        gpt4o_experiment["model"]["reasoning"] == {"enabled": False}
+        and gpt4o_experiment["model"]["temperature"] == 0
+        and gpt4o_experiment["model"]["max_output_tokens"] == 16384,
+        "gpt4o_mini is an explicit non-reasoning profile with temperature 0 and a 16384 ceiling",
+    )
     check(
         default_experiment["agents"] == gpt_experiment["agents"]
         and default_experiment["topology"] == gpt_experiment["topology"],
@@ -172,12 +185,14 @@ def _check_selection() -> None:
 def _check_wire_payloads() -> None:
     deepseek_experiment = load_experiment_config(PROJECT_ROOT)
     gpt_experiment = load_experiment_config(PROJECT_ROOT, model_id="gpt5_nano")
+    gpt4o_experiment = load_experiment_config(PROJECT_ROOT, model_id="gpt4o_mini")
     previous_env = dict(os.environ)
     os.environ["DEEPSEEK_API_KEY"] = "test-deepseek-key"
     os.environ["OPENAI_API_KEY"] = "test-openai-key"
     try:
         deepseek_provider = build_provider(dict(deepseek_experiment))
         openai_provider = build_provider(dict(gpt_experiment))
+        gpt4o_provider = build_provider(dict(gpt4o_experiment))
     finally:
         for name in ("DEEPSEEK_API_KEY", "OPENAI_API_KEY"):
             if name in previous_env:
@@ -194,6 +209,15 @@ def _check_wire_payloads() -> None:
     )
     deepseek_payload = deepseek_provider._payload(request)
     openai_payload = openai_provider._payload(request)
+    gpt4o_payload = gpt4o_provider._payload(
+        ModelRequest(
+            messages=[{"role": "system", "content": "system"}, {"role": "user", "content": "{}"}],
+            model="gpt-4o-mini-2024-07-18",
+            temperature=0,
+            max_output_tokens=16384,
+            reasoning_enabled=False,
+        )
+    )
     check(
         deepseek_payload["thinking"] == {"type": "enabled"}
         and deepseek_payload.get("max_tokens") == 32768
@@ -208,12 +232,45 @@ def _check_wire_payloads() -> None:
         "OpenAI wire payload uses max_completion_tokens and reasoning_effort, never thinking",
     )
     check(
+        gpt4o_payload.get("max_completion_tokens") == 16384
+        and "max_tokens" not in gpt4o_payload
+        and "thinking" not in gpt4o_payload
+        and "reasoning_effort" not in gpt4o_payload
+        and gpt4o_payload.get("temperature") == 0
+        and gpt4o_payload.get("response_format") == {"type": "json_object"},
+        "GPT-4o-mini payload uses max_completion_tokens, temperature 0, and no reasoning flags",
+    )
+    check(
         deepseek_provider.endpoint == "https://api.deepseek.com/chat/completions"
         and openai_provider.endpoint == "https://api.openai.com/v1/chat/completions",
         "each provider targets its own chat-completions endpoint",
     )
     deepseek_provider.close()
     openai_provider.close()
+    gpt4o_provider.close()
+
+
+def _check_gpt4o_mini_runner() -> None:
+    experiment = load_experiment_config(PROJECT_ROOT, model_id="gpt4o_mini")
+    provider = FakeProvider(_node_scripts())
+    runner = FixedDebateRunner(dict(experiment), provider)
+    round_record = runner.run_round(
+        task=_task(),
+        round_index=1,
+        previous_checkpoint=None,
+    )
+    check(round_record["status"] == "completed", "GPT-4o-mini debate round 1 completes")
+    check(
+        all(
+            request.model == "gpt-4o-mini-2024-07-18"
+            and request.temperature == 0
+            and request.max_output_tokens == 16384
+            and not request.reasoning_enabled
+            and request.reasoning_effort is None
+            for request in provider.requests
+        ),
+        "every Debate node requests GPT-4o-mini with the wide non-reasoning ceiling",
+    )
 
 
 def _check_usage_parsing() -> None:
@@ -388,6 +445,7 @@ def main() -> int:
     _check_usage_parsing()
     _check_manifest()
     _check_runner_model()
+    _check_gpt4o_mini_runner()
     _check_scoring()
     print("PASS all model-selection self-checks")
     return 0

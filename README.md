@@ -36,7 +36,7 @@ MMLU-Pro：可用数据集是 500 题主集 MMLU-Pro-500 与其 50 题验证子�
     "api_key": "填入真实 API key"
   },
   "openai": {
-    "api_key": "选 GPT-5-nano 时填入真实 API key"
+    "api_key": "选 GPT-5-nano 或 GPT-4o-mini 时填入真实 API key"
   }
 }
 ```
@@ -59,7 +59,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1 与上一轮 Writer checkpoint�
         Writer → {answer, reasoning_summary}
 ```
 
-`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 5 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。Writer checkpoint 是两个语义分离的字段：`answer` 是本轮规范答案、也是唯一可评分字段；`reasoning_summary` 是对外可读的紧凑推理摘要（关键证据、选项间区分、假设与剩余不确定性），供下一轮 Agent 审阅、挑战或精化，不参与评分。第 `t` 轮的 `{answer_t, reasoning_summary_t}` 作为 `previous_writer_checkpoint` 从第 `t+1` 轮的 **Stage 2**（P2/A2/C2）与 Writer 才可见：Stage 1（P1/A1/C1）跨轮时也只读当前任务、先独立重新生成候选，Stage 2 再把它当作需要重新验证的 previous proposal 与当前 Stage-1 packet 对照，避免候选生成前被上一轮结论 anchoring。节点的可见输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量）；非思考模式下它同时是发给 API 的 `max_tokens` 硬上限，思考模式下它只是 prompt 层的可见输出目标，API 上限改用模型配置的 `max_output_tokens`，为隐藏 reasoning token 留出空间；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的可见预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 回退时 `answer` 是真实答案、`reasoning_summary` 被显式占位，非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
+`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 5 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。Writer checkpoint 是两个语义分离的字段：`answer` 是本轮规范答案、也是唯一可评分字段；`reasoning_summary` 是对外可读的紧凑推理摘要（关键证据、选项间区分、假设与剩余不确定性），供下一轮 Agent 审阅、挑战或精化，不参与评分。第 `t` 轮的 `{answer_t, reasoning_summary_t}` 作为 `previous_writer_checkpoint` 从第 `t+1` 轮的 **Stage 2**（P2/A2/C2）与 Writer 才可见：Stage 1（P1/A1/C1）跨轮时也只读当前任务、先独立重新生成候选，Stage 2 再把它当作需要重新验证的 previous proposal 与当前 Stage-1 packet 对照，避免候选生成前被上一轮结论 anchoring。节点的可见输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量），始终作为 prompt 层的可见输出目标；发给 API 的输出上限使用模型配置的 `max_output_tokens` 宽安全上限（DeepSeek 思考模式为 `32768`，GPT-4o-mini 为 `16384`），绝不按 schema 动态收窄，隐藏 reasoning token 与宽安全余量互不冲突；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的可见预算（prompt 层目标）逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 回退时 `answer` 是真实答案、`reasoning_summary` 被显式占位，非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
 
 策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`：第 1–4 轮之后都可以继续，第 5 轮是最终轮、没有继续决策。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
 
@@ -69,15 +69,15 @@ P2 / A2 / C2（并行，三者均读取完整 D1 与上一轮 Writer checkpoint�
 
 | 文件 | 作用 |
 |---|---|
-| `configs/agents.json` | 四个 Debate 角色的内嵌提示词、输出字段，以及 `format_retries` / `format_budget_margin` 修复协议 |
-| `configs/model_config.json` | Provider/模型 profile（默认 `deepseek_flash`，可选 `gpt5_nano`）、采样、重试、价格和密钥位置 |
-| `configs/topology.json` | 唯一的 Debate 通信流 `debate`：节点、边、packet 与轮数 |
+| `configs/agents.json` | 四个 Debate 角色 + 独立求解器 `single_solver` 的内嵌提示词、输出字段，以及 `format_retries` / `format_budget_margin` 修复协议 |
+| `configs/model_config.json` | Provider/模型 profile（默认 `deepseek_flash`，可选 `gpt5_nano`、`gpt4o_mini`）、采样、重试、价格和密钥位置 |
+| `configs/topology.json` | 两个具名拓扑：冻结的 Debate 通信流 `debate`（缺省）与单次独立求解 `single` |
 
-Debate 模块已被固化为一个整体：`topology.json` 只保留唯一且无版本号的 `debate` 通信流，`runner`、
-`max_rounds`、`nodes`、`packets`、`edges` 均不可选，运行时也不接受拓扑选择参数。模型是唯一的
-run-level 选择：`roundvalue smoke|run --model-id <id>` 从 `model_config.json` 的 `models` 中选一个
-profile（缺省 `deepseek_flash`，可选 `gpt5_nano`），一个 run 内所有 Planner/Analyst/Critic/Writer
-使用同一模型，不实现 heterogeneous role-model assignment。
+`debate` 的 `runner`、`max_rounds`、`nodes`、`packets`、`edges` 与可见性保持冻结且不重写。
+模型与拓扑是彼此独立的 run-level 选择：`roundvalue smoke|run --model-id <id> --topology
+debate|single`（两个参数缺省分别为 `deepseek_flash` 与 `debate`），一个 run 内所有节点使用
+同一模型，不实现 heterogeneous role-model assignment。省略 `--topology` 时行为与既有命令
+完全一致，仍运行已批准的 Debate 拓扑。
 
 默认 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 为 `0.2`（DeepSeek 思考模式下该参数会被静默忽略）、`max_output_tokens` 为 `32768`。DeepSeek 适配器显式开启思考模式（发送 `thinking: {"type": "enabled"}` 与 `reasoning_effort: "high"`），并把返回的 `reasoning_content` 长度与 `reasoning_tokens` 记入轨迹；推理内容不进入辩论消息，只出现在响应记录中。
 
@@ -89,15 +89,24 @@ OpenAI Chat Completions 端点、`reasoning_effort: "medium"` 与 `temperature: 
 `configured_model` 记录实际 provider、model 与 reasoning/inference 配置。OpenAI key 通过
 `OPENAI_API_KEY` 或 `.secret/model_key.json` 的 `openai.api_key` 提供，绝不硬编码。
 
+`gpt4o_mini` profile 使用钉死的官方 snapshot `gpt-4o-mini-2024-07-18`（不是移动别名）、
+OpenAI Chat Completions 端点、`temperature: 0` 与显式的**非思考模式**
+（`reasoning.enabled = false`，不发送 `reasoning_effort`，不发送 DeepSeek `thinking`）。
+输出上限按已核实的官方模型上限配置为 `max_completion_tokens = 16384`：它是安全上限而不是
+目标长度，角色提示词与 schema 仍要求紧凑输出；每次调用都会把该配置上限记入轨迹，任何
+`length` / `max_output_tokens` / incomplete 类截断都会在轨迹与分析产物中显式浮出，绝不
+静默当作普通答案。当前官方价格按 `$0.15 / $0.075 / $0.60`（输入 / 缓存输入 / 输出，每百万
+token）记录，未观察到的 token 或费用保持未知、不以零填充。
+
 角色提示词保存在 `agents.json`，不使用散落的 prompt 文件。模型价格采用服务端返回的 token 明细计算；缺失 token、缓存计数、成本或延迟时保存为“未知”，绝不按零处理。
 
 ## 三个执行步骤
 
 | 脚本 | 职责 | 模型 API | 写入位置 |
 |---|---|---|---|
-| `step1_smoke.py` | 小规模真实 API 通路测试：配置、完整一轮 Debate、评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
+| `step1_smoke.py` | 小规模真实 API 通路测试：所选拓扑与模型、评分、token、延迟、落盘（`--topology debate|single`） | 是 | 独立 smoke run（split 恒为 `smoke`） |
 | `step2_run.py` | 跑主实验：收集 `--benchmark` 指定单个数据集的 1–5 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误）；全部完成后立即检查完整性、逐轮评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 收集阶段是 | `trajectories/<run_id>/` 与 `results/<run_id>/` |
-| `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 报告、`charts/` 下 5 张 policy-level PNG 图表（质量-token、质量-延迟、RoundValue vs baseline、自适应停止分布、oracle regret）与简短结论 | 否 | `results/<run_id>/` |
+| `step3_visualize.py` | 只读 `results`（比较时另读已保存轨迹元数据，纯离线），输出 CSV、自包含 HTML/SVG 报告、`charts/` 下 5 张 policy-level PNG 图表与简短结论；`--compare-with` 额外生成 single-vs-debate 比较 | 否 | `results/<run_id>/` |
 
 执行顺序是强制的：
 
@@ -122,6 +131,42 @@ MMLU-Pro-500 的 collect run 是 `202608142334_MMLUPro500_15193d5a`（数据集�
 `answer + reasoning_summary` 的 1–5 轮 checkpoint，旧新语义不会静默混用。
 
 延迟统计保留两个字段：`wall_clock_ms` 是真实的墙钟等待时间（并行的 P/A/C 请求只计一次），`api_latency_ms` 是全部 API 尝试的服务时间总和（含重试）。离线标签、报告图表与策略的时间成本使用墙钟；旧轨迹只有服务时间总和时按未知处理，不用服务时间冒充墙钟。
+
+## `single` 拓扑（新增，不影响 Debate）
+
+`single` 是每道基准任务只做**一次逻辑模型调用**的独立求解器：一个 `single_solver` 节点、没有
+Planner/Analyst/Critic、没有 Stage 1/2、没有 debate packet、没有历史 transcript、没有上一轮
+checkpoint、没有未来信息或参考答案。模型只收到与独立求解者合法可见的信息一致的净化公开
+任务（题干、选项、普通公开元数据），用中性的直接求解提示词返回与 Writer checkpoint 一致的
+两字段：
+
+```json
+{"answer": "<canonical option>", "reasoning_summary": "<concise explanation>"}
+```
+
+只有 `answer` 参与评分；`reasoning_summary` 是紧凑的对外可读解释，绝不能把错误选项救成正确
+答案，也不暴露隐藏 chain-of-thought。格式校验、有界修复与 answer-only 回退复用项目既有的
+验证-修复原则，所有修复/重试尝试都被记录、计入 token 与延迟，不改变“每任务一次逻辑调用”
+的定义。50 题的 `single` 实验正常情况下正好是 50 次逻辑调用。
+
+`single` 的分析不构造 `ΔQ/V/G`、不拟合 RoundValue、不选停止阈值、不做 continuation
+决策、不定义 Repair/Harm/Recovery 转移、也不构造多轮 trajectory Oracle；它报告总体与分
+split 准确率、输入/输出/总 token 的均值与总量、wall-clock 与 API 延迟、成本、重试、
+fallback 数、finish-reason 分布、逻辑调用数与任务级预测/正确性，未知计数值保持未知。
+`single` 的意图是回答“同一模型直接求解一次 vs 多智能体 Debate”的基本对照；single 优于、
+等于或劣于 debate 都是合法实验结论，代码不为任何一边做调优或放水。
+
+### 离线 single-vs-debate 比较
+
+`roundvalue visualize --run-id <RUN_ID> --compare-with <RUN_ID>` 纯离线比较一个 `single`
+run 与一个 `debate` run，绝不调用模型 API。比较前校验相同数据集、相同基准哈希、相同冻结
+task ID 集合与相同 split 分配，不一致时直接拒绝；同 provider / 同请求模型时标记为
+same-model topology comparison，模型或 reasoning 配置不同时标记为 cross-model +
+cross-topology，不把准确率差异冒充纯拓扑因果。输出包含 Single、Debate Fixed-1..5、
+RoundValue（若已定义）与 Oracle（若已定义）的准确率、token、延迟、成本、逻辑调用数，
+以及 Single vs Debate Round 1 / Round 5 的配对计数
+（`both_correct` / `single_correct_debate_wrong` / `single_wrong_debate_correct` /
+`both_wrong`；这些词不叫 Repair/Harm，避免与既有轮内转移语义混淆）。
 
 ### 防泄漏与 Agent 可见信息
 
@@ -184,6 +229,18 @@ roundvalue smoke --model-id gpt5_nano
 roundvalue run --model-id gpt5_nano \
   --benchmark benchmark/mmlu_pro/MMLU-Pro-50.json \
   --smoke-run-id <GPT5_NANO_SMOKE_RUN_ID>
+
+# single 拓扑（smoke 与 run 必须使用同一个 --topology）
+roundvalue smoke --topology single
+roundvalue run --topology single \
+  --benchmark benchmark/mmlu_pro/MMLU-Pro-50.json \
+  --smoke-run-id <SINGLE_SMOKE_RUN_ID>
+
+# GPT-4o-mini（非思考 profile，16384 输出安全上限）
+roundvalue smoke --model-id gpt4o_mini --topology single
+
+# 纯离线 single-vs-debate 比较
+roundvalue visualize --run-id <SINGLE_RUN_ID> --compare-with <DEBATE_RUN_ID>
 ```
 
 每个数据集的 provenance 都内嵌在任务文件本身的 `provenance` 字段里，固定记录生成器
@@ -211,6 +268,10 @@ RoundValue/
 ├── scripts/step2_run.py
 ├── scripts/step3_visualize.py
 ├── src/                                # 底层模块 + pipeline 编排 + benchmark 构建/验证工具
+│   ├── debate_runner.py                # 冻结的 two-stage P/A/C-to-Writer Debate runner
+│   ├── single_runner.py                # single 拓扑的 one-call independent solver
+│   ├── single_analysis.py              # single 的确定性离线聚合与报告
+│   ├── comparison.py                   # 纯离线 single-vs-debate 比较
 │   └── roundvalue_cli.py               # roundvalue 子命令 → 三个 step 入口的转发
 ├── trajectories/YYYYMMDDHHMM_<数据集>_<hex>/
 ├── EXPERIMENT_ARCHITECTURE.md

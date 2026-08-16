@@ -722,6 +722,43 @@ def score_trajectory(
     return scores
 
 
+def score_single_record(
+    task_record: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    """Score the one prediction of a ``single`` topology task record.
+
+    A single trajectory has exactly one prediction and no rounds, so the score
+    deliberately carries no ``round_index`` and only the prediction ``answer``
+    field is scored.  ``reasoning_summary`` can never rescue an incorrect
+    option.
+    """
+
+    if not isinstance(task_record, Mapping):
+        raise TypeError("task_record must be a JSON object")
+    task_candidate = task_record.get("task", task_record.get("task_spec"))
+    task = _mapping(task_candidate)
+    if task is None:
+        raise ValueError("single task record requires a task object")
+    trajectory = _mapping(task_record.get("trajectory")) or task_record
+    prediction = _mapping(trajectory.get("prediction"))
+    if prediction is None:
+        raise ValueError("single trajectory requires a prediction object")
+    score = score_task(
+        task,
+        {"answer": prediction.get("answer")},
+    )
+    trajectory_id = trajectory.get("trajectory_id", task_record.get("trajectory_id"))
+    if trajectory_id is not None:
+        score["trajectory_id"] = str(trajectory_id)
+    if prediction.get("checkpoint_hash", prediction.get("prediction_hash")) is not None:
+        score["prediction_hash"] = str(
+            prediction.get("checkpoint_hash", prediction.get("prediction_hash"))
+        )
+    if task_record.get("split") is not None:
+        score["split"] = str(task_record["split"])
+    return [score]
+
+
 # Names kept intentionally explicit for scripts and external analysis notebooks.
 score_task_answer = score_task
 score_task_record = score_trajectory
@@ -738,5 +775,6 @@ __all__ = [
     "score_task",
     "score_task_answer",
     "score_task_record",
+    "score_single_record",
     "score_trajectory",
 ]

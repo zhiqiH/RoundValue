@@ -17,7 +17,10 @@ from contracts import (
 
 
 CONFIG_FILES = ("agents.json", "model_config.json", "topology.json")
-ROLE_IDS = {"planner", "analyst", "critic", "writer"}
+DEBATE_ROLE_IDS = {"planner", "analyst", "critic", "writer"}
+SINGLE_ROLE_ID = "single_solver"
+ALL_ROLE_IDS = DEBATE_ROLE_IDS | {SINGLE_ROLE_ID}
+CHECKPOINT_ANSWER_ROLE_IDS = {"writer", SINGLE_ROLE_ID}
 EXPECTED_NODES = {
     "planner_stage_1": ("planner", 1, "stage_1"),
     "analyst_stage_1": ("analyst", 1, "stage_1"),
@@ -77,14 +80,20 @@ def _validate_agents(config: dict[str, Any]) -> None:
             "agents.json format_budget_margin must be a finite number >= 1.0"
         )
     roles = require_list(config.get("roles"), "agents.json roles")
-    if len(roles) != 4:
-        raise ConfigurationError("agents.json must define exactly four roles")
+    if len(roles) != len(ALL_ROLE_IDS):
+        raise ConfigurationError(
+            "agents.json must define exactly the four Debate roles plus "
+            "the single_solver role"
+        )
     found: set[str] = set()
     for index, value in enumerate(roles):
         role = require_object(value, f"agents.json roles[{index}]")
         role_id = require_string(role.get("id"), f"agents.json roles[{index}].id")
-        if role_id not in ROLE_IDS or role_id in found:
-            raise ConfigurationError("agents.json roles must be unique planner/analyst/critic/writer")
+        if role_id not in ALL_ROLE_IDS or role_id in found:
+            raise ConfigurationError(
+                "agents.json roles must be unique "
+                "planner/analyst/critic/writer/single_solver"
+            )
         found.add(role_id)
         require_string(role.get("system_prompt"), f"agents.json role {role_id}.system_prompt")
         schema = require_object(role.get("output_schema"), f"agents.json role {role_id}.output_schema")
@@ -109,8 +118,10 @@ def _validate_agents(config: dict[str, Any]) -> None:
                 )
         if "prompt_file" in role:
             raise ConfigurationError("prompt files are not allowed; prompts must be stored in agents.json")
-    if found != ROLE_IDS:
-        raise ConfigurationError("agents.json must include planner, analyst, critic, and writer")
+    if found != ALL_ROLE_IDS:
+        raise ConfigurationError(
+            "agents.json must include planner, analyst, critic, writer, and single_solver"
+        )
     writer = next(role for role in roles if role["id"] == "writer")
     if "answer" not in writer["output_schema"]["required_fields"]:
         raise ConfigurationError("Writer output_schema must require answer")
@@ -119,10 +130,28 @@ def _validate_agents(config: dict[str, Any]) -> None:
             "Writer output_schema must require reasoning_summary"
         )
     if writer["output_schema"].get("is_checkpoint_answer") is not True:
-        raise ConfigurationError("Writer must be explicitly marked as the only checkpoint answer")
+        raise ConfigurationError("Writer must be explicitly marked as a checkpoint answer")
+    single_solver = next(role for role in roles if role["id"] == SINGLE_ROLE_ID)
+    if "answer" not in single_solver["output_schema"]["required_fields"]:
+        raise ConfigurationError("single_solver output_schema must require answer")
+    if "reasoning_summary" not in single_solver["output_schema"]["required_fields"]:
+        raise ConfigurationError(
+            "single_solver output_schema must require reasoning_summary"
+        )
+    if single_solver["output_schema"].get("is_checkpoint_answer") is not True:
+        raise ConfigurationError(
+            "single_solver must be explicitly marked as a checkpoint answer"
+        )
     for role in roles:
-        if role["id"] != "writer" and role["output_schema"].get("is_checkpoint_answer") is True:
-            raise ConfigurationError("only Writer may be marked as a checkpoint answer")
+        if (
+            role["id"] not in CHECKPOINT_ANSWER_ROLE_IDS
+            and role["output_schema"].get("is_checkpoint_answer") is True
+        ):
+            raise ConfigurationError(
+                "only Writer and single_solver may be marked as checkpoint answers"
+            )
+
+
 def _validate_model_config(config: dict[str, Any]) -> None:
     if config.get("schema_version") != "1.0":
         raise ConfigurationError("model_config.json schema_version must be '1.0'")
@@ -285,37 +314,78 @@ def _validate_debate_topology(topology: dict[str, Any], topology_id: str) -> Non
         raise ConfigurationError("Debate deterministic packet source order must remain fixed")
 
 
-def select_topology(document: dict[str, Any]) -> tuple[str, dict[str, Any]]:
-    """Resolve the single frozen topology entry; it is the only executable."""
+def _validate_single_topology(topology: dict[str, Any], topology_id: str) -> None:
+    """Validate the one-call independent solver topology definition."""
+
+    if topology.get("runner") != "single_solver":
+        raise ConfigurationError(f"topology {topology_id} must use runner single_solver")
+    if topology.get("max_rounds") != 1:
+        raise ConfigurationError(f"topology {topology_id}.max_rounds must be exactly 1")
+    nodes = require_list(topology.get("nodes"), f"topology {topology_id}.nodes")
+    if len(nodes) != 1:
+        raise ConfigurationError("single topology must contain exactly one solver node")
+    node = require_object(nodes[0], "single topology node")
+    if (
+        node.get("id") != SINGLE_ROLE_ID
+        or node.get("role") != SINGLE_ROLE_ID
+        or node.get("stage") != 1
+        or node.get("parallel_group") is not None
+    ):
+        raise ConfigurationError(
+            "single topology must contain the node single_solver "
+            "(role single_solver, stage 1, no parallel group)"
+        )
+    packets = require_list(topology.get("packets"), f"topology {topology_id}.packets")
+    if packets:
+        raise ConfigurationError("single topology must not define debate packets")
+    edges = require_list(topology.get("edges"), f"topology {topology_id}.edges")
+    if edges:
+        raise ConfigurationError("single topology must not define debate edges")
+
+
+def select_topology(
+    document: dict[str, Any], topology_id: str | None = None
+) -> tuple[str, dict[str, Any]]:
+    """Resolve one named topology entry, defaulting to the frozen Debate flow."""
 
     if document.get("schema_version") != "1.0":
         raise ConfigurationError("topology.json schema_version must be '1.0'")
     topologies = require_object(document.get("topologies"), "topology.json topologies")
-    selected_id = require_string(
+    default_id = require_string(
         document.get("default_topology_id"), "topology.json default_topology_id"
     )
+    selected_id = default_id if topology_id is None else topology_id
+    if not isinstance(selected_id, str) or not selected_id.strip():
+        raise ConfigurationError("topology id must be a non-empty string")
     if selected_id not in topologies:
-        raise ConfigurationError(f"unknown topology id: {selected_id}")
+        available = ", ".join(sorted(topologies))
+        raise ConfigurationError(
+            f"unknown topology id: {selected_id!r}; configured topologies are: {available}"
+        )
     selected = require_object(topologies[selected_id], f"topology {selected_id}")
     runner = require_string(selected.get("runner"), f"topology {selected_id}.runner")
-    if runner != "two_stage_pac_writer":
+    if runner == "two_stage_pac_writer":
+        _validate_debate_topology(selected, selected_id)
+    elif runner == "single_solver":
+        _validate_single_topology(selected, selected_id)
+    else:
         raise ConfigurationError(
             f"topology {selected_id} uses unsupported runner {runner!r}; add a runner and validator first"
         )
-    _validate_debate_topology(selected, selected_id)
     return selected_id, selected
 
 
 def load_experiment_config(
     project_root: Path,
     model_id: str | None = None,
+    topology_id: str | None = None,
 ) -> dict[str, Any]:
     """Return the validated configuration resolved for one run-level model.
 
     ``model_id=None`` keeps the frozen ``default_model_id`` so existing runs
-    stay DeepSeek-backed.  Selecting another configured model id swaps the
-    provider/model profile for every Debate node without touching topology or
-    role semantics.
+    stay DeepSeek-backed.  ``topology_id=None`` keeps the frozen
+    ``default_topology_id`` so existing commands stay on the approved Debate
+    flow.  Model and topology are independent run-level dimensions.
     """
 
     root = project_root.resolve()
@@ -325,7 +395,7 @@ def load_experiment_config(
     topology_document = load_json(config_dir / "topology.json")
     _validate_agents(agents)
     _validate_model_config(model_config)
-    selected_topology_id, topology = select_topology(topology_document)
+    selected_topology_id, topology = select_topology(topology_document, topology_id)
     selected_id = model_config["default_model_id"] if model_id is None else model_id
     models = model_config["models"]
     if selected_id not in models:

@@ -18,6 +18,7 @@ from contracts import canonical_json, file_hash, json_hash, utc_now
 
 
 _RUN_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,119}\Z")
+_WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[\\/].*")
 RUN_ID_TIMEZONE = ZoneInfo("America/Chicago")
 
 
@@ -200,10 +201,28 @@ def open_run(root: Path, run_id: str) -> dict[str, Any]:
     """Find a prior run through its trajectory-side manifest, never by fuzzy matching."""
 
     safe_run_id = _validated_run_id(run_id)
-    manifest_path = root.resolve() / "trajectories" / safe_run_id / "run.json"
+    root = root.resolve()
+    manifest_path = root / "trajectories" / safe_run_id / "run.json"
     manifest = read_json(manifest_path)
     if manifest.get("run_id") != safe_run_id:
         raise ValueError(f"run manifest id mismatch: {manifest_path}")
+    # Historical artifacts may record absolute paths from another platform.
+    # Never rewrite those artifacts; only use the local sibling directories
+    # when the recorded paths are foreign-absolute or do not exist here.
+    recorded_trajectory = manifest.get("trajectory_dir")
+    if (
+        not recorded_trajectory
+        or _WINDOWS_ABSOLUTE_PATH_RE.fullmatch(str(recorded_trajectory))
+        or not Path(str(recorded_trajectory)).exists()
+    ):
+        manifest["trajectory_dir"] = str(root / "trajectories" / safe_run_id)
+    recorded_result = manifest.get("result_dir")
+    if (
+        not recorded_result
+        or _WINDOWS_ABSOLUTE_PATH_RE.fullmatch(str(recorded_result))
+        or not Path(str(recorded_result)).exists()
+    ):
+        manifest["result_dir"] = str(root / "results" / safe_run_id)
     return manifest
 
 

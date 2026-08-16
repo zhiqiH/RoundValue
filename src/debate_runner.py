@@ -153,13 +153,14 @@ class FixedDebateRunner:
         schema-derived visible budget would truncate the model before it emits
         the JSON answer.  In reasoning mode the configured model cap is the wire
         limit while the schema budget stays a soft, prompt-level target for
-        visible output; in non-reasoning mode the schema budget remains the hard
-        wire limit exactly as before.
+        visible output.  Non-reasoning profiles such as GPT-4o-mini receive the
+        same configured model ceiling as a wide safety cap (never a narrow
+        schema-derived cap); concise visible output is requested through the
+        role prompt and the schema-derived soft budget, which continues to
+        shrink across repair attempts.
         """
 
-        if self.reasoning_enabled:
-            return int(self.model["max_output_tokens"])
-        return visible_budget
+        return int(self.model["max_output_tokens"])
 
     def _answer_field(self, role_id: str) -> str:
         """Return the one field whose content is the node's candidate answer."""
@@ -707,6 +708,9 @@ class FixedDebateRunner:
         trajectory_started_monotonic = time.monotonic()
         trajectory: dict[str, Any] = {
             "schema_version": "1.0",
+            "topology": "debate",
+            "topology_runner": "two_stage_pac_writer",
+            "topology_hash": json_hash(self.topology),
             "trajectory_id": trajectory_id,
             "task_id": task["task_id"],
             "domain": task["domain"],

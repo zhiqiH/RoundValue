@@ -1,11 +1,12 @@
 """Step 2: run the main experiment (benchmark collection + offline analysis).
 
 This entry merges the former ``step2_collect`` and ``step3_analyze`` stages
-into one command.  It first collects the raw one-to-five-round trajectories
-into ``trajectories/<run_id>/`` under the step1 smoke gate, and then, only if
-every task completed, runs the deterministic offline scoring, label building,
-policy fitting, threshold selection, and Test evaluation into
-``results/<run_id>/``.
+into one command.  It first collects the raw trajectories (one-to-five-round
+Debate, or one-call single) into ``trajectories/<run_id>/`` under the step1
+smoke gate, and then, only if every task completed, runs the deterministic
+offline analysis into ``results/<run_id>/``: Debate runs get scoring, label
+building, policy fitting, threshold selection, and Test evaluation; single
+runs get scoring plus the single-topology aggregate metrics only.
 
 The two stages are never allowed to mix their outputs: trajectories stay raw
 and untouched, and every result in ``results/<run_id>/`` can be regenerated
@@ -60,14 +61,26 @@ def main(argv: list[str] | None = None) -> int:
         "--model-id",
         help=(
             "Run-level model profile from configs/model_config.json. Defaults "
-            "to deepseek_flash; pass gpt5_nano to run every Debate node with "
-            "GPT-5-nano."
+            "to deepseek_flash; pass gpt5_nano or gpt4o_mini to run every node "
+            "with that profile."
+        ),
+    )
+    parser.add_argument(
+        "--topology",
+        default=None,
+        help=(
+            "Run-level topology from configs/topology.json. Defaults to debate; "
+            "pass single for the one-call independent solver."
         ),
     )
     args = parser.parse_args(argv)
     args.mode = "collect"
     try:
-        experiment = load_experiment_config(tb.PROJECT_ROOT, model_id=args.model_id)
+        experiment = load_experiment_config(
+            tb.PROJECT_ROOT,
+            model_id=args.model_id,
+            topology_id=args.topology,
+        )
     except ConfigurationError as error:
         parser.error(str(error))
     state: dict[str, Any] = {"manifest": None}

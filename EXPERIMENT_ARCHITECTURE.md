@@ -34,7 +34,7 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 | 在线停止策略 | 题目、当前答案、可见消息、公开 verifier、已用预算 |
 | 离线评分/标签 | 参考答案、隐藏测试与离线 Judge（不可回流在线） |
 
-所有角色必须返回严格 JSON。节点可见输出预算由角色 output_schema 推导；非思考模式下它逐节点限制 `max_output_tokens`，思考模式下它是 prompt 层目标、API 上限改为模型 `max_output_tokens`（因为 reasoning 模型的 wire cap 计入隐藏 reasoning token）；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的可见预算逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 回退时 `answer` 始终是模型给出的真实答案，`reasoning_summary` 被显式占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
+所有角色必须返回严格 JSON。节点可见输出预算由角色 output_schema 推导，始终作为 prompt 层的可见输出目标；发给 API 的输出上限使用模型配置的 `max_output_tokens` 宽安全上限（DeepSeek 思考模式为 `32768`、GPT-4o-mini 为 `16384`），绝不按 schema 动态收窄（reasoning 模型的 wire cap 会计入隐藏 reasoning token，宽安全上限因此是必要约束）；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的可见预算（prompt 层目标）逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 回退时 `answer` 始终是模型给出的真实答案，`reasoning_summary` 被显式占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
 
 Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。MMLU-Pro 的题目与全部选项已内嵌在公开 `prompt` 中，而 `answer_index`、`reference_answer`、原 ID 与完整标签只保存在磁盘记录和离线评分中。
 
@@ -58,7 +58,21 @@ results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、�
 .secret/model_key.json            本地密钥，永不提交
 ```
 
-三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 定义 `deepseek_flash`（默认）与 `gpt5_nano` 两个 profile。Debate 拓扑不可选；模型是唯一 run-level 选择，通过 `roundvalue smoke|run --model-id <id>` 指定，一个 run 内全部七类节点使用同一模型。任何 config/源码变更都会通过哈希与 smoke gate 强制重跑验收。DeepSeek 默认使用 `deepseek-v4-flash`、`temperature: 0.2`、`max_output_tokens: 32768`，适配器发送 `thinking: {"type":"enabled"}` 与 `reasoning_effort: "high"`；`gpt5_nano` 使用官方 `gpt-5-nano`（默认 snapshot `gpt-5-nano-2025-08-07`）、Chat Completions、`reasoning_effort: "medium"`、`temperature: 1`（该模型只接受默认值）与 `max_completion_tokens`，不发送 DeepSeek 的 `thinking` toggle。
+三份配置同时校验。`agents.json` 固定四个 Debate 角色提示词和字段，并新增独立的
+`single_solver` 角色；`topology.json` 注册两个具名拓扑：冻结的 `debate`（缺省）与
+`single`；`model_config.json` 定义 `deepseek_flash`（默认）、`gpt5_nano` 与 `gpt4o_mini`
+三个 profile。模型与拓扑是彼此独立的 run-level 选择，通过
+`roundvalue smoke|run --model-id <id> --topology debate|single` 指定，一个 run 内全部节点
+使用同一模型（不实现 heterogeneous role-model assignment）；省略 `--topology` 时行为与
+既有命令完全一致，仍运行已批准的 Debate 拓扑。任何 config/源码变更都会通过哈希与 smoke
+gate 强制重跑验收。DeepSeek 默认使用 `deepseek-v4-flash`、`temperature: 0.2`、
+`max_output_tokens: 32768`，适配器发送 `thinking: {"type":"enabled"}` 与
+`reasoning_effort: "high"`；`gpt5_nano` 使用官方 `gpt-5-nano`（默认 snapshot
+`gpt-5-nano-2025-08-07`）、Chat Completions、`reasoning_effort: "medium"`、
+`temperature: 1`（该模型只接受默认值）与 `max_completion_tokens`，不发送 DeepSeek 的
+`thinking` toggle；`gpt4o_mini` 使用钉死 snapshot `gpt-4o-mini-2024-07-18`、Chat
+Completions、`temperature: 0`、`reasoning.enabled=false`（不发送 `reasoning_effort` 与
+`thinking`）与 `max_completion_tokens: 16384` 宽安全上限。
 
 正式基准是两个 MMLU-Pro 数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
 确定性划分，余数计入 Test：MMLU-Pro-500（500 → 300/100/100）与
@@ -89,3 +103,33 @@ collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照
 ## 6. 论文结论的最低证据
 
 比较 Fixed-1/2/3/4/5、task-only、RoundValue 和 trajectory Oracle。默认 `λ_cost=μ_latency=0`，因此值函数 `G` 是纯质量收益、阈值选择只在质量相同时以更少 token 决胜；质量—成本与质量—延迟 Pareto、任务级配对置信区间、Oracle regret 与 Repair/Neutral/Harm/Recovery 作为独立坐标报告。Oracle 覆盖全部五个 checkpoint，只测量可达上界与后悔值，绝不可部署。
+
+## 7. `single` 拓扑（新增实验条件）
+
+`single` 是每道基准任务一次逻辑模型调用的独立求解器，与 `debate` 并列、可通过同一
+`--topology` 参数选择。它只有 `single_solver` 一个节点，没有 Planner/Analyst/Critic、
+Stage 1/2、debate packet、历史 transcript、上一轮 checkpoint、未来信息或参考答案；模型只
+看到与独立求解者合法可见信息一致的净化公开任务，用中性提示词返回
+`{answer, reasoning_summary}`。只有 `answer` 评分，`reasoning_summary` 不能救回错误选项，
+也不暴露隐藏 chain-of-thought；格式校验、有界修复与 answer-only 回退沿用项目既有原则，
+所有尝试都被记录并计入资源，逻辑调用数仍保持每任务一次。
+
+`single` 的分析刻意不构造任何多轮概念：不构建 `ΔQ/V/G`、不拟合 RoundValue、不选停止
+阈值、不做 continuation 决策、不定义 Repair/Harm/Recovery 转移、不构造 trajectory
+Oracle、也不把唯一预测伪装成 Debate Round 1。它只报告总体/分 split 准确率、输入/输出/总
+token、wall-clock 与 API 延迟、成本、重试、fallback 数、finish-reason 分布、逻辑调用数与
+任务级预测/正确性。50 题的 `single` run 正常情况下正好 50 次逻辑调用（明确记录的修复/
+重试另计）。single 优于、等于或劣于 debate 都是合法结论，不做任何偏向 debate 的调优或
+放水，也不实现 self-consistency / majority-vote 等额外条件。
+
+## 8. 纯离线 single-vs-debate 比较
+
+`roundvalue visualize --run-id <RUN_ID> --compare-with <RUN_ID>` 读取已保存的 manifest、
+基准快照、冻结 split、原始轨迹与派生分数，绝不调用模型 API。比较前强制校验相同数据集、
+相同基准文件哈希、相同冻结 task ID 集合与相同 split 分配，任一不匹配即拒绝；同 provider
+且同请求模型时标记 same-model topology comparison，模型/reasoning 配置不同时标记
+cross-model + cross-topology，不把准确率差异冒充纯拓扑因果。输出包含 Single、
+Debate Fixed-1..5、RoundValue（已定义时）与 Oracle（已定义时）的准确率、token、延迟、
+成本与逻辑调用数，以及 Single vs Debate Round 1 / Round 5 的配对计数
+（`both_correct`、`single_correct_debate_wrong`、`single_wrong_debate_correct`、
+`both_wrong`）。这些计数不使用 Repair/Harm 命名，以免与既有跨轮转移语义混淆。

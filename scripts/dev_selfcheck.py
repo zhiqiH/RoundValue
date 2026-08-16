@@ -221,13 +221,23 @@ def main() -> int:
         "non-thinking truncation repair still completes",
     )
     no_thinking_runner = FixedDebateRunner(dict(no_thinking_experiment), None)
-    expected_budgets = [
-        *no_thinking_runner._attempt_budgets("writer"),
-        no_thinking_runner._answer_only_budget(),
-    ]
     check(
-        [request.max_output_tokens for request in provider.requests] == expected_budgets,
-        "non-thinking full-schema budgets shrink, then the answer-only fallback takes over",
+        all(
+            request.max_output_tokens
+            == int(no_thinking_experiment["model"]["max_output_tokens"])
+            for request in provider.requests
+        ),
+        "non-thinking requests use the configured wide model ceiling as the wire cap",
+    )
+    prompt_budget = no_thinking_runner._schema_token_budget("writer")
+    check(
+        no_thinking_runner._attempt_budgets("writer")
+        == [prompt_budget, max(64, prompt_budget // 2)],
+        "non-thinking prompt-level visible budgets still shrink across repairs",
+    )
+    check(
+        no_thinking_runner._answer_only_budget() == 128,
+        "answer-only fallback prompt target stays at 128 tokens",
     )
     check(
         all(not request.reasoning_enabled for request in provider.requests)
