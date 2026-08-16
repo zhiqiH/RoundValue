@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -447,6 +448,8 @@ def _check_manifest() -> None:
             config_snapshot={},
             dataset_name="smoke",
             domain="mmlu_pro",
+            topology_id="single",
+            requested_model="deepseek-v4-flash",
         )
         updated = update_run_status(
             manifest,
@@ -466,6 +469,23 @@ def _check_manifest() -> None:
             and reloaded["topology_runner"] == "single_solver"
             and reloaded["topology_definition"] == experiment["topology"],
             "run manifest records topology selector, definition, and runner",
+        )
+        check(
+            re.fullmatch(
+                r"\d{12}_smoke_single_deepseek-v4-flash_[0-9a-f]{8}",
+                updated["run_id"],
+            )
+            and (root / "trajectories" / updated["run_id"]).is_dir()
+            and (root / "results" / updated["run_id"]).is_dir()
+            and updated["run_name_components"]
+            == {
+                "timestamp": updated["run_id"].split("_")[0],
+                "dataset": "smoke",
+                "topology": "single",
+                "model": "deepseek-v4-flash",
+                "hex": updated["run_id"].split("_")[-1],
+            },
+            "trajectory and result directories share one canonical run name",
         )
 
 

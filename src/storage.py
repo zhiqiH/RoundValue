@@ -19,6 +19,10 @@ from contracts import canonical_json, file_hash, json_hash, utc_now
 
 _RUN_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,119}\Z")
 _WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[\\/].*")
+_DATASET_TOKEN_RE = re.compile(r"^[A-Za-z0-9]+\Z")
+_TOPOLOGY_TOKEN_RE = re.compile(r"^[a-z][a-z0-9]*\Z")
+_MODEL_TOKEN_RE = re.compile(r"^[a-z0-9][a-z0-9-]*\Z")
+_SNAPSHOT_SUFFIX_RE = re.compile(r"-20\d{2}-\d{2}-\d{2}\Z")
 RUN_ID_TIMEZONE = ZoneInfo("America/Chicago")
 
 
@@ -116,6 +120,82 @@ def make_run_id() -> str:
     return datetime.now(RUN_ID_TIMEZONE).strftime("%Y%m%d%H%M")
 
 
+def canonical_dataset_token(dataset_name: str) -> str:
+    """Return the one concise filesystem-safe dataset label.
+
+    The canonical labels are ``MMLUPro50`` and ``MMLUPro500``; the rule removes
+    every punctuation character so aliases such as ``MMLU-Pro-50`` can never
+    diverge across runs.  New benchmark manifests may instead carry their own
+    concise ``dataset_id``, which is used verbatim when already alphanumeric.
+    """
+
+    if not isinstance(dataset_name, str) or not dataset_name.strip():
+        raise ValueError("dataset_name must be a non-empty string")
+    token = re.sub(r"[^A-Za-z0-9]+", "", dataset_name.strip())
+    if not _DATASET_TOKEN_RE.fullmatch(token):
+        raise ValueError(f"dataset name produces an invalid directory token: {dataset_name!r}")
+    return token
+
+
+def canonical_model_token(requested_model: str) -> str:
+    """Return a concise model label from the actual requested model/snapshot.
+
+    A trailing dated API snapshot such as ``-2024-07-18`` is omitted for the
+    human-readable directory label; the exact requested model stays in the run
+    manifest.  The label is derived only from the configured request model,
+    never from a provider response alias.
+    """
+
+    if not isinstance(requested_model, str) or not requested_model.strip():
+        raise ValueError("requested_model must be a non-empty string")
+    token = requested_model.strip().casefold()
+    token = _SNAPSHOT_SUFFIX_RE.sub("", token)
+    if not _MODEL_TOKEN_RE.fullmatch(token):
+        raise ValueError(f"requested model produces an invalid directory token: {requested_model!r}")
+    return token
+
+
+def canonical_topology_token(topology_id: str) -> str:
+    """Normalize the selected topology name for the directory component."""
+
+    if not isinstance(topology_id, str) or not topology_id.strip():
+        raise ValueError("topology_id must be a non-empty string")
+    token = topology_id.strip().casefold()
+    if not _TOPOLOGY_TOKEN_RE.fullmatch(token):
+        raise ValueError(f"topology id produces an invalid directory token: {topology_id!r}")
+    return token
+
+
+def compose_run_name(
+    *,
+    dataset_name: str,
+    topology_id: str,
+    requested_model: str,
+    timestamp: str | None = None,
+    hex_suffix: str | None = None,
+) -> str:
+    """The single source of canonical run identity.
+
+    Format is ``YYYYMMDDHHMM_<dataset>_<topology>_<model>_<hex>``.  The
+    timestamp and suffix are generated exactly once at run creation and are
+    never recomputed by later offline analysis.
+    """
+
+    run_timestamp = make_run_id() if timestamp is None else timestamp
+    if not isinstance(run_timestamp, str) or not re.fullmatch(
+        r"\d{12}", run_timestamp
+    ):
+        raise ValueError("run timestamp must be a 12-digit YYYYMMDDHHMM string")
+    suffix = uuid.uuid4().hex[:8] if hex_suffix is None else hex_suffix
+    if not isinstance(suffix, str) or not re.fullmatch(r"[0-9a-f]{8}", suffix):
+        raise ValueError("run hex suffix must be 8 lowercase hexadecimal characters")
+    return (
+        f"{run_timestamp}_{canonical_dataset_token(dataset_name)}_"
+        f"{canonical_topology_token(topology_id)}_"
+        f"{canonical_model_token(requested_model)}_{suffix}"
+    )
+
+
 def _validated_run_id(run_id: str) -> str:
     """Permit a compact identifier, never a path supplied by a CLI user."""
 
@@ -144,17 +224,36 @@ def create_run(
     run_id: str | None = None,
     dataset_name: str,
     domain: str,
+    topology_id: str | None = None,
+    requested_model: str | None = None,
 ) -> dict[str, Any]:
     """Create matching raw-trajectory and aggregate-result directories."""
 
     root = root.resolve()
-    # Run IDs contain exactly two underscores: after the timestamp and after
-    # the dataset.  Dataset names therefore cannot keep hyphens.
-    dataset_token = _validated_run_id(dataset_name.replace("-", ""))
-    chosen_id = _validated_run_id(
-        run_id
-        or f"{make_run_id()}_{dataset_token}_{uuid.uuid4().hex[:8]}"
-    )
+    # The canonical name is YYYYMMDDHHMM_<dataset>_<topology>_<model>_<hex> and
+    # is generated once here; analysis and visualization reuse the stored id.
+    name_components: dict[str, Any] | None = None
+    if run_id is None:
+        if topology_id is None or requested_model is None:
+            raise ValueError(
+                "auto-named runs require topology_id and requested_model"
+            )
+        composed = compose_run_name(
+            dataset_name=dataset_name,
+            topology_id=topology_id,
+            requested_model=requested_model,
+        )
+        timestamp, dataset_token, topology_token, model_token, suffix = composed.split("_")
+        name_components = {
+            "timestamp": timestamp,
+            "dataset": dataset_token,
+            "topology": topology_token,
+            "model": model_token,
+            "hex": suffix,
+        }
+        chosen_id = _validated_run_id(composed)
+    else:
+        chosen_id = _validated_run_id(run_id)
     trajectory_dir = root / "trajectories" / chosen_id
     result_dir = root / "results" / result_directory_name(chosen_id)
     if trajectory_dir.exists() or result_dir.exists():
@@ -166,7 +265,10 @@ def create_run(
     manifest = {
         "schema_version": "1.0",
         "run_id": chosen_id,
+        "run_name": chosen_id,
+        "run_name_components": name_components,
         "dataset": dataset_name,
+        "dataset_label": canonical_dataset_token(dataset_name),
         "domain": domain,
         "status": "created",
         "created_at": utc_now(),

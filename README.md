@@ -23,7 +23,7 @@ roundvalue visualize --run-id <RUN_ID>
 `benchmark-build`，即 `datasets>=3,<5`）。项目要求 Python 3.11+。
 
 每个数据集都是独立的自包含基准文件：`collect` 用 `--benchmark <数据集 json>` 选择，
-run 命名直接带数据集名称，任何 run 都不会混合两个数据集。当前主实验基准是
+run 命名直接带数据集/拓扑/模型的规范标签，任何 run 都不会混合两个数据集。当前主实验基准是
 MMLU-Pro：可用数据集是 500 题主集 MMLU-Pro-500 与其 50 题验证子集 MMLU-Pro-50。
 
 ## 配置密钥
@@ -118,10 +118,17 @@ token）记录，未观察到的 token 或费用保持未知、不以零填充�
 任何参数、强制顺序或门禁；`scripts/` 中的 `step*.py` 仍然是仅有的三个用户入口，
 `dev_*.py` 是纯离线自检工具，不属于实验步骤。
 
-run 命名统一为 `YYYYMMDDHHMM_<数据集名称>_<hex>`：trajectories 与 results 使用
-完全相同的目录名，时间取达拉斯本地时区（America/Chicago），精确到分钟。例如
-MMLU-Pro-500 的 collect run 是 `202608142334_MMLUPro500_15193d5a`（数据集名中的连字符
-会被去掉，run 名只含两个下划线），smoke run 用 `smoke` 作为数据集占位名。
+新 run 的命名统一为 `YYYYMMDDHHMM_<数据集>_<拓扑>_<模型>_<hex>`：trajectories 与
+results 使用完全相同的目录名，时间取达拉斯本地时区（America/Chicago）的创建时刻、
+精确到分钟，`hex` 是 8 位小写十六进制唯一后缀，创建一次后离线分析/可视化/重分析都
+绝不重新生成。数据集使用仓库唯一规范标签（`MMLUPro50`、`MMLUPro500`，smoke 验收题
+使用 `SmokeTasks`），拓扑严格为 `debate` 或 `single`，模型取实际请求模型的简洁标签
+（`deepseek-v4-flash`、`gpt-5-nano`、`gpt-4o-mini`；完整快照仍记录在 run.json 与
+manifest）。例如
+`202608161542_MMLUPro50_single_deepseek-v4-flash_78bd119a`。运行身份只在创建 run 时
+由一个共享 helper 生成一次，并传播到轨迹目录、结果目录、run.json、manifest、分析与
+可视化元数据。旧的 `YYYYMMDDHHMM_<数据集>_<hex>` 历史目录一律不重命名、保持可读，
+其拓扑/模型继续以存储的 manifest 与源码快照为准，不凭旧目录名推断。
 
 因此 `trajectories/` 是原始且尽量不被后续阶段修改的模型轨迹；`results/` 必须能由 trajectories 完全离线重建（重跑 step3）。`run_id` 是 step3/step4 唯一接受的实验标识，不要混用不同 run。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
 
@@ -263,7 +270,7 @@ RoundValue/
 ├── benchmark/mmlu_pro/MMLU-Pro-50.json  # MMLU-Pro-500 的验证子集（30/10/10）
 ├── benchmark/math/MATH-500.json        # 旧数学基准（仅保留用于追溯）
 ├── benchmark/math/MATH-50.json
-├── results/YYYYMMDDHHMM_<数据集>_<hex>/
+├── results/YYYYMMDDHHMM_<数据集>_<拓扑>_<模型>_<hex>/
 ├── scripts/step1_smoke.py              # 三个用户入口（dev_*.py 为离线自检）
 ├── scripts/step2_run.py
 ├── scripts/step3_visualize.py
@@ -273,7 +280,7 @@ RoundValue/
 │   ├── single_analysis.py              # single 的确定性离线聚合与报告
 │   ├── comparison.py                   # 纯离线 single-vs-debate 比较
 │   └── roundvalue_cli.py               # roundvalue 子命令 → 三个 step 入口的转发
-├── trajectories/YYYYMMDDHHMM_<数据集>_<hex>/
+├── trajectories/YYYYMMDDHHMM_<数据集>_<拓扑>_<模型>_<hex>/
 ├── EXPERIMENT_ARCHITECTURE.md
 └── README.md
 ```

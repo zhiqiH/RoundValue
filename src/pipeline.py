@@ -139,6 +139,8 @@ def _create_run(
         run_id=args.run_id,
         dataset_name=dataset_name,
         domain=domain,
+        topology_id=str(experiment["topology_id"]),
+        requested_model=str(experiment["model"]["model_name"]),
     )
     state["manifest"] = manifest
     manifest = update_run_status(
@@ -460,7 +462,10 @@ def _run_smoke(
         )
     selected_tasks = tasks
     skipped_other_domain_task_ids: list[str] = []
-    manifest = _create_run(args, experiment, state, "smoke", domain)
+    dataset_name = benchmark_document.get("dataset_id") or "smoke"
+    if not isinstance(dataset_name, str) or not dataset_name.strip():
+        dataset_name = "smoke"
+    manifest = _create_run(args, experiment, state, dataset_name, domain)
     _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
     provider = build_provider(dict(experiment))
     try:
@@ -525,7 +530,7 @@ def _run_smoke(
     updated = update_run_status(
         manifest,
         status,
-        dataset="smoke",
+        dataset=dataset_name,
         domain=domain,
         task_count=len(records),
         complete_task_count=sum(

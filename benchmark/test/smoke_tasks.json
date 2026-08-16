@@ -1,6 +1,7 @@
 {
   "schema_version": "1.0",
   "benchmark_id": "repository_smoke_v1",
+  "dataset_id": "SmokeTasks",
   "purpose": "Independent repository acceptance test. These public fixtures are not sampled from, derived from, or reported with the paper benchmarks.",
   "tasks": [
     {
