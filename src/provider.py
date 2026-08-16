@@ -111,10 +111,15 @@ class OpenAICompatibleProvider(ProviderAdapter):
             if key not in forbidden_defaults:
                 payload[key] = value
         if request.reasoning_enabled:
-            raise ProviderError("this experiment forbids reasoning-enabled requests")
-        if self.supports_thinking_toggle:
-            # DeepSeek V4 defaults to thinking mode. This is an explicit API
-            # field, rather than merely a local bookkeeping boolean.
+            if not self.supports_thinking_toggle:
+                raise ProviderError("this provider does not support toggling thinking mode")
+            # DeepSeek's OpenAI-format toggle plus its separate effort knob.
+            payload["thinking"] = {"type": "enabled"}
+            if request.reasoning_effort:
+                payload["reasoning_effort"] = request.reasoning_effort
+        elif self.supports_thinking_toggle:
+            # DeepSeek V4 defaults to thinking mode, so an explicit disable is
+            # required for the non-reasoning profile.
             payload["thinking"] = {"type": "disabled"}
         return payload
 
@@ -218,12 +223,13 @@ class OpenAICompatibleProvider(ProviderAdapter):
                 text = message["content"]
                 if not isinstance(text, str):
                     raise TypeError("response content is not text")
-                if (
-                    message.get("reasoning_content") not in (None, "")
-                    or choice.get("reasoning_content") not in (None, "")
-                    or (self._reasoning_tokens(body) or 0) > 0
-                ):
-                    raise TypeError("provider returned reasoning content despite thinking=disabled")
+                reasoning_content = message.get("reasoning_content") or choice.get("reasoning_content")
+                reasoning_tokens = self._reasoning_tokens(body)
+                reasoning_content_chars = (
+                    len(reasoning_content)
+                    if isinstance(reasoning_content, str)
+                    else None
+                )
             except (ValueError, KeyError, IndexError, TypeError) as error:
                 record.update(
                     {
@@ -251,6 +257,8 @@ class OpenAICompatibleProvider(ProviderAdapter):
                     "output_tokens": self._usage(body, "completion_tokens"),
                     "input_cache_hit_tokens": self._usage(body, "prompt_cache_hit_tokens"),
                     "input_cache_miss_tokens": self._usage(body, "prompt_cache_miss_tokens"),
+                    "reasoning_tokens": reasoning_tokens,
+                    "reasoning_content_chars": reasoning_content_chars,
                 }
             )
             attempts.append(record)

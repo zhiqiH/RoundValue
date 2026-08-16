@@ -1,0 +1,3011 @@
+{
+  "bootstrap": {
+    "samples": 2000,
+    "seed": 20260813
+  },
+  "evaluated_at": "2026-08-16T10:09:05.415108+00:00",
+  "evaluation_split": "test",
+  "label_parameters": {
+    "lambda_cost": 0.0,
+    "mu_latency": 0.0
+  },
+  "max_rounds": 5,
+  "model_status": {
+    "provided": true,
+    "roundvalue_kind": "linear",
+    "task_only_kind": "linear"
+  },
+  "n_records": 10,
+  "pairwise_vs_fixed_1": {
+    "fixed_1": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "fixed_2": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 24887.7,
+        "ci95_low": 12040.1,
+        "mean_difference": 17816.6,
+        "n_paired": 10
+      }
+    },
+    "fixed_3": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 59990.5,
+        "ci95_low": 25285.4,
+        "mean_difference": 40888.4,
+        "n_paired": 10
+      }
+    },
+    "fixed_4": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 87221.3,
+        "ci95_low": 38621.5,
+        "mean_difference": 60505.6,
+        "n_paired": 10
+      }
+    },
+    "fixed_5": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 111045.0,
+        "ci95_low": 50981.0,
+        "mean_difference": 78223.5,
+        "n_paired": 10
+      }
+    },
+    "oracle": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "roundvalue": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "task_only": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    }
+  },
+  "policies": {
+    "fixed_1": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 139937.1,
+        "mean_cost_usd": 0.0049756252,
+        "mean_input_tokens": 8235.7,
+        "mean_latency_ms": 70825.1,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 15094.8,
+        "mean_quality": 0.9,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 23330.5,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 70825.1,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 16596.0,
+          "available": true,
+          "checkpoint_hash": "cc2161e104893a1a26ec6c9222a4bc7863c2e1e4d996431487ec0df59c8e5e05",
+          "cost_usd": 0.0009025632000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6886.0,
+          "latency_ms": 7228.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1223.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "fixed_round",
+          "total_tokens": 8109.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 7228.0
+        },
+        {
+          "api_latency_ms": 381796.0,
+          "available": true,
+          "checkpoint_hash": "7c045fc4bcbc7887e3851a4ddc610ff01f5e01ae0ca1fad86d9dc504bdf3a035",
+          "cost_usd": 0.015280283200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7798.0,
+          "latency_ms": 190828.0,
+          "logical_calls": 7.0,
+          "output_tokens": 52116.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "fixed_round",
+          "total_tokens": 59914.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 190828.0
+        },
+        {
+          "api_latency_ms": 29071.0,
+          "available": true,
+          "checkpoint_hash": "4f66ebb1dba07639582e3edcc800c872b52ba648713d744c70d7b1b5b03d2270",
+          "cost_usd": 0.0012091632000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7246.0,
+          "latency_ms": 13262.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2138.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "fixed_round",
+          "total_tokens": 9384.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 13262.0
+        },
+        {
+          "api_latency_ms": 119177.0,
+          "available": true,
+          "checkpoint_hash": "01fd4cebc1604b815c35728d8aed8e3b79506724196ed089260b1642c01b416a",
+          "cost_usd": 0.0038134432,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7564.0,
+          "latency_ms": 66809.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11280.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "fixed_round",
+          "total_tokens": 18844.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 66809.0
+        },
+        {
+          "api_latency_ms": 110121.0,
+          "available": true,
+          "checkpoint_hash": "644d9887df1b61e31ebe288bcc9ec2ad13b4ae00dcd1e3c6097f042ff1993d1d",
+          "cost_usd": 0.004530663200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 11311.0,
+          "latency_ms": 56065.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11968.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "fixed_round",
+          "total_tokens": 23279.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 56065.0
+        },
+        {
+          "api_latency_ms": 21657.0,
+          "available": true,
+          "checkpoint_hash": "ab825a6b20fe25a5c489435675b99c9dffd1c50a25c6a85098a2ab8398d58fed",
+          "cost_usd": 0.0010583832,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7293.0,
+          "latency_ms": 12410.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1576.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "fixed_round",
+          "total_tokens": 8869.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 12410.0
+        },
+        {
+          "api_latency_ms": 636240.0,
+          "available": true,
+          "checkpoint_hash": "7127a13e79a147ab9b26114163dcd82cd520001d82bc1248ff39960e63e87938",
+          "cost_usd": 0.0188602232,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9551.0,
+          "latency_ms": 319218.0,
+          "logical_calls": 7.0,
+          "output_tokens": 64025.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "fixed_round",
+          "total_tokens": 73576.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 319218.0
+        },
+        {
+          "api_latency_ms": 21741.0,
+          "available": true,
+          "checkpoint_hash": "47f51fd8fff5b844ec66eb2f64fb7d5339d225b09cf36fecfee2103cd6c64615",
+          "cost_usd": 0.0010320632,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6799.0,
+          "latency_ms": 12573.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1729.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "fixed_round",
+          "total_tokens": 8528.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 12573.0
+        },
+        {
+          "api_latency_ms": 28103.0,
+          "available": true,
+          "checkpoint_hash": "993643a2aa338f524c34e66e8c1d9634eb930f254013f49fac585e9f3feedffd",
+          "cost_usd": 0.0015084832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9628.0,
+          "latency_ms": 14284.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2016.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "fixed_round",
+          "total_tokens": 11644.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 14284.0
+        },
+        {
+          "api_latency_ms": 34869.0,
+          "available": true,
+          "checkpoint_hash": "1fe7a0edc1d2829130db47d0848198d9df50353fcabc941ccd6ea8fa93770b3d",
+          "cost_usd": 0.0015609832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8281.0,
+          "latency_ms": 15574.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2877.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "fixed_round",
+          "total_tokens": 11158.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 15574.0
+        }
+      ]
+    },
+    "fixed_2": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 221444.5,
+        "mean_cost_usd": 0.008402018800000001,
+        "mean_input_tokens": 17638.5,
+        "mean_latency_ms": 121753.6,
+        "mean_logical_calls": 14.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 23508.6,
+        "mean_quality": 0.9,
+        "mean_stop_round": 2.0,
+        "mean_total_tokens": 41147.1,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 121753.6,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "2": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 34323.0,
+          "available": true,
+          "checkpoint_hash": "0b8edcc02cdf1707537c91671d404253348d05047bf2f4339d98ffea5a9f6b62",
+          "cost_usd": 0.0021695408,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 14840.0,
+          "latency_ms": 16341.0,
+          "logical_calls": 14.0,
+          "output_tokens": 2649.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "fixed_round",
+          "total_tokens": 17489.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 16341.0
+        },
+        {
+          "api_latency_ms": 560860.0,
+          "available": true,
+          "checkpoint_hash": "6c22417c0dbd39b8d6a621d57233e90127ac8f93482cb7165cbd2829b9de219b",
+          "cost_usd": 0.0228006408,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 16935.0,
+          "latency_ms": 314427.0,
+          "logical_calls": 14.0,
+          "output_tokens": 75284.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "fixed_round",
+          "total_tokens": 92219.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 314427.0
+        },
+        {
+          "api_latency_ms": 80277.0,
+          "available": true,
+          "checkpoint_hash": "b617111577aa6cc27fb5f7a487081131c178ac795274536d8ace6b2d36c5a9f4",
+          "cost_usd": 0.0034247808000000004,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 15634.0,
+          "latency_ms": 49820.0,
+          "logical_calls": 14.0,
+          "output_tokens": 6735.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "fixed_round",
+          "total_tokens": 22369.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 49820.0
+        },
+        {
+          "api_latency_ms": 187373.0,
+          "available": true,
+          "checkpoint_hash": "027e680ea1249bd55a37cb7031816dcbb477f95bf0437c157bc929b7ff8fe6ae",
+          "cost_usd": 0.006451300800000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 15788.0,
+          "latency_ms": 100294.0,
+          "logical_calls": 14.0,
+          "output_tokens": 17467.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "fixed_round",
+          "total_tokens": 33255.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 100294.0
+        },
+        {
+          "api_latency_ms": 229909.0,
+          "available": true,
+          "checkpoint_hash": "df04f86306b7632f60c2e9bbe588626cb632e02a2856a70bc2c28c5d3bfb93bd",
+          "cost_usd": 0.009745920800000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 23897.0,
+          "latency_ms": 121088.0,
+          "logical_calls": 14.0,
+          "output_tokens": 25179.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "fixed_round",
+          "total_tokens": 49076.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 121088.0
+        },
+        {
+          "api_latency_ms": 46794.0,
+          "available": true,
+          "checkpoint_hash": "f58f6352aaa6e1d5d963662108fdcdd8fec9a2007119ab94c094871b557a0c5d",
+          "cost_usd": 0.0024937808000000004,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 15456.0,
+          "latency_ms": 27485.0,
+          "logical_calls": 14.0,
+          "output_tokens": 3499.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "fixed_round",
+          "total_tokens": 18955.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 27485.0
+        },
+        {
+          "api_latency_ms": 911371.0,
+          "available": true,
+          "checkpoint_hash": "a79eaf7837b140c71295236c7077be73fe88af8414c296e2aadbbfc09099c553",
+          "cost_usd": 0.0278970608,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 20802.0,
+          "latency_ms": 508531.0,
+          "logical_calls": 14.0,
+          "output_tokens": 91552.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "fixed_round",
+          "total_tokens": 112354.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 508531.0
+        },
+        {
+          "api_latency_ms": 37186.0,
+          "available": true,
+          "checkpoint_hash": "9e6638548a258264c7335640e07370ef9c0a77c3c36fc3451c20939e93d97d08",
+          "cost_usd": 0.0021491008,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 14332.0,
+          "latency_ms": 19946.0,
+          "logical_calls": 14.0,
+          "output_tokens": 2830.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "fixed_round",
+          "total_tokens": 17162.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 19946.0
+        },
+        {
+          "api_latency_ms": 52504.0,
+          "available": true,
+          "checkpoint_hash": "1ddb7c896d9810d241745f65f66f0a51e79c6791ce0ddf395703c3e25a36e5d8",
+          "cost_usd": 0.0032867408000000005,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 20460.0,
+          "latency_ms": 25755.0,
+          "logical_calls": 14.0,
+          "output_tokens": 3829.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "fixed_round",
+          "total_tokens": 24289.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 25755.0
+        },
+        {
+          "api_latency_ms": 73848.0,
+          "available": true,
+          "checkpoint_hash": "a0c5b5a04d6f44335cbc2ca063b28db965a54078b6b0def00c2e5b2424e97843",
+          "cost_usd": 0.0036013208000000006,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 18241.0,
+          "latency_ms": 33849.0,
+          "logical_calls": 14.0,
+          "output_tokens": 6062.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "fixed_round",
+          "total_tokens": 24303.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 33849.0
+        }
+      ]
+    },
+    "fixed_3": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 343184.8,
+        "mean_cost_usd": 0.01319297952,
+        "mean_input_tokens": 27579.0,
+        "mean_latency_ms": 192660.3,
+        "mean_logical_calls": 21.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 36639.9,
+        "mean_quality": 0.9,
+        "mean_stop_round": 3.0,
+        "mean_total_tokens": 64218.9,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 192660.3,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "3": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 53318.0,
+          "available": true,
+          "checkpoint_hash": "0801a86add7ba2ac1a197982a65f7bed0cdd2a3b6c91f1e13b2f2f335ec72d73",
+          "cost_usd": 0.0034813184000000003,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 22860.0,
+          "latency_ms": 24905.0,
+          "logical_calls": 21.0,
+          "output_tokens": 4202.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "fixed_round",
+          "total_tokens": 27062.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 24905.0
+        },
+        {
+          "api_latency_ms": 899239.0,
+          "available": true,
+          "checkpoint_hash": "62cdaed5aff2794cba6a5481491518dc759a22a3bec116d9d21421b0d73bc416",
+          "cost_usd": 0.0364752584,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 25923.0,
+          "latency_ms": 524245.0,
+          "logical_calls": 21.0,
+          "output_tokens": 120506.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "fixed_round",
+          "total_tokens": 146429.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 524245.0
+        },
+        {
+          "api_latency_ms": 132893.0,
+          "available": true,
+          "checkpoint_hash": "494248f0d6246fe978db5cf05d062d3e899abbc7c109c1ee2bd856b192c13507",
+          "cost_usd": 0.005963098400000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 24571.0,
+          "latency_ms": 90166.0,
+          "logical_calls": 21.0,
+          "output_tokens": 12210.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "fixed_round",
+          "total_tokens": 36781.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 90166.0
+        },
+        {
+          "api_latency_ms": 292819.0,
+          "available": true,
+          "checkpoint_hash": "10b7be245e08d17d1ae3cc4cf223faad99b388b9ec1b401cad65bdb073eba493",
+          "cost_usd": 0.0100789584,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 24574.0,
+          "latency_ms": 152620.0,
+          "logical_calls": 21.0,
+          "output_tokens": 26908.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "fixed_round",
+          "total_tokens": 51482.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 152620.0
+        },
+        {
+          "api_latency_ms": 349105.0,
+          "available": true,
+          "checkpoint_hash": "7d478a8d108ab07776b9fbac2881ff864d9bb28aed1fa18b5d6504f0e8de3487",
+          "cost_usd": 0.0150128384,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 37184.0,
+          "latency_ms": 175977.0,
+          "logical_calls": 21.0,
+          "output_tokens": 38224.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "fixed_round",
+          "total_tokens": 75408.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 175977.0
+        },
+        {
+          "api_latency_ms": 82211.0,
+          "available": true,
+          "checkpoint_hash": "ef9d15953c05d2c7312f4d23593a52f352958fde4ca199a295911a519329654c",
+          "cost_usd": 0.0043814624,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 25702.0,
+          "latency_ms": 47760.0,
+          "logical_calls": 21.0,
+          "output_tokens": 6623.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "fixed_round",
+          "total_tokens": 32325.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 47760.0
+        },
+        {
+          "api_latency_ms": 1372400.0,
+          "available": true,
+          "checkpoint_hash": "edd2c690c61e06a3e3d9a9a9abb781ad5c8f6f626176d74be47a2b767e4f31f6",
+          "cost_usd": 0.0422389856,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 32972.0,
+          "latency_ms": 783937.0,
+          "logical_calls": 21.0,
+          "output_tokens": 138068.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "fixed_round",
+          "total_tokens": 171040.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 783937.0
+        },
+        {
+          "api_latency_ms": 64232.0,
+          "available": true,
+          "checkpoint_hash": "c379c7eb9d1be9e887a89d24b5dff67d3f88d491ed2a68a2b6e42ba33358432b",
+          "cost_usd": 0.0036267784000000003,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 22209.0,
+          "latency_ms": 34077.0,
+          "logical_calls": 21.0,
+          "output_tokens": 5047.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "fixed_round",
+          "total_tokens": 27256.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 34077.0
+        },
+        {
+          "api_latency_ms": 82120.0,
+          "available": true,
+          "checkpoint_hash": "d67775ff5c8f6f901d3171b9c3ca899cc2c53f87efeeae93d84a751ad71d5501",
+          "cost_usd": 0.0052943184,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 31754.0,
+          "latency_ms": 42549.0,
+          "logical_calls": 21.0,
+          "output_tokens": 6230.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "fixed_round",
+          "total_tokens": 37984.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 42549.0
+        },
+        {
+          "api_latency_ms": 103511.0,
+          "available": true,
+          "checkpoint_hash": "c18c49bf10324b867b50f567b0057aa43b2b78f94f674b6c9cf8a6de44acdbb3",
+          "cost_usd": 0.0053767784000000015,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 28041.0,
+          "latency_ms": 50367.0,
+          "logical_calls": 21.0,
+          "output_tokens": 8381.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "fixed_round",
+          "total_tokens": 36422.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 50367.0
+        }
+      ]
+    },
+    "fixed_4": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 433276.5,
+        "mean_cost_usd": 0.017080925120000003,
+        "mean_input_tokens": 37286.2,
+        "mean_latency_ms": 251681.8,
+        "mean_logical_calls": 28.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 46549.9,
+        "mean_quality": 0.9,
+        "mean_stop_round": 4.0,
+        "mean_total_tokens": 83836.1,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 251681.8,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "4": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 72193.0,
+          "available": true,
+          "checkpoint_hash": "9e78054bd072b646e7982a9cecede59fefa43e46ee9c0f7c37c65991225de6c7",
+          "cost_usd": 0.004799676,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 30977.0,
+          "latency_ms": 34156.0,
+          "logical_calls": 28.0,
+          "output_tokens": 5730.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "fixed_round",
+          "total_tokens": 36707.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 34156.0
+        },
+        {
+          "api_latency_ms": 1154295.0,
+          "available": true,
+          "checkpoint_hash": "43bf8709348d5201b6a1dfcd736b3836f2410bb0400b26b68983f1de3b9cb8ee",
+          "cost_usd": 0.046804856,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 35566.0,
+          "latency_ms": 691058.0,
+          "logical_calls": 28.0,
+          "output_tokens": 153454.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "fixed_round",
+          "total_tokens": 189020.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 691058.0
+        },
+        {
+          "api_latency_ms": 156591.0,
+          "available": true,
+          "checkpoint_hash": "c951335f5611e132a6cc6c56bc09ae35943dcc854603b1db1eca136a7f97e49b",
+          "cost_usd": 0.0074267759999999995,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 33186.0,
+          "latency_ms": 103478.0,
+          "logical_calls": 28.0,
+          "output_tokens": 14008.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "fixed_round",
+          "total_tokens": 47194.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 103478.0
+        },
+        {
+          "api_latency_ms": 440930.0,
+          "available": true,
+          "checkpoint_hash": "6cf64a296ec015e93459823e5925b370de972e6b7f1f6bfdde876b9750d03f14",
+          "cost_usd": 0.015923236,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 32811.0,
+          "latency_ms": 259936.0,
+          "logical_calls": 28.0,
+          "output_tokens": 44540.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "fixed_round",
+          "total_tokens": 77351.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 259936.0
+        },
+        {
+          "api_latency_ms": 447054.0,
+          "available": true,
+          "checkpoint_hash": "3ebfe621bde816873ddc0228a269a3fced08d53200ea7e2bda09c8cf997bd1f2",
+          "cost_usd": 0.019558616,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 49822.0,
+          "latency_ms": 229635.0,
+          "logical_calls": 28.0,
+          "output_tokens": 49018.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "fixed_round",
+          "total_tokens": 98840.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 229635.0
+        },
+        {
+          "api_latency_ms": 104619.0,
+          "available": true,
+          "checkpoint_hash": "258c7cb63d14476ad520ab3512123d1aca46fbf4c45075f20b891eb0c8e74773",
+          "cost_usd": 0.005791940000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 34285.0,
+          "latency_ms": 59536.0,
+          "logical_calls": 28.0,
+          "output_tokens": 8247.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "fixed_round",
+          "total_tokens": 42532.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 59536.0
+        },
+        {
+          "api_latency_ms": 1619663.0,
+          "available": true,
+          "checkpoint_hash": "75c610109204f6b5ad0189de728131d7692b6ab55890788a279fd9ef5ea56a4d",
+          "cost_usd": 0.0506818032,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 43872.0,
+          "latency_ms": 962603.0,
+          "logical_calls": 28.0,
+          "output_tokens": 163649.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "fixed_round",
+          "total_tokens": 207521.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 962603.0
+        },
+        {
+          "api_latency_ms": 86845.0,
+          "available": true,
+          "checkpoint_hash": "7867a25e23fb7b29cb7a7584003338a9e9723877432810b55e713a271a15bd86",
+          "cost_usd": 0.005058676000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 30673.0,
+          "latency_ms": 45648.0,
+          "logical_calls": 28.0,
+          "output_tokens": 6807.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "fixed_round",
+          "total_tokens": 37480.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 45648.0
+        },
+        {
+          "api_latency_ms": 118452.0,
+          "available": true,
+          "checkpoint_hash": "b2560006aa5a481a7864ff33c19a9aee58740a26f023deabb11410fe0c647987",
+          "cost_usd": 0.007638176000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 43950.0,
+          "latency_ms": 65688.0,
+          "logical_calls": 28.0,
+          "output_tokens": 9381.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "fixed_round",
+          "total_tokens": 53331.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 65688.0
+        },
+        {
+          "api_latency_ms": 132123.0,
+          "available": true,
+          "checkpoint_hash": "64b9da82292286a15df413c4d0fdbc49b6571f6f51efd55011d6ee5cd7e88c7d",
+          "cost_usd": 0.007125496000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 37720.0,
+          "latency_ms": 65080.0,
+          "logical_calls": 28.0,
+          "output_tokens": 10665.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "fixed_round",
+          "total_tokens": 48385.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 65080.0
+        }
+      ]
+    },
+    "fixed_5": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 506651.6,
+        "mean_cost_usd": 0.020387188640000005,
+        "mean_input_tokens": 47186.6,
+        "mean_latency_ms": 295786.6,
+        "mean_logical_calls": 35.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 54367.4,
+        "mean_quality": 0.9,
+        "mean_stop_round": 5.0,
+        "mean_total_tokens": 101554.0,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 295786.6,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "5": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 91942.0,
+          "available": true,
+          "checkpoint_hash": "3243afec07d711defebd1e16371c515ca2f8ff616b78264323c0916db203efb2",
+          "cost_usd": 0.006108933600000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 38971.0,
+          "latency_ms": 44910.0,
+          "logical_calls": 35.0,
+          "output_tokens": 7287.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "fixed_round",
+          "total_tokens": 46258.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 44910.0
+        },
+        {
+          "api_latency_ms": 1383205.0,
+          "available": true,
+          "checkpoint_hash": "03d20b68a8b66b8badcb3a7e159eedd566d456bc6f3a864d9d0984eeae8311b6",
+          "cost_usd": 0.0565930736,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 44544.0,
+          "latency_ms": 856640.0,
+          "logical_calls": 35.0,
+          "output_tokens": 184801.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "fixed_round",
+          "total_tokens": 229345.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 856640.0
+        },
+        {
+          "api_latency_ms": 196454.0,
+          "available": true,
+          "checkpoint_hash": "69e8167083195b31d2e3a5b8c99cd22b62226b598d863e80dfb4dab19e57ab41",
+          "cost_usd": 0.009237653600000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 41295.0,
+          "latency_ms": 128361.0,
+          "logical_calls": 35.0,
+          "output_tokens": 17299.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "fixed_round",
+          "total_tokens": 58594.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 128361.0
+        },
+        {
+          "api_latency_ms": 514613.0,
+          "available": true,
+          "checkpoint_hash": "9868f4742d402daeaadb47bbe0444f1380a06f7157e752d63e12663b467ca281",
+          "cost_usd": 0.0187657736,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 41603.0,
+          "latency_ms": 293726.0,
+          "logical_calls": 35.0,
+          "output_tokens": 51174.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "fixed_round",
+          "total_tokens": 92777.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 293726.0
+        },
+        {
+          "api_latency_ms": 541008.0,
+          "available": true,
+          "checkpoint_hash": "f139071a3d3391c192c2aacc902b12f5662e2e4cfd43a7299ddbfbcddd0ae717",
+          "cost_usd": 0.024143173600000005,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 63435.0,
+          "latency_ms": 281766.0,
+          "logical_calls": 35.0,
+          "output_tokens": 59463.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "fixed_round",
+          "total_tokens": 122898.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 281766.0
+        },
+        {
+          "api_latency_ms": 128465.0,
+          "available": true,
+          "checkpoint_hash": "839ce5718f3e618933f0ee3da1564c0bde1fb5fcc3fcc53f8eb9b651e0aa0655",
+          "cost_usd": 0.007235457600000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 42920.0,
+          "latency_ms": 70492.0,
+          "logical_calls": 35.0,
+          "output_tokens": 9963.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "fixed_round",
+          "total_tokens": 52883.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 70492.0
+        },
+        {
+          "api_latency_ms": 1789657.0,
+          "available": true,
+          "checkpoint_hash": "d72184acf5b076349e7308fac22e6414c404440ed6a769e07ea564b113a3ca67",
+          "cost_usd": 0.0566961808,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 55378.0,
+          "latency_ms": 1060601.0,
+          "logical_calls": 35.0,
+          "output_tokens": 180254.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "fixed_round",
+          "total_tokens": 235632.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 1060601.0
+        },
+        {
+          "api_latency_ms": 106581.0,
+          "available": true,
+          "checkpoint_hash": "bb37f237cff508c5681617f43314485fa7bca643f74bd52792f0e039bfce9442",
+          "cost_usd": 0.006368124000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 39615.0,
+          "latency_ms": 55478.0,
+          "logical_calls": 35.0,
+          "output_tokens": 8267.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "fixed_round",
+          "total_tokens": 47882.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 55478.0
+        },
+        {
+          "api_latency_ms": 150447.0,
+          "available": true,
+          "checkpoint_hash": "ffc1c5e21c85ffd31366535efca78bfe66e27f5a622e326216ba340ba88f26a3",
+          "cost_usd": 0.009756633600000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 55668.0,
+          "latency_ms": 83610.0,
+          "logical_calls": 35.0,
+          "output_tokens": 11966.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "fixed_round",
+          "total_tokens": 67634.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 83610.0
+        },
+        {
+          "api_latency_ms": 164144.0,
+          "available": true,
+          "checkpoint_hash": "8a8d94079babfbbbf1286bafd59239766dc35af3f5f70be902f19accd7de42d6",
+          "cost_usd": 0.0089668824,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 48437.0,
+          "latency_ms": 82282.0,
+          "logical_calls": 35.0,
+          "output_tokens": 13200.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "fixed_round",
+          "total_tokens": 61637.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 82282.0
+        }
+      ]
+    },
+    "oracle": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 139937.1,
+        "mean_cost_usd": 0.0049756252,
+        "mean_input_tokens": 8235.7,
+        "mean_latency_ms": 70825.1,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 15094.8,
+        "mean_quality": 0.9,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 23330.5,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 70825.1,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 16596.0,
+          "available": true,
+          "checkpoint_hash": "cc2161e104893a1a26ec6c9222a4bc7863c2e1e4d996431487ec0df59c8e5e05",
+          "cost_usd": 0.0009025632000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6886.0,
+          "latency_ms": 7228.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1223.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 8109.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 7228.0
+        },
+        {
+          "api_latency_ms": 381796.0,
+          "available": true,
+          "checkpoint_hash": "7c045fc4bcbc7887e3851a4ddc610ff01f5e01ae0ca1fad86d9dc504bdf3a035",
+          "cost_usd": 0.015280283200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7798.0,
+          "latency_ms": 190828.0,
+          "logical_calls": 7.0,
+          "output_tokens": 52116.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 59914.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 190828.0
+        },
+        {
+          "api_latency_ms": 29071.0,
+          "available": true,
+          "checkpoint_hash": "4f66ebb1dba07639582e3edcc800c872b52ba648713d744c70d7b1b5b03d2270",
+          "cost_usd": 0.0012091632000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7246.0,
+          "latency_ms": 13262.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2138.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 9384.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 13262.0
+        },
+        {
+          "api_latency_ms": 119177.0,
+          "available": true,
+          "checkpoint_hash": "01fd4cebc1604b815c35728d8aed8e3b79506724196ed089260b1642c01b416a",
+          "cost_usd": 0.0038134432,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7564.0,
+          "latency_ms": 66809.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11280.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 18844.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 66809.0
+        },
+        {
+          "api_latency_ms": 110121.0,
+          "available": true,
+          "checkpoint_hash": "644d9887df1b61e31ebe288bcc9ec2ad13b4ae00dcd1e3c6097f042ff1993d1d",
+          "cost_usd": 0.004530663200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 11311.0,
+          "latency_ms": 56065.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11968.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 23279.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 56065.0
+        },
+        {
+          "api_latency_ms": 21657.0,
+          "available": true,
+          "checkpoint_hash": "ab825a6b20fe25a5c489435675b99c9dffd1c50a25c6a85098a2ab8398d58fed",
+          "cost_usd": 0.0010583832,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7293.0,
+          "latency_ms": 12410.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1576.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 8869.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 12410.0
+        },
+        {
+          "api_latency_ms": 636240.0,
+          "available": true,
+          "checkpoint_hash": "7127a13e79a147ab9b26114163dcd82cd520001d82bc1248ff39960e63e87938",
+          "cost_usd": 0.0188602232,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9551.0,
+          "latency_ms": 319218.0,
+          "logical_calls": 7.0,
+          "output_tokens": 64025.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 73576.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 319218.0
+        },
+        {
+          "api_latency_ms": 21741.0,
+          "available": true,
+          "checkpoint_hash": "47f51fd8fff5b844ec66eb2f64fb7d5339d225b09cf36fecfee2103cd6c64615",
+          "cost_usd": 0.0010320632,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6799.0,
+          "latency_ms": 12573.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1729.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 8528.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 12573.0
+        },
+        {
+          "api_latency_ms": 28103.0,
+          "available": true,
+          "checkpoint_hash": "993643a2aa338f524c34e66e8c1d9634eb930f254013f49fac585e9f3feedffd",
+          "cost_usd": 0.0015084832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9628.0,
+          "latency_ms": 14284.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2016.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 11644.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 14284.0
+        },
+        {
+          "api_latency_ms": 34869.0,
+          "available": true,
+          "checkpoint_hash": "1fe7a0edc1d2829130db47d0848198d9df50353fcabc941ccd6ea8fa93770b3d",
+          "cost_usd": 0.0015609832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8281.0,
+          "latency_ms": 15574.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2877.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 11158.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 15574.0
+        }
+      ]
+    },
+    "roundvalue": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 139937.1,
+        "mean_cost_usd": 0.0049756252,
+        "mean_input_tokens": 8235.7,
+        "mean_latency_ms": 70825.1,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 15094.8,
+        "mean_quality": 0.9,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 23330.5,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 70825.1,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 16596.0,
+          "available": true,
+          "checkpoint_hash": "cc2161e104893a1a26ec6c9222a4bc7863c2e1e4d996431487ec0df59c8e5e05",
+          "cost_usd": 0.0009025632000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6886.0,
+          "latency_ms": 7228.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1223.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 8109.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 7228.0
+        },
+        {
+          "api_latency_ms": 381796.0,
+          "available": true,
+          "checkpoint_hash": "7c045fc4bcbc7887e3851a4ddc610ff01f5e01ae0ca1fad86d9dc504bdf3a035",
+          "cost_usd": 0.015280283200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7798.0,
+          "latency_ms": 190828.0,
+          "logical_calls": 7.0,
+          "output_tokens": 52116.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 59914.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 190828.0
+        },
+        {
+          "api_latency_ms": 29071.0,
+          "available": true,
+          "checkpoint_hash": "4f66ebb1dba07639582e3edcc800c872b52ba648713d744c70d7b1b5b03d2270",
+          "cost_usd": 0.0012091632000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7246.0,
+          "latency_ms": 13262.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2138.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 9384.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 13262.0
+        },
+        {
+          "api_latency_ms": 119177.0,
+          "available": true,
+          "checkpoint_hash": "01fd4cebc1604b815c35728d8aed8e3b79506724196ed089260b1642c01b416a",
+          "cost_usd": 0.0038134432,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7564.0,
+          "latency_ms": 66809.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11280.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 18844.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 66809.0
+        },
+        {
+          "api_latency_ms": 110121.0,
+          "available": true,
+          "checkpoint_hash": "644d9887df1b61e31ebe288bcc9ec2ad13b4ae00dcd1e3c6097f042ff1993d1d",
+          "cost_usd": 0.004530663200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 11311.0,
+          "latency_ms": 56065.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11968.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 23279.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 56065.0
+        },
+        {
+          "api_latency_ms": 21657.0,
+          "available": true,
+          "checkpoint_hash": "ab825a6b20fe25a5c489435675b99c9dffd1c50a25c6a85098a2ab8398d58fed",
+          "cost_usd": 0.0010583832,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7293.0,
+          "latency_ms": 12410.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1576.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 8869.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 12410.0
+        },
+        {
+          "api_latency_ms": 636240.0,
+          "available": true,
+          "checkpoint_hash": "7127a13e79a147ab9b26114163dcd82cd520001d82bc1248ff39960e63e87938",
+          "cost_usd": 0.0188602232,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9551.0,
+          "latency_ms": 319218.0,
+          "logical_calls": 7.0,
+          "output_tokens": 64025.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 73576.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 319218.0
+        },
+        {
+          "api_latency_ms": 21741.0,
+          "available": true,
+          "checkpoint_hash": "47f51fd8fff5b844ec66eb2f64fb7d5339d225b09cf36fecfee2103cd6c64615",
+          "cost_usd": 0.0010320632,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6799.0,
+          "latency_ms": 12573.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1729.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 8528.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 12573.0
+        },
+        {
+          "api_latency_ms": 28103.0,
+          "available": true,
+          "checkpoint_hash": "993643a2aa338f524c34e66e8c1d9634eb930f254013f49fac585e9f3feedffd",
+          "cost_usd": 0.0015084832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9628.0,
+          "latency_ms": 14284.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2016.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 11644.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 14284.0
+        },
+        {
+          "api_latency_ms": 34869.0,
+          "available": true,
+          "checkpoint_hash": "1fe7a0edc1d2829130db47d0848198d9df50353fcabc941ccd6ea8fa93770b3d",
+          "cost_usd": 0.0015609832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8281.0,
+          "latency_ms": 15574.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2877.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 11158.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 15574.0
+        }
+      ]
+    },
+    "task_only": {
+      "metrics": {
+        "accuracy": 0.9,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 139937.1,
+        "mean_cost_usd": 0.0049756252,
+        "mean_input_tokens": 8235.7,
+        "mean_latency_ms": 70825.1,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 15094.8,
+        "mean_quality": 0.9,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 23330.5,
+        "mean_utility": 0.9,
+        "mean_wall_clock_ms": 70825.1,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 16596.0,
+          "available": true,
+          "checkpoint_hash": "cc2161e104893a1a26ec6c9222a4bc7863c2e1e4d996431487ec0df59c8e5e05",
+          "cost_usd": 0.0009025632000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6886.0,
+          "latency_ms": 7228.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1223.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::740",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 8109.0,
+          "trajectory_id": "0cf66dcd82bb81a7ff653d9a",
+          "utility": 1.0,
+          "wall_clock_ms": 7228.0
+        },
+        {
+          "api_latency_ms": 381796.0,
+          "available": true,
+          "checkpoint_hash": "7c045fc4bcbc7887e3851a4ddc610ff01f5e01ae0ca1fad86d9dc504bdf3a035",
+          "cost_usd": 0.015280283200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7798.0,
+          "latency_ms": 190828.0,
+          "logical_calls": 7.0,
+          "output_tokens": 52116.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8526",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 59914.0,
+          "trajectory_id": "740a4058c58e19504cd04bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 190828.0
+        },
+        {
+          "api_latency_ms": 29071.0,
+          "available": true,
+          "checkpoint_hash": "4f66ebb1dba07639582e3edcc800c872b52ba648713d744c70d7b1b5b03d2270",
+          "cost_usd": 0.0012091632000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7246.0,
+          "latency_ms": 13262.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2138.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::8695",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 9384.0,
+          "trajectory_id": "f67d2146ed56ec377e404b8f",
+          "utility": 1.0,
+          "wall_clock_ms": 13262.0
+        },
+        {
+          "api_latency_ms": 119177.0,
+          "available": true,
+          "checkpoint_hash": "01fd4cebc1604b815c35728d8aed8e3b79506724196ed089260b1642c01b416a",
+          "cost_usd": 0.0038134432,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7564.0,
+          "latency_ms": 66809.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11280.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::6418",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 18844.0,
+          "trajectory_id": "e20f69353af506975f04617d",
+          "utility": 1.0,
+          "wall_clock_ms": 66809.0
+        },
+        {
+          "api_latency_ms": 110121.0,
+          "available": true,
+          "checkpoint_hash": "644d9887df1b61e31ebe288bcc9ec2ad13b4ae00dcd1e3c6097f042ff1993d1d",
+          "cost_usd": 0.004530663200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 11311.0,
+          "latency_ms": 56065.0,
+          "logical_calls": 7.0,
+          "output_tokens": 11968.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::11564",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 23279.0,
+          "trajectory_id": "dc8a1b407928a25fea67718a",
+          "utility": 1.0,
+          "wall_clock_ms": 56065.0
+        },
+        {
+          "api_latency_ms": 21657.0,
+          "available": true,
+          "checkpoint_hash": "ab825a6b20fe25a5c489435675b99c9dffd1c50a25c6a85098a2ab8398d58fed",
+          "cost_usd": 0.0010583832,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7293.0,
+          "latency_ms": 12410.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1576.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2130",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 8869.0,
+          "trajectory_id": "975107ce8f2a61daa7742bf5",
+          "utility": 1.0,
+          "wall_clock_ms": 12410.0
+        },
+        {
+          "api_latency_ms": 636240.0,
+          "available": true,
+          "checkpoint_hash": "7127a13e79a147ab9b26114163dcd82cd520001d82bc1248ff39960e63e87938",
+          "cost_usd": 0.0188602232,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9551.0,
+          "latency_ms": 319218.0,
+          "logical_calls": 7.0,
+          "output_tokens": 64025.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::4097",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 73576.0,
+          "trajectory_id": "1a4408fbe314a270ed7c9968",
+          "utility": 0.0,
+          "wall_clock_ms": 319218.0
+        },
+        {
+          "api_latency_ms": 21741.0,
+          "available": true,
+          "checkpoint_hash": "47f51fd8fff5b844ec66eb2f64fb7d5339d225b09cf36fecfee2103cd6c64615",
+          "cost_usd": 0.0010320632,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6799.0,
+          "latency_ms": 12573.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1729.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::5383",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 8528.0,
+          "trajectory_id": "5d357509fe345d2459afca50",
+          "utility": 1.0,
+          "wall_clock_ms": 12573.0
+        },
+        {
+          "api_latency_ms": 28103.0,
+          "available": true,
+          "checkpoint_hash": "993643a2aa338f524c34e66e8c1d9634eb930f254013f49fac585e9f3feedffd",
+          "cost_usd": 0.0015084832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9628.0,
+          "latency_ms": 14284.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2016.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::968",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 11644.0,
+          "trajectory_id": "ea72f127255e10426be57b17",
+          "utility": 1.0,
+          "wall_clock_ms": 14284.0
+        },
+        {
+          "api_latency_ms": 34869.0,
+          "available": true,
+          "checkpoint_hash": "1fe7a0edc1d2829130db47d0848198d9df50353fcabc941ccd6ea8fa93770b3d",
+          "cost_usd": 0.0015609832000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8281.0,
+          "latency_ms": 15574.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2877.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "mmlupro::test::2895",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 11158.0,
+          "trajectory_id": "76062283d7f0133ea5ed251c",
+          "utility": 1.0,
+          "wall_clock_ms": 15574.0
+        }
+      ]
+    }
+  },
+  "policy_metrics": {
+    "fixed_1": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 139937.1,
+      "mean_cost_usd": 0.0049756252,
+      "mean_input_tokens": 8235.7,
+      "mean_latency_ms": 70825.1,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 15094.8,
+      "mean_quality": 0.9,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 23330.5,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 70825.1,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "fixed_2": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 221444.5,
+      "mean_cost_usd": 0.008402018800000001,
+      "mean_input_tokens": 17638.5,
+      "mean_latency_ms": 121753.6,
+      "mean_logical_calls": 14.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 23508.6,
+      "mean_quality": 0.9,
+      "mean_stop_round": 2.0,
+      "mean_total_tokens": 41147.1,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 121753.6,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "2": 10
+      }
+    },
+    "fixed_3": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 343184.8,
+      "mean_cost_usd": 0.01319297952,
+      "mean_input_tokens": 27579.0,
+      "mean_latency_ms": 192660.3,
+      "mean_logical_calls": 21.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 36639.9,
+      "mean_quality": 0.9,
+      "mean_stop_round": 3.0,
+      "mean_total_tokens": 64218.9,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 192660.3,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "3": 10
+      }
+    },
+    "fixed_4": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 433276.5,
+      "mean_cost_usd": 0.017080925120000003,
+      "mean_input_tokens": 37286.2,
+      "mean_latency_ms": 251681.8,
+      "mean_logical_calls": 28.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 46549.9,
+      "mean_quality": 0.9,
+      "mean_stop_round": 4.0,
+      "mean_total_tokens": 83836.1,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 251681.8,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "4": 10
+      }
+    },
+    "fixed_5": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 506651.6,
+      "mean_cost_usd": 0.020387188640000005,
+      "mean_input_tokens": 47186.6,
+      "mean_latency_ms": 295786.6,
+      "mean_logical_calls": 35.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 54367.4,
+      "mean_quality": 0.9,
+      "mean_stop_round": 5.0,
+      "mean_total_tokens": 101554.0,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 295786.6,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "5": 10
+      }
+    },
+    "oracle": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 139937.1,
+      "mean_cost_usd": 0.0049756252,
+      "mean_input_tokens": 8235.7,
+      "mean_latency_ms": 70825.1,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 15094.8,
+      "mean_quality": 0.9,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 23330.5,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 70825.1,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "roundvalue": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 139937.1,
+      "mean_cost_usd": 0.0049756252,
+      "mean_input_tokens": 8235.7,
+      "mean_latency_ms": 70825.1,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 15094.8,
+      "mean_quality": 0.9,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 23330.5,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 70825.1,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "task_only": {
+      "accuracy": 0.9,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 139937.1,
+      "mean_cost_usd": 0.0049756252,
+      "mean_input_tokens": 8235.7,
+      "mean_latency_ms": 70825.1,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 15094.8,
+      "mean_quality": 0.9,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 23330.5,
+      "mean_utility": 0.9,
+      "mean_wall_clock_ms": 70825.1,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    }
+  },
+  "policy_version": "roundvalue-replay-v3",
+  "replay_mode": "offline_saved_trajectories_only",
+  "run_id": "202608160226_MMLUPro50_917223ab",
+  "schema_version": "1.0",
+  "transition_metrics": {
+    "n_checkpoints": 50,
+    "n_decisions": 40,
+    "transition_counts": {
+      "harm": 0,
+      "neutral": 40,
+      "recovery": 0,
+      "repair": 0,
+      "terminal": 10,
+      "unknown": 0
+    },
+    "transition_rates": {
+      "harm": 0.0,
+      "neutral": 1.0,
+      "recovery": 0.0,
+      "repair": 0.0
+    }
+  }
+}

@@ -56,7 +56,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
         Writer → {answer, reasoning_summary}
 ```
 
-`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 5 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。Writer checkpoint 是两个语义分离的字段：`answer` 是本轮规范答案、也是唯一可评分字段；`reasoning_summary` 是对外可读的紧凑推理摘要（关键证据、选项间区分、假设与剩余不确定性），供下一轮 Agent 审阅、挑战或精化，不参与评分。第 `t` 轮的 `{answer_t, reasoning_summary_t}` 会作为 `previous_writer_checkpoint` 传入第 `t+1` 轮的全部 Planner/Analyst/Critic/Writer，而不是只传给最终 Writer。节点的输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量），这是硬的有界性保证；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 回退时 `answer` 是真实答案、`reasoning_summary` 被显式占位，非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
+`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 5 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。Writer checkpoint 是两个语义分离的字段：`answer` 是本轮规范答案、也是唯一可评分字段；`reasoning_summary` 是对外可读的紧凑推理摘要（关键证据、选项间区分、假设与剩余不确定性），供下一轮 Agent 审阅、挑战或精化，不参与评分。第 `t` 轮的 `{answer_t, reasoning_summary_t}` 会作为 `previous_writer_checkpoint` 传入第 `t+1` 轮的全部 Planner/Analyst/Critic/Writer，而不是只传给最终 Writer。节点的可见输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量）；非思考模式下它同时是发给 API 的 `max_tokens` 硬上限，思考模式下它只是 prompt 层的可见输出目标，API 上限改用模型配置的 `max_output_tokens`，为隐藏 reasoning token 留出空间；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的可见预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 回退时 `answer` 是真实答案、`reasoning_summary` 被显式占位，非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
 
 策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`：第 1–4 轮之后都可以继续，第 5 轮是最终轮、没有继续决策。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
 
@@ -73,7 +73,7 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 Debate 模块已被固化为一个整体：`topology.json` 只保留唯一且无版本号的 `debate` 通信流，`runner`、
 `max_rounds`、`nodes`、`packets`、`edges` 均不可选，运行时也不再接受模型或拓扑选择参数。
 
-唯一 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 固定为 `0.0`。DeepSeek 适配器会显式关闭思考模式（发送 `thinking: {"type": "disabled"}`），并要求响应中不存在 reasoning 内容。
+唯一 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 为 `0.2`（DeepSeek 思考模式下该参数会被静默忽略）、`max_output_tokens` 为 `32768`。DeepSeek 适配器显式开启思考模式（发送 `thinking: {"type": "enabled"}` 与 `reasoning_effort: "high"`），并把返回的 `reasoning_content` 长度与 `reasoning_tokens` 记入轨迹；推理内容不进入辩论消息，只出现在响应记录中。
 
 角色提示词保存在 `agents.json`，不使用散落的 prompt 文件。模型价格采用服务端返回的 token 明细计算；缺失 token、缓存计数、成本或延迟时保存为“未知”，绝不按零处理。
 

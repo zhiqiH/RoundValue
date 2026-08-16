@@ -1,0 +1,96 @@
+{
+  "api_latency_ms": {
+    "ci95_high": 461990.16,
+    "ci95_low": 223246.2,
+    "mean": 336652.8,
+    "n": 50
+  },
+  "bootstrap": {
+    "samples": 2000,
+    "seed": 20260813
+  },
+  "cost_status": "configured",
+  "cost_usd": {
+    "ci95_high": 0.017906110432,
+    "ci95_low": 0.010649088800000001,
+    "mean": 0.014052780672000002,
+    "n": 50
+  },
+  "input_tokens": {
+    "ci95_high": 47546.66,
+    "ci95_low": 44072.76,
+    "mean": 45817.56,
+    "n": 50
+  },
+  "latency_ms": {
+    "ci95_high": 272103.24,
+    "ci95_low": 126145.98,
+    "mean": 194908.74,
+    "n": 50
+  },
+  "output_tokens": {
+    "ci95_high": 46227.54,
+    "ci95_low": 20480.64,
+    "mean": 32459.14,
+    "n": 50
+  },
+  "quality": null,
+  "resource_observation": {
+    "api_latency_ms": {
+      "complete_observation": true,
+      "n_completed_tasks": 50,
+      "n_observed": 50
+    },
+    "cost_usd": {
+      "complete_observation": true,
+      "n_completed_tasks": 50,
+      "n_observed": 50
+    },
+    "input_tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 50,
+      "n_observed": 50
+    },
+    "latency_ms": {
+      "complete_observation": true,
+      "n_completed_tasks": 50,
+      "n_observed": 50
+    },
+    "output_tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 50,
+      "n_observed": 50
+    },
+    "quality": {
+      "complete_observation": false,
+      "n_completed_tasks": 50,
+      "n_observed": 0
+    },
+    "tokens": {
+      "complete_observation": true,
+      "n_completed_tasks": 50,
+      "n_observed": 50
+    },
+    "wall_clock_ms": {
+      "complete_observation": true,
+      "n_completed_tasks": 50,
+      "n_observed": 50
+    }
+  },
+  "schema_version": "1.0",
+  "tasks_complete": 50,
+  "tasks_failed": 0,
+  "tasks_total": 50,
+  "tokens": {
+    "ci95_high": 92142.42,
+    "ci95_low": 65751.36,
+    "mean": 78276.7,
+    "n": 50
+  },
+  "wall_clock_ms": {
+    "ci95_high": 272103.24,
+    "ci95_low": 126145.98,
+    "mean": 194908.74,
+    "n": 50
+  }
+}

@@ -37,6 +37,8 @@ class FixedDebateRunner:
         self.topology = experiment["topology"]
         self.model = experiment["model"]
         self.provider_name = experiment["provider_name"]
+        self.reasoning_enabled = bool(self.model["reasoning"]["enabled"])
+        self.reasoning_effort = self.model["reasoning"].get("effort")
         self.roles = {role["id"]: role for role in experiment["agents"]["roles"]}
         self.packet_nodes = {packet["id"]: packet for packet in self.topology["packets"]}
         self.format_retries = experiment["agents"].get("format_retries", 0)
@@ -95,9 +97,9 @@ class FixedDebateRunner:
         role = self.roles[role_id]
         model_max = int(self.model["max_output_tokens"])
         if token_budget is None:
-            max_output_tokens = model_max
+            visible_budget = model_max
         else:
-            max_output_tokens = min(model_max, max(16, int(token_budget)))
+            visible_budget = min(model_max, max(16, int(token_budget)))
         return ModelRequest(
             messages=[
                 {"role": "system", "content": role["system_prompt"]},
@@ -105,8 +107,9 @@ class FixedDebateRunner:
             ],
             model=self.model["model_name"],
             temperature=float(self.model["temperature"]),
-            max_output_tokens=max_output_tokens,
-            reasoning_enabled=bool(self.model["reasoning"]["enabled"]),
+            max_output_tokens=self._api_max_tokens(visible_budget),
+            reasoning_enabled=self.reasoning_enabled,
+            reasoning_effort=self.reasoning_effort,
             metadata={"round_index": str(round_index), "node_id": node_id, "role": role_id},
         )
 
@@ -114,11 +117,11 @@ class FixedDebateRunner:
         """Derive the node output budget from its declared output schema.
 
         The accepted output is already bounded by the per-field ``max_length``
-        values, so a global 4096-token allowance merely invites unbounded
-        rambling and the truncation failures that follow.  Convert the schema's
-        character budget plus JSON key overhead into tokens conservatively
-        (three characters per token covers dense LaTeX) and keep the configured
-        margin so a conforming reply is never cut off.
+        values, so a global token allowance merely invites unbounded rambling
+        and the truncation failures that follow.  Convert the schema's character
+        budget plus JSON key overhead into tokens conservatively (three
+        characters per token covers dense LaTeX) and keep the configured margin
+        so a conforming reply is never cut off.
         """
 
         schema = self.roles[role_id]["output_schema"]
@@ -135,6 +138,22 @@ class FixedDebateRunner:
             characters += len(str(name)) + 6  # `"name": ` plus a comma
         token_estimate = max(1, math.ceil(max(1, characters) / 3.0))
         return max(16, math.ceil(token_estimate * self.format_budget_margin))
+
+    def _api_max_tokens(self, visible_budget: int) -> int:
+        """Wire-level ``max_tokens`` for one request, reasoning-aware.
+
+        DeepSeek's ``max_tokens`` counts the hidden ``reasoning_content`` in
+        addition to the visible ``content``, so capping a thinking-mode request
+        at the schema-derived visible budget would truncate the model before it
+        emits the JSON answer.  In thinking mode the configured model cap is the
+        wire limit while the schema budget stays a soft, prompt-level target for
+        visible output; in non-thinking mode the schema budget remains the hard
+        wire limit exactly as before.
+        """
+
+        if self.reasoning_enabled:
+            return int(self.model["max_output_tokens"])
+        return visible_budget
 
     def _answer_field(self, role_id: str) -> str:
         """Return the one field whose content is the node's candidate answer."""
@@ -192,8 +211,9 @@ class FixedDebateRunner:
             ],
             model=base_request.model,
             temperature=base_request.temperature,
-            max_output_tokens=self._answer_only_budget(),
+            max_output_tokens=self._api_max_tokens(self._answer_only_budget()),
             reasoning_enabled=base_request.reasoning_enabled,
+            reasoning_effort=base_request.reasoning_effort,
             metadata=base_request.metadata,
         )
 
@@ -359,8 +379,9 @@ class FixedDebateRunner:
                     ],
                     model=base_request.model,
                     temperature=base_request.temperature,
-                    max_output_tokens=budget,
+                    max_output_tokens=self._api_max_tokens(budget),
                     reasoning_enabled=base_request.reasoning_enabled,
+                    reasoning_effort=base_request.reasoning_effort,
                     metadata=base_request.metadata,
                 )
             try:
@@ -689,6 +710,7 @@ class FixedDebateRunner:
                 "requested_model": self.model["model_name"],
                 "temperature": self.model["temperature"],
                 "reasoning_enabled": self.model["reasoning"]["enabled"],
+                "reasoning_effort": self.model["reasoning"].get("effort"),
             },
             "rounds": [],
             "checkpoints": [],

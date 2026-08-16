@@ -1,0 +1,14 @@
+{
+  "label_parameters": {
+    "lambda_cost": 0.0,
+    "mu_latency": 0.0
+  },
+  "run_id": "202608160226_MMLUPro50_917223ab",
+  "schema_version": "1.0",
+  "thresholds": {
+    "roundvalue": 0.0,
+    "task_only": 0.0
+  },
+  "training_records": 30,
+  "validation_records": 10
+}

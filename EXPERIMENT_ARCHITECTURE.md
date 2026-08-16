@@ -34,7 +34,7 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 | 在线停止策略 | 题目、当前答案、可见消息、公开 verifier、已用预算 |
 | 离线评分/标签 | 参考答案、隐藏测试与离线 Judge（不可回流在线） |
 
-所有角色必须返回严格 JSON。节点输出预算由角色 output_schema 推导并逐节点限制 `max_output_tokens`，这是硬的有界性保证；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的预算逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 回退时 `answer` 始终是模型给出的真实答案，`reasoning_summary` 被显式占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
+所有角色必须返回严格 JSON。节点可见输出预算由角色 output_schema 推导；非思考模式下它逐节点限制 `max_output_tokens`，思考模式下它是 prompt 层目标、API 上限改为模型 `max_output_tokens`（因为 DeepSeek 的 `max_tokens` 计入隐藏 reasoning token）；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的可见预算逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 回退时 `answer` 始终是模型给出的真实答案，`reasoning_summary` 被显式占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
 
 Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。MMLU-Pro 的题目与全部选项已内嵌在公开 `prompt` 中，而 `answer_index`、`reference_answer`、原 ID 与完整标签只保存在磁盘记录和离线评分中。
 
@@ -58,7 +58,7 @@ results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、�
 .secret/model_key.json            本地密钥，永不提交
 ```
 
-三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 只保留唯一的 `deepseek_flash` profile。Debate 模块是一个不可选的固定整体：运行时不接受模型或拓扑选择参数，任何变更都会通过 config/源码哈希与 smoke gate 强制重跑验收。默认使用 `deepseek-v4-flash`、`temperature: 0.0`，适配器显式发送 `thinking: {"type":"disabled"}`。
+三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 只保留唯一的 `deepseek_flash` profile。Debate 模块是一个不可选的固定整体：运行时不接受模型或拓扑选择参数，任何变更都会通过 config/源码哈希与 smoke gate 强制重跑验收。默认使用 `deepseek-v4-flash`、`temperature: 0.2`、`max_output_tokens: 32768`，适配器显式发送 `thinking: {"type":"enabled"}` 与 `reasoning_effort: "high"`。
 
 正式基准是两个 MMLU-Pro 数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
 确定性划分，余数计入 Test：MMLU-Pro-500（500 → 300/100/100）与

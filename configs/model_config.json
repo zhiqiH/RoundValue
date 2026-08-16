@@ -19,11 +19,12 @@
     "deepseek_flash": {
       "provider": "deepseek",
       "model_name": "deepseek-v4-flash",
-      "temperature": 0.0,
+      "temperature": 0.2,
       "reasoning": {
-        "enabled": false
+        "enabled": true,
+        "effort": "high"
       },
-      "max_output_tokens": 4096,
+      "max_output_tokens": 32768,
       "request_defaults": {
         "response_format": {
           "type": "json_object"

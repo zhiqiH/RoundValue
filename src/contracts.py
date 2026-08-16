@@ -153,6 +153,7 @@ class ModelRequest:
     temperature: float
     max_output_tokens: int
     reasoning_enabled: bool
+    reasoning_effort: str | None = None
     metadata: dict[str, str] = field(default_factory=dict)
 
     def log_view(self) -> dict[str, Any]:

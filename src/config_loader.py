@@ -154,11 +154,29 @@ def _validate_model_config(config: dict[str, Any]) -> None:
             raise ConfigurationError(f"model {configured_id} references unknown provider {provider_name}")
         require_string(model.get("model_name"), f"model {configured_id}.model_name")
         temperature = model.get("temperature")
-        if isinstance(temperature, bool) or not isinstance(temperature, (int, float)) or float(temperature) != 0.0:
-            raise ConfigurationError(f"model {configured_id} must use temperature 0")
+        if (
+            isinstance(temperature, bool)
+            or not isinstance(temperature, (int, float))
+            or not math.isfinite(float(temperature))
+            or not 0.0 <= float(temperature) <= 2.0
+        ):
+            raise ConfigurationError(
+                f"model {configured_id} temperature must be a finite number between 0 and 2"
+            )
         reasoning = require_object(model.get("reasoning"), f"model {configured_id}.reasoning")
-        if reasoning.get("enabled") is not False:
-            raise ConfigurationError(f"model {configured_id} must disable reasoning")
+        reasoning_enabled = reasoning.get("enabled")
+        if not isinstance(reasoning_enabled, bool):
+            raise ConfigurationError(f"model {configured_id}.reasoning.enabled must be a boolean")
+        reasoning_effort = reasoning.get("effort")
+        if reasoning_enabled:
+            if reasoning_effort not in ("low", "medium", "high", "xhigh", "max"):
+                raise ConfigurationError(
+                    f"model {configured_id}.reasoning.effort must be low/medium/high/xhigh/max while reasoning is enabled"
+                )
+        elif reasoning_effort is not None:
+            raise ConfigurationError(
+                f"model {configured_id} must not set reasoning.effort while reasoning is disabled"
+            )
         max_tokens = model.get("max_output_tokens")
         if isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or max_tokens <= 0:
             raise ConfigurationError(f"model {configured_id}.max_output_tokens must be positive")

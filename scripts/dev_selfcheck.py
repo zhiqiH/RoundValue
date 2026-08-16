@@ -14,6 +14,7 @@ a node cannot fail merely because the model refuses to write a short JSON.
 
 from __future__ import annotations
 
+import copy
 import json
 import sys
 import tempfile
@@ -183,13 +184,18 @@ def main() -> int:
     check(record["status"] == "completed", "repeated truncation recovered by shrinking budget")
     check(record["format_repairs"] == 2, "two shrinking repairs recorded")
     budget_runner = FixedDebateRunner(dict(experiment), None)
-    expected_budgets = [
-        *budget_runner._attempt_budgets("writer"),
-        budget_runner._answer_only_budget(),
-    ]
+    model_max = int(experiment["model"]["max_output_tokens"])
     check(
-        [request.max_output_tokens for request in provider.requests] == expected_budgets,
-        "full-schema budgets shrink, then the answer-only fallback takes over",
+        [request.max_output_tokens for request in provider.requests]
+        == [model_max, model_max, model_max],
+        "thinking mode keeps the model cap as the wire budget on every attempt",
+    )
+    check(
+        all(
+            request.reasoning_enabled and request.reasoning_effort == "high"
+            for request in provider.requests
+        ),
+        "thinking-mode requests carry reasoning plus the configured high effort",
     )
     check(
         "Return ONLY the final answer" in provider.requests[2].messages[1]["content"],
@@ -199,6 +205,31 @@ def main() -> int:
         record["fallback"]["type"] == "answer_only"
         and record["output"]["answer"] == "C",
         "answer-only fallback completes the writer schema deterministically",
+    )
+
+    no_thinking_experiment = copy.deepcopy(experiment)
+    no_thinking_experiment["model"]["reasoning"] = {"enabled": False}
+    record, provider = _node_result(
+        no_thinking_experiment,
+        [("length", truncated), ("length", truncated), ("stop", valid)],
+    )
+    check(
+        record["status"] == "completed",
+        "non-thinking truncation repair still completes",
+    )
+    no_thinking_runner = FixedDebateRunner(dict(no_thinking_experiment), None)
+    expected_budgets = [
+        *no_thinking_runner._attempt_budgets("writer"),
+        no_thinking_runner._answer_only_budget(),
+    ]
+    check(
+        [request.max_output_tokens for request in provider.requests] == expected_budgets,
+        "non-thinking full-schema budgets shrink, then the answer-only fallback takes over",
+    )
+    check(
+        all(not request.reasoning_enabled for request in provider.requests)
+        and all(request.reasoning_effort is None for request in provider.requests),
+        "non-thinking requests carry no reasoning flags",
     )
 
     record, provider = _node_result(
@@ -285,9 +316,10 @@ def main() -> int:
         and checkpoint["writer_output"]["reasoning_summary"],
         "writer checkpoint stores answer separately from reasoning_summary",
     )
+    model_max = int(experiment["model"]["max_output_tokens"])
     check(
-        all(request.max_output_tokens < 4096 for request in provider.requests),
-        "every node request uses a schema-derived budget",
+        all(request.max_output_tokens == model_max for request in provider.requests),
+        "thinking-mode node requests reserve the model cap for hidden reasoning",
     )
 
     # Collect a complete five-round trajectory with the same deterministic
