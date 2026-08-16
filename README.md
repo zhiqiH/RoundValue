@@ -34,29 +34,32 @@ MMLU-Pro：可用数据集是 500 题主集 MMLU-Pro-500 与其 50 题验证子�
 {
   "deepseek": {
     "api_key": "填入真实 API key"
+  },
+  "openai": {
+    "api_key": "选 GPT-5-nano 时填入真实 API key"
   }
 }
 ```
 
-也可使用环境变量 `DEEPSEEK_API_KEY`。`.secret/` 已被忽略，密钥不会写入轨迹、结果或运行日志。`smoke` 是一次真实 API 冒烟实验：若密钥、网络、模型响应、JSON 输出或评分失败，命令会失败；不会退化为假调用。
+也可使用环境变量 `DEEPSEEK_API_KEY` / `OPENAI_API_KEY`。`.secret/` 已被忽略，密钥不会写入轨迹、结果或运行日志。`smoke` 是一次真实 API 冒烟实验：若密钥、网络、模型响应、JSON 输出或评分失败，命令会失败；不会退化为假调用。
 
 ## 冻结的 Debate 协议
 
 一轮就是下列完整 DAG，四种角色固定为 Planner、Analyst、Critic、Writer：
 
 ```text
-P1 / A1 / C1（并行，读取题目与上一轮 Writer checkpoint）
+P1 / A1 / C1（并行，只读取题目；跨轮时对上一轮 Writer checkpoint 保持盲态）
                      ↓
        D1 = [P1, A1, C1] 的确定性 JSON packet
                      ↓
-P2 / A2 / C2（并行，三者均读取完整 D1）
+P2 / A2 / C2（并行，三者均读取完整 D1 与上一轮 Writer checkpoint）
                      ↓
  W-packet = [P1, A1, C1, P2, A2, C2]（固定顺序）
                      ↓
         Writer → {answer, reasoning_summary}
 ```
 
-`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 5 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。Writer checkpoint 是两个语义分离的字段：`answer` 是本轮规范答案、也是唯一可评分字段；`reasoning_summary` 是对外可读的紧凑推理摘要（关键证据、选项间区分、假设与剩余不确定性），供下一轮 Agent 审阅、挑战或精化，不参与评分。第 `t` 轮的 `{answer_t, reasoning_summary_t}` 会作为 `previous_writer_checkpoint` 传入第 `t+1` 轮的全部 Planner/Analyst/Critic/Writer，而不是只传给最终 Writer。节点的可见输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量）；非思考模式下它同时是发给 API 的 `max_tokens` 硬上限，思考模式下它只是 prompt 层的可见输出目标，API 上限改用模型配置的 `max_output_tokens`，为隐藏 reasoning token 留出空间；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的可见预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 回退时 `answer` 是真实答案、`reasoning_summary` 被显式占位，非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
+`D1` 和 `W-packet` 只是确定性 JSON 拼接，不是额外 Agent，也不产生模型调用。每轮固定有 7 次**逻辑模型调用**，至多 5 轮；网络重试是附属 API 尝试，单独记录，不改变“7 次逻辑调用/轮”的定义。Writer checkpoint 是两个语义分离的字段：`answer` 是本轮规范答案、也是唯一可评分字段；`reasoning_summary` 是对外可读的紧凑推理摘要（关键证据、选项间区分、假设与剩余不确定性），供下一轮 Agent 审阅、挑战或精化，不参与评分。第 `t` 轮的 `{answer_t, reasoning_summary_t}` 作为 `previous_writer_checkpoint` 从第 `t+1` 轮的 **Stage 2**（P2/A2/C2）与 Writer 才可见：Stage 1（P1/A1/C1）跨轮时也只读当前任务、先独立重新生成候选，Stage 2 再把它当作需要重新验证的 previous proposal 与当前 Stage-1 packet 对照，避免候选生成前被上一轮结论 anchoring。节点的可见输出预算由该角色 output_schema 的字段上限推导（`format_budget_margin` 留余量）；非思考模式下它同时是发给 API 的 `max_tokens` 硬上限，思考模式下它只是 prompt 层的可见输出目标，API 上限改用模型配置的 `max_output_tokens`，为隐藏 reasoning token 留出空间；非法 JSON、截断输出或缺失/空字段会触发有界的验证-修复重试（`format_retries`），每次重试把具体违规反馈给模型并完整记录，非最终修复的可见预算逐级减半。最后一次修复退化为**只问答案的回退**：只要求模型返回答案本身，runner 再用自描述占位符确定性补全 schema，并在轨迹 `fallback` 字段记录该降级——Writer 回退时 `answer` 是真实答案、`reasoning_summary` 被显式占位，非 Writer 角色只有辅助字段被占位。字段的 `max_length` 是软目标而非致命校验（模型无法精确数字符数），不触发失败。不存在静默修改；回退也无答案时仍如实失败。
 
 策略只在某个完整 checkpoint 后决定 `STOP` 或 `CONTINUE`：第 1–4 轮之后都可以继续，第 5 轮是最终轮、没有继续决策。它只能读取题目、已可见消息、公开 verifier 信号和已用预算；参考答案、隐藏测试、未来轮输出及离线 Judge 信息只用于离线评分和标签构建。
 
@@ -67,13 +70,23 @@ P2 / A2 / C2（并行，三者均读取完整 D1）
 | 文件 | 作用 |
 |---|---|
 | `configs/agents.json` | 四个 Debate 角色的内嵌提示词、输出字段，以及 `format_retries` / `format_budget_margin` 修复协议 |
-| `configs/model_config.json` | 唯一的 Provider/模型 profile（`deepseek_flash`）、采样、重试、价格和密钥位置 |
+| `configs/model_config.json` | Provider/模型 profile（默认 `deepseek_flash`，可选 `gpt5_nano`）、采样、重试、价格和密钥位置 |
 | `configs/topology.json` | 唯一的 Debate 通信流 `debate`：节点、边、packet 与轮数 |
 
 Debate 模块已被固化为一个整体：`topology.json` 只保留唯一且无版本号的 `debate` 通信流，`runner`、
-`max_rounds`、`nodes`、`packets`、`edges` 均不可选，运行时也不再接受模型或拓扑选择参数。
+`max_rounds`、`nodes`、`packets`、`edges` 均不可选，运行时也不接受拓扑选择参数。模型是唯一的
+run-level 选择：`roundvalue smoke|run --model-id <id>` 从 `model_config.json` 的 `models` 中选一个
+profile（缺省 `deepseek_flash`，可选 `gpt5_nano`），一个 run 内所有 Planner/Analyst/Critic/Writer
+使用同一模型，不实现 heterogeneous role-model assignment。
 
-唯一 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 为 `0.2`（DeepSeek 思考模式下该参数会被静默忽略）、`max_output_tokens` 为 `32768`。DeepSeek 适配器显式开启思考模式（发送 `thinking: {"type": "enabled"}` 与 `reasoning_effort: "high"`），并把返回的 `reasoning_content` 长度与 `reasoning_tokens` 记入轨迹；推理内容不进入辩论消息，只出现在响应记录中。
+默认 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 为 `0.2`（DeepSeek 思考模式下该参数会被静默忽略）、`max_output_tokens` 为 `32768`。DeepSeek 适配器显式开启思考模式（发送 `thinking: {"type": "enabled"}` 与 `reasoning_effort: "high"`），并把返回的 `reasoning_content` 长度与 `reasoning_tokens` 记入轨迹；推理内容不进入辩论消息，只出现在响应记录中。
+
+`gpt5_nano` profile 使用官方模型 ID `gpt-5-nano`（默认 snapshot `gpt-5-nano-2025-08-07`）、
+OpenAI Chat Completions 端点与 `reasoning_effort: "medium"`。OpenAI 路径不发送 DeepSeek 的
+`thinking` toggle，输出上限使用 `max_completion_tokens`（DeepSeek 继续使用 `max_tokens`）；
+两个 profile 的采样、推理与价格参数彼此隔离，`run.json` 与轨迹的 `model_selection` /
+`configured_model` 记录实际 provider、model 与 reasoning/inference 配置。OpenAI key 通过
+`OPENAI_API_KEY` 或 `.secret/model_key.json` 的 `openai.api_key` 提供，绝不硬编码。
 
 角色提示词保存在 `agents.json`，不使用散落的 prompt 文件。模型价格采用服务端返回的 token 明细计算；缺失 token、缓存计数、成本或延迟时保存为“未知”，绝不按零处理。
 
@@ -111,7 +124,7 @@ MMLU-Pro-500 的 collect run 是 `202608142334_MMLUPro500_15193d5a`（数据集�
 
 ### 防泄漏与 Agent 可见信息
 
-Agent 只能看到 `task_id`、`domain`、`prompt`、上一轮 Writer 的 `answer` 与 `reasoning_summary`，以及少量明确允许的公开元数据。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。MMLU-Pro 的题干与全部选项已内嵌在 `prompt` 中，而 `answer_index`、`reference_answer`、参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
+Agent 可见信息按 stage 分层：Stage 1（P1/A1/C1）只能看到 `task_id`、`domain`、`prompt` 与少量明确允许的公开元数据，跨轮时也看不到上一轮 Writer 的 `answer`/`reasoning_summary` 或历史 transcript；Stage 2（P2/A2/C2）与 Writer 才额外看到上一轮 Writer checkpoint。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。MMLU-Pro 的题干与全部选项已内嵌在 `prompt` 中，而 `answer_index`、`reference_answer`、参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
 
 ## Benchmark 边界
 
@@ -164,6 +177,12 @@ roundvalue run --benchmark benchmark/mmlu_pro/MMLU-Pro-500.json \
 # MMLU-Pro-50 快速验证
 roundvalue run --benchmark benchmark/mmlu_pro/MMLU-Pro-50.json \
   --smoke-run-id <MMLU_PRO_SMOKE_RUN_ID>
+
+# 显式改用 GPT-5-nano（smoke 与 run 必须使用同一个 --model-id）
+roundvalue smoke --model-id gpt5_nano
+roundvalue run --model-id gpt5_nano \
+  --benchmark benchmark/mmlu_pro/MMLU-Pro-50.json \
+  --smoke-run-id <GPT5_NANO_SMOKE_RUN_ID>
 ```
 
 每个数据集的 provenance 都内嵌在任务文件本身的 `provenance` 字段里，固定记录生成器

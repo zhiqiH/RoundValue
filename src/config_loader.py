@@ -138,6 +138,17 @@ def _validate_model_config(config: dict[str, Any]) -> None:
                 f"provider {provider_name} has unsupported adapter; add a Python adapter before using it"
             )
         require_string(provider.get("base_url"), f"provider {provider_name}.base_url")
+        output_tokens_field = provider.get("max_output_tokens_field", "max_tokens")
+        if output_tokens_field not in ("max_tokens", "max_completion_tokens"):
+            raise ConfigurationError(
+                f"provider {provider_name}.max_output_tokens_field must be "
+                "max_tokens or max_completion_tokens"
+            )
+        thinking_toggle = provider.get("supports_thinking_toggle", False)
+        if not isinstance(thinking_toggle, bool):
+            raise ConfigurationError(
+                f"provider {provider_name}.supports_thinking_toggle must be a boolean"
+            )
         key_spec = require_object(provider.get("api_key"), f"provider {provider_name}.api_key")
         require_string(key_spec.get("environment_variable"), f"provider {provider_name}.api_key.environment_variable")
         key_file = require_string(key_spec.get("file"), f"provider {provider_name}.api_key.file")
@@ -169,9 +180,18 @@ def _validate_model_config(config: dict[str, Any]) -> None:
             raise ConfigurationError(f"model {configured_id}.reasoning.enabled must be a boolean")
         reasoning_effort = reasoning.get("effort")
         if reasoning_enabled:
-            if reasoning_effort not in ("low", "medium", "high", "xhigh", "max"):
+            if reasoning_effort not in (
+                "none",
+                "minimal",
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max",
+            ):
                 raise ConfigurationError(
-                    f"model {configured_id}.reasoning.effort must be low/medium/high/xhigh/max while reasoning is enabled"
+                    f"model {configured_id}.reasoning.effort must be "
+                    "none/minimal/low/medium/high/xhigh/max while reasoning is enabled"
                 )
         elif reasoning_effort is not None:
             raise ConfigurationError(
@@ -192,9 +212,22 @@ def _validate_model_config(config: dict[str, Any]) -> None:
         defaults = model.get("request_defaults", {})
         if not isinstance(defaults, dict):
             raise ConfigurationError(f"model {configured_id}.request_defaults must be a JSON object")
-        if any(key in defaults for key in ("thinking", "reasoning_effort", "stream")):
+        if any(
+            key in defaults
+            for key in (
+                "model",
+                "messages",
+                "temperature",
+                "max_tokens",
+                "max_completion_tokens",
+                "thinking",
+                "reasoning_effort",
+                "stream",
+            )
+        ):
             raise ConfigurationError(
-                f"model {configured_id}.request_defaults may not override thinking, reasoning effort, or streaming"
+                f"model {configured_id}.request_defaults may not override the "
+                "model, messages, sampling, output cap, thinking, reasoning effort, or streaming"
             )
         response_format = defaults.get("response_format")
         if response_format is not None:
@@ -275,8 +308,15 @@ def select_topology(document: dict[str, Any]) -> tuple[str, dict[str, Any]]:
 
 def load_experiment_config(
     project_root: Path,
+    model_id: str | None = None,
 ) -> dict[str, Any]:
-    """Return the fixed validated configuration and its single model profile."""
+    """Return the validated configuration resolved for one run-level model.
+
+    ``model_id=None`` keeps the frozen ``default_model_id`` so existing runs
+    stay DeepSeek-backed.  Selecting another configured model id swaps the
+    provider/model profile for every Debate node without touching topology or
+    role semantics.
+    """
 
     root = project_root.resolve()
     config_dir = root / "configs"
@@ -286,10 +326,13 @@ def load_experiment_config(
     _validate_agents(agents)
     _validate_model_config(model_config)
     selected_topology_id, topology = select_topology(topology_document)
-    selected_id = model_config["default_model_id"]
+    selected_id = model_config["default_model_id"] if model_id is None else model_id
     models = model_config["models"]
     if selected_id not in models:
-        raise ConfigurationError(f"unknown model id: {selected_id}")
+        available = ", ".join(sorted(models))
+        raise ConfigurationError(
+            f"unknown model id {selected_id!r}; configured models are: {available}"
+        )
     model = models[selected_id]
     provider = model_config["providers"][model["provider"]]
     return {

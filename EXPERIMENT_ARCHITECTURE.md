@@ -10,17 +10,17 @@
 
 ```text
 P1 / A1 / C1 并行
-      │（题目 + 上一轮 Writer checkpoint {answer, reasoning_summary}）
+      │（只读题目；跨轮时对上一轮 Writer checkpoint 保持盲态）
       ▼
 D1 = 确定性 JSON packet [P1, A1, C1]
       ├───────────────┬───────────────┐
       ▼               ▼               ▼
-     P2              A2              C2       （并行；全部读取完整 D1）
+     P2              A2              C2       （并行；读取完整 D1 + 上一轮 Writer checkpoint）
       \               │               /
        └── W-packet = [P1,A1,C1,P2,A2,C2] ──► Writer ──► {answer, reasoning_summary}
 ```
 
-`P/A/C/W` 分别表示 Planner、Analyst、Critic、Writer。`D1` 与 `W-packet` 是确定性 JSON 聚合节点：不是 Agent、不请求模型、不改变 token 或成本。Writer 看到六条角色输出的固定顺序，输出两个语义分离的字段：`answer` 是唯一可评分答案，`reasoning_summary` 是对外可读的紧凑推理摘要，只作为跨轮通信证据、不参与评分。第 `t` 轮 checkpoint `{answer_t, reasoning_summary_t}` 作为 `previous_writer_checkpoint` 进入第 `t+1` 轮全部七个逻辑节点，构成受控的跨轮信息瓶颈；除该紧凑 checkpoint 外不累积传递完整历史 transcript。
+`P/A/C/W` 分别表示 Planner、Analyst、Critic、Writer。`D1` 与 `W-packet` 是确定性 JSON 聚合节点：不是 Agent、不请求模型、不改变 token 或成本。Writer 看到六条角色输出的固定顺序，输出两个语义分离的字段：`answer` 是唯一可评分答案，`reasoning_summary` 是对外可读的紧凑推理摘要，只作为跨轮通信证据、不参与评分。第 `t` 轮 checkpoint `{answer_t, reasoning_summary_t}` 作为 `previous_writer_checkpoint` 从第 `t+1` 轮的 Stage 2（P2/A2/C2）与 Writer 才可见；Stage 1（P1/A1/C1）跨轮时也只读当前任务、独立重新生成候选，Stage 2 再把它当作需要重新验证的 previous proposal 与当前 Stage-1 packet 对照。除该紧凑 checkpoint 外不累积传递完整历史 transcript。
 
 一轮恒为 7 次逻辑模型调用：`P1,A1,C1,P2,A2,C2,W`。网络重试与格式修复重试都属于附属 API 尝试，完整保存在轨迹中并另行累积；它们不改变每轮的逻辑调用数。格式修复是有界的（`agents.json` 的 `format_retries`），把具体违规反馈给模型后重新采样同一节点，绝不静默改写字段；耗尽后该节点如实失败。P/A/C 同阶段并行，阶段 2 必须等待完整 D1，Writer 必须等待完整 W-packet。角色、边、可见性、顺序和最大轮数在运行中均不可变。
 
@@ -28,13 +28,13 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 
 | 位置 | 可读取信息 |
 |---|---|
-| P1/A1/C1 | 公开题面、上一轮 Writer checkpoint（answer + reasoning_summary） |
-| P2/A2/C2 | 上述信息、完整 D1 |
-| Writer | 上述信息、完整 W-packet |
+| P1/A1/C1 | 仅公开题面；跨轮时看不到上一轮 Writer checkpoint 与历史 transcript |
+| P2/A2/C2 | 公开题面、上一轮 Writer checkpoint（answer + reasoning_summary）、完整 D1 |
+| Writer | 公开题面、上一轮 Writer checkpoint、完整 W-packet |
 | 在线停止策略 | 题目、当前答案、可见消息、公开 verifier、已用预算 |
 | 离线评分/标签 | 参考答案、隐藏测试与离线 Judge（不可回流在线） |
 
-所有角色必须返回严格 JSON。节点可见输出预算由角色 output_schema 推导；非思考模式下它逐节点限制 `max_output_tokens`，思考模式下它是 prompt 层目标、API 上限改为模型 `max_output_tokens`（因为 DeepSeek 的 `max_tokens` 计入隐藏 reasoning token）；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的可见预算逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 回退时 `answer` 始终是模型给出的真实答案，`reasoning_summary` 被显式占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
+所有角色必须返回严格 JSON。节点可见输出预算由角色 output_schema 推导；非思考模式下它逐节点限制 `max_output_tokens`，思考模式下它是 prompt 层目标、API 上限改为模型 `max_output_tokens`（因为 reasoning 模型的 wire cap 计入隐藏 reasoning token）；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的可见预算逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 回退时 `answer` 始终是模型给出的真实答案，`reasoning_summary` 被显式占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
 
 Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。MMLU-Pro 的题目与全部选项已内嵌在公开 `prompt` 中，而 `answer_index`、`reference_answer`、原 ID 与完整标签只保存在磁盘记录和离线评分中。
 
@@ -58,7 +58,7 @@ results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、�
 .secret/model_key.json            本地密钥，永不提交
 ```
 
-三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 只保留唯一的 `deepseek_flash` profile。Debate 模块是一个不可选的固定整体：运行时不接受模型或拓扑选择参数，任何变更都会通过 config/源码哈希与 smoke gate 强制重跑验收。默认使用 `deepseek-v4-flash`、`temperature: 0.2`、`max_output_tokens: 32768`，适配器显式发送 `thinking: {"type":"enabled"}` 与 `reasoning_effort: "high"`。
+三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 定义 `deepseek_flash`（默认）与 `gpt5_nano` 两个 profile。Debate 拓扑不可选；模型是唯一 run-level 选择，通过 `roundvalue smoke|run --model-id <id>` 指定，一个 run 内全部七类节点使用同一模型。任何 config/源码变更都会通过哈希与 smoke gate 强制重跑验收。DeepSeek 默认使用 `deepseek-v4-flash`、`temperature: 0.2`、`max_output_tokens: 32768`，适配器发送 `thinking: {"type":"enabled"}` 与 `reasoning_effort: "high"`；`gpt5_nano` 使用官方 `gpt-5-nano`（默认 snapshot `gpt-5-nano-2025-08-07`）、Chat Completions、`reasoning_effort: "medium"` 与 `max_completion_tokens`，不发送 DeepSeek 的 `thinking` toggle。
 
 正式基准是两个 MMLU-Pro 数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
 确定性划分，余数计入 Test：MMLU-Pro-500（500 → 300/100/100）与

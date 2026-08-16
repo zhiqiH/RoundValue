@@ -28,6 +28,7 @@ if str(SRC_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SRC_DIRECTORY))
 
 from config_loader import load_experiment_config  # noqa: E402
+from contracts import ConfigurationError  # noqa: E402
 import pipeline as tb  # noqa: E402
 
 
@@ -55,9 +56,20 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help="Passing step1_smoke run ID; collection refuses to start without it.",
     )
+    parser.add_argument(
+        "--model-id",
+        help=(
+            "Run-level model profile from configs/model_config.json. Defaults "
+            "to deepseek_flash; pass gpt5_nano to run every Debate node with "
+            "GPT-5-nano."
+        ),
+    )
     args = parser.parse_args(argv)
     args.mode = "collect"
-    experiment = load_experiment_config(tb.PROJECT_ROOT)
+    try:
+        experiment = load_experiment_config(tb.PROJECT_ROOT, model_id=args.model_id)
+    except ConfigurationError as error:
+        parser.error(str(error))
     state: dict[str, Any] = {"manifest": None}
 
     def run() -> int:

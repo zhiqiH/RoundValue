@@ -73,17 +73,22 @@ class FixedDebateRunner:
         visible_messages: list[dict[str, Any]],
     ) -> dict[str, Any]:
         role = self.roles[role_id]
-        return {
+        node_input: dict[str, Any] = {
             "protocol": "RoundValue fixed two-stage P/A/C-to-Writer debate",
             "round_index": round_index,
             "node_id": node_id,
             "role": role_id,
             "task": public_task(task),
-            "previous_writer_checkpoint": previous_checkpoint,
             "visible_messages": visible_messages,
             "required_output_schema": role["output_schema"],
             "instruction": "Return exactly one JSON object. Do not use Markdown fences or add text outside the object.",
         }
+        if previous_checkpoint is not None:
+            # Stage 1 never receives this field, so rounds 2-5 regenerate
+            # candidates independently.  Stage 2 and Writer see it as a
+            # previous proposal that must be re-validated, never as authority.
+            node_input["previous_writer_checkpoint"] = previous_checkpoint
+        return node_input
 
     def _request_for_node(
         self,
@@ -140,14 +145,15 @@ class FixedDebateRunner:
         return max(16, math.ceil(token_estimate * self.format_budget_margin))
 
     def _api_max_tokens(self, visible_budget: int) -> int:
-        """Wire-level ``max_tokens`` for one request, reasoning-aware.
+        """Wire-level output cap for one request, reasoning-aware.
 
-        DeepSeek's ``max_tokens`` counts the hidden ``reasoning_content`` in
-        addition to the visible ``content``, so capping a thinking-mode request
-        at the schema-derived visible budget would truncate the model before it
-        emits the JSON answer.  In thinking mode the configured model cap is the
-        wire limit while the schema budget stays a soft, prompt-level target for
-        visible output; in non-thinking mode the schema budget remains the hard
+        Reasoning providers (DeepSeek's ``max_tokens`` and OpenAI's
+        ``max_completion_tokens``) count hidden reasoning tokens in addition to
+        the visible ``content``, so capping a reasoning request at the
+        schema-derived visible budget would truncate the model before it emits
+        the JSON answer.  In reasoning mode the configured model cap is the wire
+        limit while the schema budget stays a soft, prompt-level target for
+        visible output; in non-reasoning mode the schema budget remains the hard
         wire limit exactly as before.
         """
 
@@ -582,7 +588,10 @@ class FixedDebateRunner:
             stage_1_specs,
             task=task,
             round_index=round_index,
-            previous_checkpoint=previous_checkpoint,
+            # Stage 1 is intentionally blind to the previous Writer checkpoint
+            # in every round: rounds 2-5 must regenerate candidates
+            # independently before any comparison with the prior conclusion.
+            previous_checkpoint=None,
             visible_messages=[],
         )
         round_record["nodes"].extend(stage_1)
@@ -709,6 +718,7 @@ class FixedDebateRunner:
                 "provider": self.provider_name,
                 "requested_model": self.model["model_name"],
                 "temperature": self.model["temperature"],
+                "max_output_tokens": self.model["max_output_tokens"],
                 "reasoning_enabled": self.model["reasoning"]["enabled"],
                 "reasoning_effort": self.model["reasoning"].get("effort"),
             },

@@ -1,4 +1,4 @@
-"""Provider-neutral real model calls with an OpenAI-compatible DeepSeek adapter.
+"""Provider-neutral real model calls over OpenAI-compatible chat completions.
 
 There is intentionally no mock provider.  A missing credential or an HTTP error
 is an experiment failure and is written into the trajectory by the DAG runner.
@@ -75,6 +75,7 @@ class OpenAICompatibleProvider(ProviderAdapter):
         retry_backoff_seconds: float,
         request_defaults: dict[str, Any] | None = None,
         supports_thinking_toggle: bool = False,
+        max_output_tokens_field: str = "max_tokens",
     ) -> None:
         self.provider_name = provider_name
         self.base_url = base_url.rstrip("/")
@@ -84,6 +85,7 @@ class OpenAICompatibleProvider(ProviderAdapter):
         self.retry_backoff_seconds = retry_backoff_seconds
         self.request_defaults = request_defaults or {}
         self.supports_thinking_toggle = supports_thinking_toggle
+        self.max_output_tokens_field = max_output_tokens_field
         self.client = httpx.Client(timeout=timeout_seconds)
 
     @property
@@ -95,14 +97,22 @@ class OpenAICompatibleProvider(ProviderAdapter):
             "model": request.model,
             "messages": request.messages,
             "temperature": request.temperature,
-            "max_tokens": request.max_output_tokens,
             "stream": False,
         }
+        if self.max_output_tokens_field not in ("max_tokens", "max_completion_tokens"):
+            raise ProviderError(
+                f"provider {self.provider_name} has an invalid max output tokens field"
+            )
+        # DeepSeek counts hidden reasoning in ``max_tokens``.  OpenAI reasoning
+        # models use ``max_completion_tokens`` for the combined reasoning plus
+        # visible-token cap; ``max_tokens`` is deprecated there.
+        payload[self.max_output_tokens_field] = request.max_output_tokens
         forbidden_defaults = {
             "model",
             "messages",
             "temperature",
             "max_tokens",
+            "max_completion_tokens",
             "thinking",
             "reasoning_effort",
             "stream",
@@ -111,10 +121,9 @@ class OpenAICompatibleProvider(ProviderAdapter):
             if key not in forbidden_defaults:
                 payload[key] = value
         if request.reasoning_enabled:
-            if not self.supports_thinking_toggle:
-                raise ProviderError("this provider does not support toggling thinking mode")
-            # DeepSeek's OpenAI-format toggle plus its separate effort knob.
-            payload["thinking"] = {"type": "enabled"}
+            if self.supports_thinking_toggle:
+                # DeepSeek's OpenAI-format toggle plus its separate effort knob.
+                payload["thinking"] = {"type": "enabled"}
             if request.reasoning_effort:
                 payload["reasoning_effort"] = request.reasoning_effort
         elif self.supports_thinking_toggle:
@@ -122,6 +131,28 @@ class OpenAICompatibleProvider(ProviderAdapter):
             # required for the non-reasoning profile.
             payload["thinking"] = {"type": "disabled"}
         return payload
+
+    @staticmethod
+    def _cache_usage(body: dict[str, Any]) -> tuple[int | None, int | None]:
+        """Read cached/miss prompt tokens from DeepSeek or OpenAI usage shapes."""
+
+        usage = body.get("usage")
+        if not isinstance(usage, dict):
+            return None, None
+        hit = usage.get("prompt_cache_hit_tokens")
+        miss = usage.get("prompt_cache_miss_tokens")
+        hit_valid = isinstance(hit, int) and hit >= 0
+        miss_valid = isinstance(miss, int) and miss >= 0
+        if hit_valid or miss_valid:
+            # DeepSeek exposes explicit hit/miss counters; keep the two
+            # values independent so a partial counter is never dropped.
+            return (hit if hit_valid else None, miss if miss_valid else None)
+        details = usage.get("prompt_tokens_details")
+        cached = details.get("cached_tokens") if isinstance(details, dict) else None
+        prompt = usage.get("prompt_tokens")
+        if isinstance(cached, int) and cached >= 0 and isinstance(prompt, int):
+            return cached, max(0, prompt - cached)
+        return None, None
 
     @staticmethod
     def _usage(body: dict[str, Any], key: str) -> int | None:
@@ -225,6 +256,7 @@ class OpenAICompatibleProvider(ProviderAdapter):
                     raise TypeError("response content is not text")
                 reasoning_content = message.get("reasoning_content") or choice.get("reasoning_content")
                 reasoning_tokens = self._reasoning_tokens(body)
+                input_cache_hit_tokens, input_cache_miss_tokens = self._cache_usage(body)
                 reasoning_content_chars = (
                     len(reasoning_content)
                     if isinstance(reasoning_content, str)
@@ -255,8 +287,8 @@ class OpenAICompatibleProvider(ProviderAdapter):
                     "response_model": body.get("model"),
                     "input_tokens": self._usage(body, "prompt_tokens"),
                     "output_tokens": self._usage(body, "completion_tokens"),
-                    "input_cache_hit_tokens": self._usage(body, "prompt_cache_hit_tokens"),
-                    "input_cache_miss_tokens": self._usage(body, "prompt_cache_miss_tokens"),
+                    "input_cache_hit_tokens": input_cache_hit_tokens,
+                    "input_cache_miss_tokens": input_cache_miss_tokens,
                     "reasoning_tokens": reasoning_tokens,
                     "reasoning_content_chars": reasoning_content_chars,
                 }
@@ -269,8 +301,8 @@ class OpenAICompatibleProvider(ProviderAdapter):
                 finish_reason=choice.get("finish_reason") if isinstance(choice.get("finish_reason"), str) else None,
                 input_tokens=self._usage(body, "prompt_tokens"),
                 output_tokens=self._usage(body, "completion_tokens"),
-                input_cache_hit_tokens=self._usage(body, "prompt_cache_hit_tokens"),
-                input_cache_miss_tokens=self._usage(body, "prompt_cache_miss_tokens"),
+                input_cache_hit_tokens=input_cache_hit_tokens,
+                input_cache_miss_tokens=input_cache_miss_tokens,
                 latency_ms=latency_ms,
                 raw_response=redact(body),
             )
@@ -299,5 +331,8 @@ def build_provider(experiment: dict[str, Any]) -> ProviderAdapter:
         max_attempts=int(provider_config.get("max_attempts", 1)),
         retry_backoff_seconds=float(provider_config.get("retry_backoff_seconds", 1)),
         request_defaults=dict(model_config.get("request_defaults", {})),
-        supports_thinking_toggle=experiment["provider_name"] == "deepseek",
+        supports_thinking_toggle=bool(provider_config.get("supports_thinking_toggle", False)),
+        max_output_tokens_field=str(
+            provider_config.get("max_output_tokens_field", "max_tokens")
+        ),
     )

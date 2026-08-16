@@ -1,0 +1,54 @@
+{
+  "content": {
+    "benchmark_id": "repository_smoke_v1",
+    "invariants": [
+      "Task identifiers are globally unique within this independent test benchmark.",
+      "All answers are public repository-test fixtures only.",
+      "No task may be copied from a paper benchmark."
+    ],
+    "purpose": "Independent repository acceptance test. These public fixtures are not sampled from, derived from, or reported with the paper benchmarks.",
+    "schema_version": "1.0",
+    "tasks": [
+      {
+        "answer_index": 0,
+        "domain": "mmlu_pro",
+        "options": [
+          "Au",
+          "Ag",
+          "Al",
+          "Fe",
+          "Hg",
+          "Cu",
+          "Pb",
+          "Zn",
+          "Sn",
+          "Pt"
+        ],
+        "prompt": "Which of the following is the chemical symbol for gold?\n\nChoices:\n(A) Au\n(B) Ag\n(C) Al\n(D) Fe\n(E) Hg\n(F) Cu\n(G) Pb\n(H) Zn\n(I) Sn\n(J) Pt\n\nReturn only the letter of the correct choice (A-J).",
+        "reference_answer": "A",
+        "task_id": "test_mmlu_pro_001"
+      },
+      {
+        "answer_index": 4,
+        "domain": "mmlu_pro",
+        "options": [
+          "London",
+          "Berlin",
+          "Madrid",
+          "Rome",
+          "Paris",
+          "Vienna",
+          "Lisbon",
+          "Brussels",
+          "Amsterdam",
+          "Bern"
+        ],
+        "prompt": "What is the capital city of France?\n\nChoices:\n(A) London\n(B) Berlin\n(C) Madrid\n(D) Rome\n(E) Paris\n(F) Vienna\n(G) Lisbon\n(H) Brussels\n(I) Amsterdam\n(J) Bern\n\nReturn only the letter of the correct choice (A-J).",
+        "reference_answer": "E",
+        "task_id": "test_mmlu_pro_002"
+      }
+    ]
+  },
+  "source_path": "/Users/zhiqi/Documents/RoundValue/benchmark/test/smoke_tasks.json",
+  "source_sha256": "6bbf23756ca742fc0a7ed7e18eef51ff3a7e954e80d3b67a81ed75c6cb093459"
+}

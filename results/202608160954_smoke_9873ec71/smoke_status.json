@@ -1,0 +1,13 @@
+{
+  "domain": "mmlu_pro",
+  "expected_logical_calls": 14,
+  "max_rounds": 1,
+  "mode": "smoke",
+  "requires_quality_one": true,
+  "schema_version": "1.0",
+  "skipped_other_domain_task_ids": [],
+  "task_ids": [
+    "test_mmlu_pro_001",
+    "test_mmlu_pro_002"
+  ]
+}

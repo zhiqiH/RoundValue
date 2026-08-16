@@ -29,6 +29,9 @@ if str(SRC_DIRECTORY) not in sys.path:
 from config_loader import load_experiment_config  # noqa: E402
 from contracts import ModelRequest, ModelResponse  # noqa: E402
 from debate_runner import FixedDebateRunner  # noqa: E402
+from labels import build_labels  # noqa: E402
+from policy import replay_policies  # noqa: E402
+from scorer import score_trajectory  # noqa: E402
 
 
 ROLE_OUTPUTS = {
@@ -362,6 +365,37 @@ def main() -> int:
         and reloaded["checkpoints"][1]["reasoning_summary"],
         "serialized five-round trajectory round-trips answer and reasoning_summary",
     )
+    replay_record: dict[str, Any] = {
+        "schema_version": "1.0",
+        "task": _task(),
+        "split": "test",
+        "trajectory": reloaded,
+    }
+    replay_scores = score_trajectory(replay_record)
+    check(
+        [score["quality"] for score in replay_scores] == [1.0] * 5,
+        "offline scoring reads only the Writer answer across all five rounds",
+    )
+    replay_record["scores"] = replay_scores
+    replay_record["labels"] = build_labels(
+        replay_record, lambda_cost=0.0, mu_latency=0.0
+    )
+    replay = replay_policies([replay_record], None)
+    check(
+        replay.get("max_rounds") == 5
+        and set(replay["policy_metrics"])
+        == {
+            "fixed_1",
+            "fixed_2",
+            "fixed_3",
+            "fixed_4",
+            "fixed_5",
+            "task_only",
+            "roundvalue",
+            "oracle",
+        },
+        "five-round serialized trajectory still replays Fixed-1..5 and learned policies",
+    )
 
     inputs_by_round: dict[tuple[int, str], dict[str, Any]] = {}
     for request in trajectory_provider.requests:
@@ -376,27 +410,67 @@ def main() -> int:
         first_input.get("previous_writer_checkpoint") is None,
         "round 1 receives no previous checkpoint",
     )
+    check(
+        "previous_writer_checkpoint" not in first_input,
+        "round 1 stage-1 input omits the checkpoint field entirely",
+    )
     for round_index in range(2, 6):
-        node_input = inputs_by_round[(round_index, "planner_stage_1")]
-        previous = node_input.get("previous_writer_checkpoint")
+        previous = trajectory["checkpoints"][round_index - 2]
+        for stage_1_node in (
+            "planner_stage_1",
+            "analyst_stage_1",
+            "critic_stage_1",
+        ):
+            node_input = inputs_by_round[(round_index, stage_1_node)]
+            serialized = json.dumps(node_input, ensure_ascii=False, sort_keys=True)
+            check(
+                "previous_writer_checkpoint" not in node_input,
+                f"round {round_index} {stage_1_node} is blind to the checkpoint field",
+            )
+            check(
+                previous["reasoning_summary"] not in serialized
+                and previous["checkpoint_hash"] not in serialized,
+                f"round {round_index} {stage_1_node} does not leak the previous checkpoint",
+            )
+            public = node_input.get("task", {})
+            check(
+                "reference_answer" not in public
+                and "answer_index" not in public
+                and "options" not in public,
+                f"round {round_index} public task hides gold answer fields",
+            )
+            check(
+                node_input.get("visible_messages") == [],
+                f"round {round_index} stage-1 node receives no transcript history",
+            )
+        for stage_2_node in (
+            "planner_stage_2",
+            "analyst_stage_2",
+            "critic_stage_2",
+        ):
+            node_input = inputs_by_round[(round_index, stage_2_node)]
+            visible = node_input.get("previous_writer_checkpoint")
+            check(
+                isinstance(visible, dict)
+                and visible.get("round_index") == round_index - 1
+                and visible.get("answer") == previous["answer"]
+                and visible.get("reasoning_summary") == previous["reasoning_summary"],
+                f"round {round_index} {stage_2_node} sees the round {round_index - 1} checkpoint",
+            )
+            packets = node_input.get("visible_messages", [])
+            check(
+                len(packets) == 1
+                and packets[0].get("packet_id") == "stage_1_packet"
+                and len(packets[0].get("messages", [])) == 3,
+                f"round {round_index} {stage_2_node} sees the full stage-1 packet",
+            )
+        writer_input = inputs_by_round[(round_index, "writer")]
+        writer_previous = writer_input.get("previous_writer_checkpoint")
         check(
-            isinstance(previous, dict) and previous.get("round_index") == round_index - 1,
-            f"round {round_index} stage-1 node receives the round {round_index - 1} checkpoint",
-        )
-        check(
-            previous.get("answer") == "C" and previous.get("reasoning_summary"),
-            f"round {round_index} sees the previous answer and reasoning summary",
-        )
-        public = node_input.get("task", {})
-        check(
-            "reference_answer" not in public
-            and "answer_index" not in public
-            and "options" not in public,
-            f"round {round_index} public task hides gold answer fields",
-        )
-        check(
-            node_input.get("visible_messages") == [],
-            f"round {round_index} stage-1 node receives no future-round transcript",
+            isinstance(writer_previous, dict)
+            and writer_previous.get("answer") == previous["answer"]
+            and writer_previous.get("reasoning_summary") == previous["reasoning_summary"],
+            f"round {round_index} Writer still sees the previous checkpoint",
         )
 
     print("PASS all self-checks")

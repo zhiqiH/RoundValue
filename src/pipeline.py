@@ -140,6 +140,14 @@ def _create_run(
         dataset=dataset_name,
         domain=domain,
         selected_model_id=experiment["model_id"],
+        model_selection={
+            "model_id": experiment["model_id"],
+            "provider": experiment["provider_name"],
+            "requested_model": experiment["model"]["model_name"],
+            "temperature": experiment["model"]["temperature"],
+            "max_output_tokens": experiment["model"]["max_output_tokens"],
+            "reasoning": experiment["model"]["reasoning"],
+        },
         selected_topology_id=experiment["topology_id"],
     )
     state["manifest"] = manifest
@@ -331,6 +339,7 @@ def _validate_resume_consistency(
 
 def _verify_smoke_gate(
     smoke_run_id: str | None,
+    experiment: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Require a passing smoke run before formal collection starts."""
 
@@ -341,6 +350,13 @@ def _verify_smoke_gate(
         raise ValueError(
             f"run {smoke_run_id} is not a smoke run "
             f"(mode={smoke_manifest.get('mode')!r}); rerun step1_smoke.py"
+        )
+    if smoke_manifest.get("selected_model_id") != experiment["model_id"]:
+        raise ValueError(
+            f"smoke run {smoke_run_id} used model "
+            f"{smoke_manifest.get('selected_model_id')!r}, but this run selects "
+            f"{experiment['model_id']!r}; rerun step1_smoke.py with the same "
+            "--model-id"
         )
     task_count = smoke_manifest.get("task_count")
     complete_count = smoke_manifest.get("complete_task_count")
@@ -493,7 +509,7 @@ def _run_collect(
         raise ValueError(
             f"dataset {dataset_name!r} must contain only {domain!r} tasks"
         )
-    _verify_smoke_gate(args.smoke_run_id)
+    _verify_smoke_gate(args.smoke_run_id, experiment)
     split_seed = SPLIT_SEED
     split_by_task = freeze_splits(tasks, seed=split_seed)
     split_counts = {
@@ -514,6 +530,12 @@ def _run_collect(
             raise ValueError(
                 f"run {args.run_id} belongs to dataset "
                 f"{manifest.get('dataset')!r}; resuming requires the same dataset"
+            )
+        if manifest.get("selected_model_id") != experiment["model_id"]:
+            raise ValueError(
+                f"run {args.run_id} used model {manifest.get('selected_model_id')!r}; "
+                f"resuming with a different model ({experiment['model_id']!r}) is "
+                "not allowed"
             )
         state["manifest"] = manifest
         _validate_resume_consistency(manifest, split_by_task)
