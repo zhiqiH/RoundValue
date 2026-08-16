@@ -1,0 +1,28 @@
+{
+  "content": {
+    "benchmark_id": "repository_smoke_v1",
+    "invariants": [
+      "Task identifiers are globally unique within this independent test benchmark.",
+      "All answers are public repository-test fixtures only.",
+      "No task may be copied from a paper benchmark."
+    ],
+    "purpose": "Independent repository acceptance test. These public fixtures are not sampled from, derived from, or reported with the paper benchmarks.",
+    "schema_version": "1.0",
+    "tasks": [
+      {
+        "domain": "math",
+        "prompt": "Compute 17 multiplied by 6. Return only the integer.",
+        "reference_answer": "102",
+        "task_id": "test_math_001"
+      },
+      {
+        "domain": "math",
+        "prompt": "Solve for x: 3x + 5 = 20. Return only x.",
+        "reference_answer": "5",
+        "task_id": "test_math_002"
+      }
+    ]
+  },
+  "source_path": "/Users/zhiqi/Documents/RoundValue/benchmark/test/smoke_tasks.json",
+  "source_sha256": "7f813a34205fff638a30eadc6bbb28ab9e1f5f243d2de76a97699d532088a222"
+}

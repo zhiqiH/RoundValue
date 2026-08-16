@@ -8,8 +8,11 @@ frozen policy replay and renders the readable artifacts:
 * ``report.html`` -- a self-contained page with the requested summary tables
   and quality-vs-token / quality-vs-latency charts (inline SVG, no CDN),
 
-plus standalone PNG charts for the same summaries.  Matplotlib is imported
-lazily inside the chart renderer so the rest of the module stays lightweight.
+plus five standalone policy-level PNG charts in ``charts/``:
+policy quality-vs-tokens, policy quality-vs-latency, RoundValue-vs-baselines,
+adaptive stop-round distribution, and oracle quality regret.  Matplotlib is
+imported lazily inside the chart renderer so the rest of the module stays
+lightweight.
 
 It never contacts a provider and never rescore checkpoints.
 """
@@ -20,6 +23,7 @@ import csv
 import html
 import json
 import math
+import random
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -38,6 +42,29 @@ POLICY_ORDER = (
     "roundvalue",
     "oracle_one_step",
     "oracle",
+)
+
+POLICY_DISPLAY_NAMES: dict[str, str] = {
+    "fixed_1": "Fixed-1",
+    "fixed_2": "Fixed-2",
+    "fixed_3": "Fixed-3",
+    "consensus": "Consensus",
+    "task_only": "Task-only",
+    "roundvalue": "RoundValue",
+    "oracle_one_step": "Oracle one-step",
+    "oracle": "Oracle",
+}
+
+PAIRED_BASELINE_ORDER = ("fixed_1", "fixed_2", "fixed_3", "consensus", "task_only")
+ADAPTIVE_STOP_ORDER = ("consensus", "task_only", "roundvalue", "oracle_one_step", "oracle")
+ORACLE_REGRET_ORDER = (
+    "fixed_1",
+    "fixed_2",
+    "fixed_3",
+    "consensus",
+    "task_only",
+    "roundvalue",
+    "oracle_one_step",
 )
 
 
@@ -268,6 +295,175 @@ def _policy_table(replay: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
     return rows
+
+
+def _policy_task_rows(replay: Mapping[str, Any]) -> dict[str, list[dict[str, Any]]]:
+    """Reduce replay task results to the fields the policy charts need."""
+
+    policies = replay.get("policies", {})
+    if not isinstance(policies, Mapping):
+        return {}
+    rows_by_policy: dict[str, list[dict[str, Any]]] = {}
+    for name, item in policies.items():
+        if not isinstance(item, Mapping):
+            continue
+        raw_rows = item.get("task_results")
+        if not isinstance(raw_rows, list):
+            continue
+        rows: list[dict[str, Any]] = []
+        for raw in raw_rows:
+            if not isinstance(raw, Mapping):
+                continue
+            rows.append(
+                {
+                    "task_id": raw.get("task_id"),
+                    "trajectory_id": raw.get("trajectory_id"),
+                    "quality": _number(raw.get("quality")),
+                    "total_tokens": _number(raw.get("total_tokens")),
+                    "wall_clock_ms": _number(raw.get("wall_clock_ms")),
+                    "stop_round": raw.get("stop_round"),
+                    "available": bool(raw.get("available", False)),
+                }
+            )
+        rows_by_policy[str(name)] = rows
+    return rows_by_policy
+
+
+def _paired_differences(
+    rows: Sequence[Mapping[str, Any]],
+    baseline_rows: Sequence[Mapping[str, Any]],
+    key: str,
+) -> list[float]:
+    """Task-level paired ``row[key] - baseline[key]`` values."""
+
+    baseline_by_key = {
+        (row.get("task_id"), row.get("trajectory_id")): row
+        for row in baseline_rows
+        if row.get("available")
+    }
+    paired: list[float] = []
+    for row in rows:
+        if not row.get("available"):
+            continue
+        baseline = baseline_by_key.get((row.get("task_id"), row.get("trajectory_id")))
+        if baseline is None:
+            continue
+        value = _number(row.get(key))
+        baseline_value = _number(baseline.get(key))
+        if value is not None and baseline_value is not None:
+            paired.append(value - baseline_value)
+    return paired
+
+
+def _bootstrap_summary(
+    values: Sequence[float], *, seed: int, samples: int
+) -> dict[str, float | int | None]:
+    """Mean plus percentile 95% CI for a paired difference sample."""
+
+    if not values:
+        return {"n_paired": 0, "mean": None, "ci95_low": None, "ci95_high": None}
+    rng = random.Random(seed)
+    size = len(values)
+    means = sorted(
+        sum(values[rng.randrange(size)] for _ in range(size)) / size
+        for _ in range(samples)
+    )
+    low_index = max(0, math.floor(0.025 * (samples - 1)))
+    high_index = min(samples - 1, math.ceil(0.975 * (samples - 1)))
+    return {
+        "n_paired": size,
+        "mean": sum(values) / size,
+        "ci95_low": means[low_index],
+        "ci95_high": means[high_index],
+    }
+
+
+def _build_policy_chart_data(replay: Mapping[str, Any]) -> dict[str, Any]:
+    """Derive the policy-level chart bundle persisted on analysis.json.
+
+    Figures 1/2 come from aggregate policy metrics; Figures 3/5 add paired
+    task-level bootstrap intervals, so the renderer never has to read the
+    replay file or trajectories again.
+    """
+
+    bootstrap = replay.get("bootstrap")
+    if not isinstance(bootstrap, Mapping):
+        bootstrap = {}
+    seed = int(_number(bootstrap.get("seed")) or 20260813)
+    samples = int(_number(bootstrap.get("samples")) or 2000)
+    task_rows = _policy_task_rows(replay)
+    policy_metrics = replay.get("policy_metrics", {})
+    if not isinstance(policy_metrics, Mapping):
+        policy_metrics = {}
+
+    policy_points: list[dict[str, Any]] = []
+    for name in POLICY_ORDER:
+        metrics = policy_metrics.get(name)
+        if not isinstance(metrics, Mapping):
+            continue
+        policy_points.append(
+            {
+                "policy": name,
+                "accuracy": _number(metrics.get("accuracy")),
+                "mean_total_tokens": _number(metrics.get("mean_total_tokens")),
+                "mean_wall_clock_ms": _number(metrics.get("mean_wall_clock_ms")),
+                "mean_stop_round": _number(metrics.get("mean_stop_round")),
+                "mean_oracle_quality_regret": _number(
+                    metrics.get("mean_oracle_quality_regret")
+                ),
+                "n_available": metrics.get("n_available"),
+                "stop_round_counts": metrics.get("stop_round_counts", {}),
+            }
+        )
+
+    roundvalue_rows = task_rows.get("roundvalue", [])
+    oracle_rows = task_rows.get("oracle", [])
+    baselines: dict[str, dict[str, Any]] = {}
+    for baseline in PAIRED_BASELINE_ORDER:
+        baseline_rows = task_rows.get(baseline, [])
+        baselines[baseline] = {
+            "accuracy_difference": _bootstrap_summary(
+                _paired_differences(roundvalue_rows, baseline_rows, "quality"),
+                seed=seed,
+                samples=samples,
+            ),
+            "total_tokens_difference": _bootstrap_summary(
+                _paired_differences(roundvalue_rows, baseline_rows, "total_tokens"),
+                seed=seed,
+                samples=samples,
+            ),
+        }
+
+    regrets: dict[str, dict[str, Any]] = {}
+    for name in ORACLE_REGRET_ORDER:
+        regrets[name] = _bootstrap_summary(
+            _paired_differences(oracle_rows, task_rows.get(name, []), "quality"),
+            seed=seed,
+            samples=samples,
+        )
+
+    stop_distribution: dict[str, dict[str, float]] = {}
+    for name in ADAPTIVE_STOP_ORDER:
+        counts: Counter[str] = Counter()
+        for row in task_rows.get(name, []):
+            if row.get("available") and row.get("stop_round") is not None:
+                counts[str(row.get("stop_round"))] += 1
+        total = sum(counts.values())
+        stop_distribution[name] = {
+            str(round_index): counts.get(str(round_index), 0) / total * 100.0
+            if total
+            else 0.0
+            for round_index in range(1, 4)
+        }
+
+    return {
+        "policy_points": policy_points,
+        "task_rows": task_rows,
+        "roundvalue_vs_baselines": baselines,
+        "oracle_regret": regrets,
+        "stop_distribution": stop_distribution,
+        "bootstrap": {"seed": seed, "samples": samples},
+    }
 
 
 def _scatter_points(records: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
@@ -656,6 +852,7 @@ def build_analysis(
         "policy_table": policy_table,
         "stop_round_matrix": stop_round_matrix,
         "pairwise_vs_fixed_1": replay.get("pairwise_vs_fixed_1"),
+        "policy_charts": _build_policy_chart_data(replay),
         "quality_token_points": token_points,
         "quality_latency_points": latency_points,
         "task_rows": task_rows,
@@ -683,6 +880,7 @@ def render_analysis(manifest: Mapping[str, Any]) -> dict[str, Any]:
     _write_task_csv(csv_path, analysis.get("task_rows", []), max_rounds)
     html_path.write_text(_render_html(analysis), encoding="utf-8")
     summary_path.write_text(_render_conclusion(analysis), encoding="utf-8")
+    _remove_legacy_charts(result_dir)
     chart_paths = _render_png_charts(result_dir, analysis)
     return {
         "json": str(result_dir / "analysis.json"),
@@ -693,169 +891,564 @@ def render_analysis(manifest: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _remove_legacy_charts(result_dir: Path) -> None:
+    """Delete the five round/checkpoint-level PNGs replaced by policy charts."""
+
+    for name in (
+        "chart_accuracy_by_round.png",
+        "chart_policy_comparison.png",
+        "chart_quality_vs_tokens.png",
+        "chart_quality_vs_latency.png",
+        "chart_stop_round_distribution.png",
+    ):
+        path = result_dir / name
+        if path.exists():
+            path.unlink()
+
+
 def _render_png_charts(
     result_dir: Path, analysis: Mapping[str, Any]
 ) -> list[str]:
-    """Write standalone PNG charts from one saved analysis bundle."""
+    """Write the five policy-level PNG charts into ``result_dir/charts/``.
+
+    Figures 1/2 are one-point-per-policy quality-vs-resource scatters,
+    Figure 3 is the paired RoundValue-minus-baseline point-range plot,
+    Figure 4 is the 100% stacked stop-round distribution, and Figure 5 is
+    oracle quality regret.
+    """
 
     try:
         import matplotlib
 
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from matplotlib.lines import Line2D
+        from matplotlib.patches import Patch
     except ImportError as error:
         raise RuntimeError(
             "PNG charts require matplotlib; install it with 'pip install matplotlib'"
         ) from error
 
+    charts_dir = result_dir / "charts"
+    charts_dir.mkdir(parents=True, exist_ok=True)
     paths: list[str] = []
-    run_id = str(analysis.get("run_id", ""))
-    round_colors = {1: "#2563eb", 2: "#dc2626", 3: "#16a34a"}
 
     def save(fig: Any, name: str) -> None:
-        path = result_dir / name
+        path = charts_dir / name
         fig.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
         plt.close(fig)
         paths.append(str(path))
 
-    per_round = analysis.get("per_round", [])
-    if per_round:
-        rows = [
-            (int(row["round_index"]), _number(row.get("accuracy")))
-            for row in per_round
-            if isinstance(row, Mapping)
-            and isinstance(row.get("round_index"), int)
-        ]
-        rows = [(round_index, accuracy) for round_index, accuracy in rows if accuracy is not None]
-        if rows:
-            fig, ax = plt.subplots(figsize=(7.5, 4.2))
-            bars = ax.bar(
-                [str(round_index) for round_index, _ in rows],
-                [accuracy for _, accuracy in rows],
-                color=round_colors[1],
-                width=0.5,
-            )
-            ax.bar_label(bars, fmt="%.3f", padding=2)
-            ax.set_ylim(0.0, 1.05)
-            ax.set_ylabel("accuracy")
-            ax.set_xlabel("round")
-            ax.set_title(f"Accuracy by round - {run_id}")
-            save(fig, "chart_accuracy_by_round.png")
-
-    policies = [
-        policy
-        for policy in analysis.get("policy_table", [])
-        if isinstance(policy, Mapping) and policy.get("policy")
+    chart_data = analysis.get("policy_charts")
+    if not isinstance(chart_data, Mapping):
+        chart_data = {}
+    points = [
+        point
+        for point in chart_data.get("policy_points", [])
+        if isinstance(point, Mapping) and point.get("policy")
     ]
-    if policies:
-        names = [str(policy["policy"]) for policy in policies]
-        accuracies = [_number(policy.get("accuracy")) for policy in policies]
-        stop_rounds = [_number(policy.get("mean_stop_round")) for policy in policies]
-        fig, (ax_accuracy, ax_stop) = plt.subplots(
-            1, 2, figsize=(12.5, 4.5), sharey=False
-        )
-        accuracy_rows = [
-            (name, value)
-            for name, value in zip(names, accuracies, strict=False)
-            if value is not None
-        ]
-        bars = ax_accuracy.bar(
-            [name for name, _ in accuracy_rows],
-            [value for _, value in accuracy_rows],
-            color="#2563eb",
-            width=0.6,
-        )
-        ax_accuracy.bar_label(bars, fmt="%.2f", padding=2)
-        ax_accuracy.set_ylim(0.0, 1.05)
-        ax_accuracy.set_ylabel("accuracy")
-        ax_accuracy.tick_params(axis="x", labelrotation=30)
-        ax_accuracy.set_title("Policy accuracy")
+    points_by_name = {str(point["policy"]): point for point in points}
 
-        stop_rows = [
-            (name, value)
-            for name, value in zip(names, stop_rounds, strict=False)
-            if value is not None
-        ]
-        bars = ax_stop.bar(
-            [name for name, _ in stop_rows],
-            [value for _, value in stop_rows],
-            color="#16a34a",
-            width=0.6,
-        )
-        ax_stop.bar_label(bars, fmt="%.2f", padding=2)
-        ax_stop.set_ylabel("mean stop round")
-        ax_stop.tick_params(axis="x", labelrotation=30)
-        ax_stop.set_title("Policy mean stop round")
-        fig.suptitle(f"Policy comparison - {run_id}")
-        fig.tight_layout()
-        save(fig, "chart_policy_comparison.png")
+    fixed_color = "#6b7280"
+    adaptive_color = "#9ca3af"
+    oracle_edge = "#4b5563"
+    accent_color = "#d97706"
+    round_colors = {1: "#0072B2", 2: "#E69F00", 3: "#009E73"}
 
-    def scatter(
-        points: Any,
-        *,
-        x_label: str,
-        title: str,
-        filename: str,
+    def resource_value(point: Mapping[str, Any], key: str) -> float | None:
+        value = _number(point.get(key))
+        if value is None or key != "mean_wall_clock_ms":
+            return value
+        return value / 1000.0
+
+    def policy_quality_scatter(
+        key: str, x_label: str, title: str, filename: str
     ) -> None:
         if not points:
             return
-        fig, ax = plt.subplots(figsize=(8.2, 5.0))
-        rounds = sorted({int(point["round_index"]) for point in points})
-        for round_index in rounds:
-            xs = [float(point["x"]) for point in points if int(point["round_index"]) == round_index]
-            ys = [float(point["y"]) for point in points if int(point["round_index"]) == round_index]
+        fig, ax = plt.subplots(figsize=(8.6, 5.0))
+
+        fixed_points: list[tuple[float, float]] = []
+        for name in ("fixed_1", "fixed_2", "fixed_3"):
+            point = points_by_name.get(name)
+            if point is None:
+                continue
+            x = resource_value(point, key)
+            y = _number(point.get("accuracy"))
+            if x is None or y is None:
+                continue
+            fixed_points.append((x, y))
             ax.scatter(
-                xs,
-                ys,
-                s=22,
-                alpha=0.55,
-                color=round_colors.get(round_index, "#6b7280"),
-                label=f"round {round_index}",
+                [x],
+                [y],
+                s=72,
+                marker="o",
+                facecolor=fixed_color,
+                edgecolor=fixed_color,
+                linewidths=0,
+                zorder=3,
             )
+        if len(fixed_points) >= 2:
+            ax.plot(
+                [x for x, _ in fixed_points],
+                [y for _, y in fixed_points],
+                color=fixed_color,
+                linewidth=1.2,
+                zorder=2,
+                alpha=0.75,
+            )
+
+        for name, marker in (("consensus", "^"), ("task_only", "s")):
+            point = points_by_name.get(name)
+            if point is None:
+                continue
+            x = resource_value(point, key)
+            y = _number(point.get("accuracy"))
+            if x is None or y is None:
+                continue
+            ax.scatter(
+                [x],
+                [y],
+                s=64,
+                marker=marker,
+                facecolor=adaptive_color,
+                edgecolor=adaptive_color,
+                linewidths=0,
+                zorder=3,
+            )
+
+        roundvalue = points_by_name.get("roundvalue")
+        if roundvalue is not None:
+            x = resource_value(roundvalue, key)
+            y = _number(roundvalue.get("accuracy"))
+            if x is not None and y is not None:
+                ax.scatter(
+                    [x],
+                    [y],
+                    s=230,
+                    marker="*",
+                    facecolor=accent_color,
+                    edgecolor=accent_color,
+                    linewidths=0.8,
+                    zorder=4,
+                )
+                ax.annotate(
+                    "RoundValue",
+                    (x, y),
+                    textcoords="offset points",
+                    xytext=(13, 12),
+                    color=accent_color,
+                    fontsize=11,
+                    fontweight="bold",
+                    zorder=5,
+                )
+
+        for name, marker in (("oracle_one_step", "D"), ("oracle", "*")):
+            point = points_by_name.get(name)
+            if point is None:
+                continue
+            x = resource_value(point, key)
+            y = _number(point.get("accuracy"))
+            if x is None or y is None:
+                continue
+            ax.scatter(
+                [x],
+                [y],
+                s=130,
+                marker=marker,
+                facecolor="white",
+                edgecolor=oracle_edge,
+                linewidths=1.1,
+                zorder=3,
+            )
+
         ax.set_xlabel(x_label)
-        ax.set_ylabel("quality")
-        ax.set_title(f"{title} - {run_id}")
-        ax.legend(title="round")
+        ax.set_ylabel("Accuracy")
+        ax.set_title(title)
+        ax.grid(True, color="#e5e7eb", linewidth=0.8, alpha=0.7)
+        ax.set_axisbelow(True)
+
+        accuracies = [
+            value
+            for point in points
+            if (value := _number(point.get("accuracy"))) is not None
+        ]
+        if accuracies:
+            low = max(0.0, min(accuracies) - 0.03)
+            high = min(1.0, max(accuracies) + 0.03)
+            if high - low < 0.04:
+                center = (low + high) / 2
+                low = max(0.0, center - 0.02)
+                high = min(1.0, low + 0.04)
+            ax.set_ylim(low, high)
+        ax.margins(x=0.07)
+
+        # Faint Pareto frontier over the non-dominated policies, when it has
+        # more than one distinct point.
+        unique: dict[tuple[float, float], None] = {}
+        for point in points:
+            x = resource_value(point, key)
+            y = _number(point.get("accuracy"))
+            if x is not None and y is not None:
+                unique[(round(x, 6), round(y, 6))] = None
+        candidates = list(unique)
+        frontier = sorted(
+            (x, y)
+            for x, y in candidates
+            if not any(
+                (other_y >= y and other_x <= x) and (other_y > y or other_x < x)
+                for other_x, other_y in candidates
+            )
+        )
+        if len(frontier) >= 2:
+            ax.plot(
+                [x for x, _ in frontier],
+                [y for _, y in frontier],
+                color="#94a3b8",
+                linewidth=1.0,
+                linestyle=(0, (5, 4)),
+                zorder=1,
+                alpha=0.9,
+            )
+
+        handles = [
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                color=fixed_color,
+                linewidth=1.2,
+                markersize=7,
+                markerfacecolor=fixed_color,
+                markeredgecolor=fixed_color,
+                label="Fixed budget curve",
+            ),
+            Line2D(
+                [0],
+                [0],
+                marker="^",
+                color="none",
+                markersize=8,
+                markerfacecolor=adaptive_color,
+                markeredgecolor=adaptive_color,
+                label="Consensus",
+            ),
+            Line2D(
+                [0],
+                [0],
+                marker="s",
+                color="none",
+                markersize=7,
+                markerfacecolor=adaptive_color,
+                markeredgecolor=adaptive_color,
+                label="Task-only",
+            ),
+            Line2D(
+                [0],
+                [0],
+                marker="*",
+                color="none",
+                markersize=12,
+                markerfacecolor=accent_color,
+                markeredgecolor=accent_color,
+                label="RoundValue",
+            ),
+            Line2D(
+                [0],
+                [0],
+                marker="D",
+                color="none",
+                markersize=8,
+                markerfacecolor="white",
+                markeredgecolor=oracle_edge,
+                label="Oracle one-step",
+            ),
+            Line2D(
+                [0],
+                [0],
+                marker="*",
+                color="none",
+                markersize=12,
+                markerfacecolor="white",
+                markeredgecolor=oracle_edge,
+                label="Oracle",
+            ),
+        ]
+        ax.legend(handles=handles, loc="best", frameon=True, fontsize=9)
+        fig.tight_layout()
         save(fig, filename)
 
-    scatter(
-        analysis.get("quality_token_points", []),
-        x_label="cumulative tokens",
-        title="Quality vs tokens",
-        filename="chart_quality_vs_tokens.png",
-    )
-    scatter(
-        analysis.get("quality_latency_points", []),
-        x_label="cumulative wall-clock (ms)",
-        title="Quality vs latency",
-        filename="chart_quality_vs_latency.png",
-    )
+    def roundvalue_vs_baselines(chart_data: Mapping[str, Any]) -> None:
+        baselines = chart_data.get("roundvalue_vs_baselines")
+        if not isinstance(baselines, Mapping) or not baselines:
+            return
+        names = [name for name in PAIRED_BASELINE_ORDER if name in baselines]
+        if not names:
+            return
+        fig, (ax_accuracy, ax_tokens) = plt.subplots(1, 2, figsize=(11.8, 4.8))
+        y_positions = list(range(len(names) - 1, -1, -1))
+        display_names = [POLICY_DISPLAY_NAMES.get(name, name) for name in names]
 
-    stop_matrix = analysis.get("stop_round_matrix", {})
-    if policies and stop_matrix:
-        policy_names = names
-        rounds = sorted({int(round_index) for round_index in stop_matrix})
-        fig, ax = plt.subplots(figsize=(9.0, 4.6))
-        bottoms = [0] * len(policy_names)
-        for round_index in rounds:
-            counts = [
-                int(stop_matrix.get(str(round_index), {}).get(name, 0))
-                for name in policy_names
-            ]
-            ax.bar(
-                policy_names,
-                counts,
-                bottom=bottoms,
-                color=round_colors.get(round_index, "#6b7280"),
-                width=0.6,
-                label=f"stop round {round_index}",
+        def point_range(ax: Any, *, key: str, fmt: str) -> tuple[list[float], list[float]]:
+            lows: list[float] = []
+            highs: list[float] = []
+            for name, y_position in zip(names, y_positions, strict=False):
+                stat = baselines[name].get(key)
+                if not isinstance(stat, Mapping):
+                    continue
+                mean_value = _number(stat.get("mean"))
+                if mean_value is None:
+                    continue
+                low = _number(stat.get("ci95_low"))
+                high = _number(stat.get("ci95_high"))
+                xerr = None
+                if low is not None and high is not None and low <= mean_value <= high:
+                    xerr = [[mean_value - low], [high - mean_value]]
+                significant = low is not None and high is not None and (low > 0 or high < 0)
+                color = accent_color if significant else fixed_color
+                ax.errorbar(
+                    [mean_value],
+                    [y_position],
+                    xerr=xerr,
+                    fmt="o",
+                    markersize=6,
+                    color=color,
+                    ecolor=color,
+                    elinewidth=1.4,
+                    capsize=4,
+                    zorder=3,
+                )
+                ax.annotate(
+                    format(mean_value, fmt),
+                    (mean_value, y_position),
+                    textcoords="offset points",
+                    xytext=(6, 0),
+                    va="center",
+                    fontsize=9,
+                    color=color,
+                )
+                if low is not None:
+                    lows.append(low)
+                if high is not None:
+                    highs.append(high)
+            return lows, highs
+
+        accuracy_lows, accuracy_highs = point_range(
+            ax_accuracy, key="accuracy_difference", fmt="+.3f"
+        )
+        token_lows, token_highs = point_range(
+            ax_tokens, key="total_tokens_difference", fmt="+,.0f"
+        )
+
+        def set_limits(ax: Any, lows: list[float], highs: list[float]) -> None:
+            if not lows or not highs:
+                ax.set_xlim(-0.08, 0.08)
+                return
+            low = min(lows + [0.0])
+            high = max(highs + [0.0])
+            if high - low < 1e-9:
+                ax.set_xlim(-0.08, 0.08)
+                return
+            padding = (high - low) * 0.18
+            ax.set_xlim(low - padding, high + padding)
+
+        set_limits(ax_accuracy, accuracy_lows, accuracy_highs)
+        set_limits(ax_tokens, token_lows, token_highs)
+
+        for ax in (ax_accuracy, ax_tokens):
+            ax.axvline(0.0, color="#111827", linewidth=1.0, zorder=2)
+            ax.grid(True, axis="x", color="#e5e7eb", linewidth=0.8, alpha=0.7)
+            ax.set_axisbelow(True)
+            ax.set_yticks(y_positions)
+            ax.set_yticklabels(display_names)
+            ax.tick_params(axis="y", length=0)
+
+        ax_accuracy.set_title("Δ Accuracy (RoundValue − Baseline)")
+        ax_accuracy.set_xlabel("Δ accuracy (positive = RoundValue higher)")
+        ax_tokens.set_title("Δ Tokens (RoundValue − Baseline)")
+        ax_tokens.set_xlabel("Δ tokens (negative = RoundValue cheaper)")
+        fig.suptitle("RoundValue vs Baselines", fontsize=13, fontweight="bold")
+        fig.legend(
+            handles=[
+                Line2D(
+                    [0],
+                    [0],
+                    marker="o",
+                    color="none",
+                    markersize=7,
+                    markerfacecolor=accent_color,
+                    markeredgecolor=accent_color,
+                    label="95% CI excludes 0",
+                ),
+                Line2D(
+                    [0],
+                    [0],
+                    marker="o",
+                    color="none",
+                    markersize=7,
+                    markerfacecolor=fixed_color,
+                    markeredgecolor=fixed_color,
+                    label="95% CI spans 0",
+                ),
+            ],
+            loc="lower center",
+            bbox_to_anchor=(0.5, -0.03),
+            ncol=2,
+            frameon=False,
+        )
+        fig.tight_layout(rect=(0.0, 0.02, 1.0, 0.94))
+        save(fig, "chart_roundvalue_vs_baselines.png")
+
+    def adaptive_stop_distribution(chart_data: Mapping[str, Any]) -> None:
+        stop = chart_data.get("stop_distribution")
+        if not isinstance(stop, Mapping) or not stop:
+            return
+        names = [name for name in ADAPTIVE_STOP_ORDER if name in stop]
+        if not names:
+            return
+        fig, ax = plt.subplots(figsize=(9.2, 4.8))
+        display_names = [
+            POLICY_DISPLAY_NAMES.get(name, name) for name in reversed(names)
+        ]
+        for y_position, name in enumerate(reversed(names)):
+            values = stop[name]
+            if not isinstance(values, Mapping):
+                continue
+            left = 0.0
+            for round_index in (1, 2, 3):
+                percent = _number(values.get(str(round_index))) or 0.0
+                if percent <= 0:
+                    continue
+                color = round_colors.get(round_index, "#6b7280")
+                ax.barh(y_position, percent, left=left, color=color, height=0.6, zorder=2)
+                if percent >= 8:
+                    text_color = "#111827" if round_index == 2 else "white"
+                    ax.text(
+                        left + percent / 2,
+                        y_position,
+                        f"{percent:.0f}%",
+                        ha="center",
+                        va="center",
+                        fontsize=9,
+                        color=text_color,
+                        zorder=3,
+                    )
+                left += percent
+        ax.set_yticks(range(len(display_names)))
+        ax.set_yticklabels(display_names)
+        ax.tick_params(axis="y", length=0)
+        ax.set_xlim(0.0, 100.0)
+        ax.set_xticks([0, 20, 40, 60, 80, 100])
+        ax.set_xticklabels(["0%", "20%", "40%", "60%", "80%", "100%"])
+        ax.set_xlabel("Percentage of Tasks")
+        ax.set_title("Adaptive Stop-Round Distribution")
+        ax.legend(
+            handles=[
+                Patch(
+                    facecolor=round_colors[round_index],
+                    label=f"Stop after Round {round_index}",
+                )
+                for round_index in (1, 2, 3)
+            ],
+            loc="lower right",
+            fontsize=9,
+        )
+        fig.tight_layout()
+        save(fig, "chart_adaptive_stop_distribution.png")
+
+    def oracle_regret(chart_data: Mapping[str, Any]) -> None:
+        regrets = chart_data.get("oracle_regret")
+        if not isinstance(regrets, Mapping) or not regrets:
+            return
+        rows: list[tuple[str, float]] = []
+        for name in ORACLE_REGRET_ORDER:
+            stat = regrets.get(name)
+            if not isinstance(stat, Mapping):
+                continue
+            mean_value = _number(stat.get("mean"))
+            if mean_value is not None:
+                rows.append((name, mean_value))
+        rows.sort(key=lambda item: item[1], reverse=True)
+        if not rows:
+            return
+
+        fig, ax = plt.subplots(figsize=(8.8, 4.8))
+        y_positions = list(range(len(rows) - 1, -1, -1))
+        span_lows: list[float] = []
+        span_highs: list[float] = []
+        for (name, mean_value), y_position in zip(rows, y_positions, strict=False):
+            stat = regrets[name]
+            low = _number(stat.get("ci95_low"))
+            high = _number(stat.get("ci95_high"))
+            xerr = None
+            if low is not None and high is not None and low <= mean_value <= high:
+                xerr = [[mean_value - low], [high - mean_value]]
+            color = accent_color if name == "roundvalue" else fixed_color
+            marker = "*" if name == "roundvalue" else "o"
+            ax.errorbar(
+                [mean_value],
+                [y_position],
+                xerr=xerr,
+                fmt=marker,
+                markersize=8,
+                color=color,
+                ecolor="#9ca3af",
+                elinewidth=1.4,
+                capsize=4,
+                zorder=3,
             )
-            bottoms = [bottom + count for bottom, count in zip(bottoms, counts, strict=False)]
-        ax.set_ylabel("tasks")
-        ax.tick_params(axis="x", labelrotation=30)
-        ax.legend(title="stop round")
-        ax.set_title(f"Stop-round distribution - {run_id}")
-        save(fig, "chart_stop_round_distribution.png")
+            ax.annotate(
+                f"{mean_value:.3f}",
+                (mean_value, y_position),
+                textcoords="offset points",
+                xytext=(6, 0),
+                va="center",
+                fontsize=9,
+                color=color,
+            )
+            if low is not None:
+                span_lows.append(low)
+            if high is not None:
+                span_highs.append(high)
+
+        ax.axvline(0.0, color="#111827", linewidth=1.0, zorder=2)
+        if span_lows and span_highs:
+            low = min(span_lows + [0.0])
+            high = max(span_highs + [0.0])
+            if high - low < 1e-9:
+                ax.set_xlim(-0.08, 0.08)
+            else:
+                padding = (high - low) * 0.18
+                ax.set_xlim(low - padding, high + padding)
+        else:
+            ax.set_xlim(-0.08, 0.08)
+        ax.grid(True, axis="x", color="#e5e7eb", linewidth=0.8, alpha=0.7)
+        ax.set_axisbelow(True)
+        ax.set_yticks(y_positions)
+        ax.set_yticklabels(
+            [POLICY_DISPLAY_NAMES.get(name, name) for name, _ in rows]
+        )
+        ax.tick_params(axis="y", length=0)
+        ax.set_xlabel("Mean Oracle Quality Regret (lower is better; 0 = Oracle)")
+        ax.set_title("Oracle Quality Regret")
+        fig.tight_layout()
+        save(fig, "chart_oracle_regret.png")
+
+    policy_quality_scatter(
+        "mean_total_tokens",
+        "Mean Total Tokens per Task",
+        "Policy Quality vs Tokens",
+        "chart_policy_quality_vs_tokens.png",
+    )
+    policy_quality_scatter(
+        "mean_wall_clock_ms",
+        "Mean Wall-clock Time per Task (s)",
+        "Policy Quality vs Latency",
+        "chart_policy_quality_vs_latency.png",
+    )
+    roundvalue_vs_baselines(chart_data)
+    adaptive_stop_distribution(chart_data)
+    oracle_regret(chart_data)
 
     return paths
 

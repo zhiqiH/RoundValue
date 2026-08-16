@@ -1,0 +1,373 @@
+{
+  "analyzed_task_count": 50,
+  "command": [
+    "roundvalue",
+    "collect-analyze",
+    "--benchmark",
+    "benchmark/math/MATH-50.json",
+    "--smoke-run-id",
+    "202608151711_smoke_c9607040"
+  ],
+  "complete_task_count": 50,
+  "config_hash": "691413eda71e83e2ef1bc0d35d510afeceafe653248c825ac7cd28099eadcd0c",
+  "configs": {
+    "agents.json": {
+      "content": {
+        "format_budget_margin": 2.0,
+        "format_retries": 2,
+        "roles": [
+          {
+            "id": "planner",
+            "output_schema": {
+              "properties": {
+                "assumptions": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "candidate_answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "plan": {
+                  "max_length": 180,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "verification_steps": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "plan",
+                "assumptions",
+                "verification_steps",
+                "candidate_answer"
+              ]
+            },
+            "system_prompt": "You are the Planner in a fixed RoundValue debate DAG. Analyze the task, identify constraints and assumptions, propose a concise, verifiable plan, and state your current best candidate answer based only on visible evidence. Use only the task and messages explicitly provided to you. Do not claim access to hidden answers or hidden tests. Do not restate the task, do not repeat yourself, and do not write any derivation, chain of thought, or step-by-step computation; keep every field near its max_length target, and keep the whole response well within the model output limit. Return the required JSON object only."
+          },
+          {
+            "id": "analyst",
+            "output_schema": {
+              "properties": {
+                "analysis": {
+                  "max_length": 180,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "candidate_answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "evidence": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "analysis",
+                "candidate_answer",
+                "evidence"
+              ]
+            },
+            "system_prompt": "You are the Analyst in a fixed RoundValue debate DAG. Independently solve the task and state a candidate answer with concise supporting reasoning. If a plan or evidence is supplied, check it and flag concrete errors; if none is supplied, form your own plan from the task alone. Use only visible task inputs and messages. Do not claim access to hidden answers or hidden tests. Do not restate the task, do not repeat yourself, and do not reproduce a derivation or chain of thought; keep every field near its max_length target, and keep the whole response well within the model output limit. Return the required JSON object only."
+          },
+          {
+            "id": "critic",
+            "output_schema": {
+              "properties": {
+                "candidate_answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "evidence": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "issues": {
+                  "max_length": 180,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "revision_advice": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "issues",
+                "evidence",
+                "revision_advice",
+                "candidate_answer"
+              ]
+            },
+            "system_prompt": "You are the Critic in a fixed RoundValue debate DAG. Inspect any visible proposals and analyses for concrete errors, missing constraints, unsupported claims, and unresolved disagreement, then state your own current best candidate answer based only on visible evidence. If no visible proposals are supplied, act as an independent verifier: solve the task directly from the prompt and report only concrete risk points; do not invent prior proposals and do not claim to have inspected messages you cannot see. Give evidence-based, actionable revision advice; do not invent hidden-test results or a reference answer. Do not restate the task, do not repeat yourself or loop, do not rewrite derivations, and if there is nothing concrete to flag, say so in one sentence; keep every field near its max_length target, and keep the whole response well within the model output limit. Return the required JSON object only."
+          },
+          {
+            "id": "writer",
+            "output_schema": {
+              "is_checkpoint_answer": true,
+              "properties": {
+                "final_answer": {
+                  "max_length": 500,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "final_answer"
+              ]
+            },
+            "system_prompt": "You are the Writer in a fixed RoundValue debate DAG. Synthesize the visible Planner, Analyst, and Critic messages into the best final answer to the task. Resolve disagreements using evidence, obey the task's requested answer format, and do not mention hidden answers or hidden tests. Your output is the only scoreable checkpoint answer for this round. Return only the answer itself: do not restate the task, do not add explanation, derivation, or commentary unless the task explicitly requests it, and keep the field near its max_length target. Return the required JSON object only."
+          }
+        ],
+        "schema_version": "1.0"
+      },
+      "sha256": "56a4e98e9a7e169df756f46fb8b545f633f9abd468487a683249218f916a1dc6"
+    },
+    "model_config.json": {
+      "content": {
+        "default_model_id": "deepseek_flash",
+        "models": {
+          "deepseek_flash": {
+            "max_output_tokens": 4096,
+            "model_name": "deepseek-v4-flash",
+            "pricing": {
+              "currency": "USD",
+              "effective_date": "2026-08-13",
+              "input_cache_hit_per_million": 0.0028,
+              "input_cache_miss_per_million": 0.14,
+              "output_per_million": 0.28
+            },
+            "provider": "deepseek",
+            "reasoning": {
+              "enabled": false
+            },
+            "request_defaults": {
+              "response_format": {
+                "type": "json_object"
+              }
+            },
+            "temperature": 0.0
+          }
+        },
+        "providers": {
+          "deepseek": {
+            "adapter": "openai_compatible",
+            "api_key": {
+              "environment_variable": "DEEPSEEK_API_KEY",
+              "field": "deepseek.api_key",
+              "file": ".secret/model_key.json"
+            },
+            "base_url": "https://api.deepseek.com",
+            "max_attempts": 3,
+            "retry_backoff_seconds": 1.0,
+            "timeout_seconds": 120
+          }
+        },
+        "schema_version": "1.0"
+      },
+      "sha256": "be492e3757e95326e493d5a709f131dd24a5be072846d871def47ab5bfaf3074"
+    },
+    "topology.json": {
+      "content": {
+        "default_topology_id": "debate",
+        "schema_version": "1.0",
+        "topologies": {
+          "debate": {
+            "edges": [
+              [
+                "planner_stage_1",
+                "stage_1_packet"
+              ],
+              [
+                "analyst_stage_1",
+                "stage_1_packet"
+              ],
+              [
+                "critic_stage_1",
+                "stage_1_packet"
+              ],
+              [
+                "stage_1_packet",
+                "planner_stage_2"
+              ],
+              [
+                "stage_1_packet",
+                "analyst_stage_2"
+              ],
+              [
+                "stage_1_packet",
+                "critic_stage_2"
+              ],
+              [
+                "stage_1_packet",
+                "writer_packet"
+              ],
+              [
+                "planner_stage_2",
+                "writer_packet"
+              ],
+              [
+                "analyst_stage_2",
+                "writer_packet"
+              ],
+              [
+                "critic_stage_2",
+                "writer_packet"
+              ],
+              [
+                "writer_packet",
+                "writer"
+              ]
+            ],
+            "max_rounds": 3,
+            "nodes": [
+              {
+                "id": "planner_stage_1",
+                "parallel_group": "stage_1",
+                "role": "planner",
+                "stage": 1
+              },
+              {
+                "id": "analyst_stage_1",
+                "parallel_group": "stage_1",
+                "role": "analyst",
+                "stage": 1
+              },
+              {
+                "id": "critic_stage_1",
+                "parallel_group": "stage_1",
+                "role": "critic",
+                "stage": 1
+              },
+              {
+                "id": "planner_stage_2",
+                "parallel_group": "stage_2",
+                "role": "planner",
+                "stage": 2
+              },
+              {
+                "id": "analyst_stage_2",
+                "parallel_group": "stage_2",
+                "role": "analyst",
+                "stage": 2
+              },
+              {
+                "id": "critic_stage_2",
+                "parallel_group": "stage_2",
+                "role": "critic",
+                "stage": 2
+              },
+              {
+                "id": "writer",
+                "parallel_group": null,
+                "role": "writer",
+                "stage": 3
+              }
+            ],
+            "packets": [
+              {
+                "id": "stage_1_packet",
+                "sources": [
+                  "planner_stage_1",
+                  "analyst_stage_1",
+                  "critic_stage_1"
+                ]
+              },
+              {
+                "id": "writer_packet",
+                "sources": [
+                  "stage_1_packet",
+                  "planner_stage_2",
+                  "analyst_stage_2",
+                  "critic_stage_2"
+                ]
+              }
+            ],
+            "runner": "two_stage_pac_writer"
+          }
+        }
+      },
+      "sha256": "2d70b8b78aeda0882b00453439a2b5687f77d01d44c8567c82b3113c9a0a2df8"
+    }
+  },
+  "created_at": "2026-08-15T22:12:24.851863+00:00",
+  "dataset": "MATH-50",
+  "domain": "math",
+  "failed_task_ids": [],
+  "git": {
+    "commit": "9cd365306f6da86e25a90733435182394793818d",
+    "dirty": true,
+    "status_porcelain": [
+      "?? results/202608151711_smoke_c9607040/collection_summary.json",
+      "?? results/202608151711_smoke_c9607040/manifest.json",
+      "?? results/202608151711_smoke_c9607040/smoke_status.json",
+      "?? trajectories/202608151711_smoke_c9607040/benchmark_provenance.json",
+      "?? trajectories/202608151711_smoke_c9607040/benchmark_snapshot.json",
+      "?? trajectories/202608151711_smoke_c9607040/resolved_config.json",
+      "?? trajectories/202608151711_smoke_c9607040/run.json",
+      "?? trajectories/202608151711_smoke_c9607040/source_snapshot.json",
+      "?? trajectories/202608151711_smoke_c9607040/task_1bd4b9687b9a8615.json",
+      "?? trajectories/202608151711_smoke_c9607040/task_20fe249f8f297241.json"
+    ]
+  },
+  "mode": "collect",
+  "package_versions": {
+    "httpx": "0.28.1",
+    "numpy": "2.4.6"
+  },
+  "platform": "macOS-26.6.1-arm64-arm-64bit",
+  "project_root": "/Users/zhiqi/Documents/RoundValue",
+  "python": "3.11.15 | packaged by conda-forge | (main, Aug 11 2026, 10:24:21) [Clang 19.1.7 ]",
+  "result_dir": "/Users/zhiqi/Documents/RoundValue/results/202608151712_MATH50_9793e493",
+  "resumed": false,
+  "resumed_task_ids": [],
+  "run_id": "202608151712_MATH50_9793e493",
+  "schema_version": "1.0",
+  "selected_model_id": "deepseek_flash",
+  "selected_topology_id": "debate",
+  "source_file_hashes": {
+    "EXPERIMENT_ARCHITECTURE.md": "adf286260d7ebd1c51047c6a86a5a9dcb466ec34e3acf2f83373f8dbb5024888",
+    "README.md": "78b67bf3d5c4ea6c81545e431059856a031d1bf14b227252a5a6f3ef3206ef7b",
+    "pyproject.toml": "d38891d3a5833ebedfe0f7efb23f2d65bac96a4279210f6e94d24b97304f94bc",
+    "scripts/dev_selfcheck.py": "11a97e72e97bbe507ec8b755827c06aaef499413ed8cce24c0c56a33629975d4",
+    "scripts/step1_smoke.py": "9ff03012d47a55c075ebabe0bd0f66ce45bae7f38ad0ae66377e8f6543532571",
+    "scripts/step2_collect_analyze.py": "16bb8e34ddec2268564faa5ce1e38b946c06085a7c46e03489da21a2b651025c",
+    "scripts/step3_visualize.py": "8e8310a3b72ff1f208b2a526acfd6b5aa2bfbc77479859db79a31ae694302cba",
+    "src/accounting.py": "d3772e190e62f772a19d693a45449c5d9bf5c8a01ccba1d5fc15a7db2fd112c6",
+    "src/benchmark_io.py": "78f7b67f1a62cff8f053e72eb627ab66823e573685df61cb20b81ca1286c25e0",
+    "src/build_math50.py": "7cd47355a9326780f27bc1235296e9c8df69a549b24a48f2f49917395f143d7d",
+    "src/build_real_benchmarks.py": "f745fa1c24d54de2234d39ea88ac118b5ae49609525f06cb1aef02abfed44faf",
+    "src/config_loader.py": "92759951df2d0eec9437180166d2e52052f4d5f779b92f4b22d809e67817a432",
+    "src/contracts.py": "fa29c6ae36b977f9c05aa263f873d1fcc1e7201d74f5a015f7170ab834093db9",
+    "src/debate_runner.py": "2091ce774db0b076eaa5d36c017bb0e870a6cf1f95b268ddd7b39c0c211f3fee",
+    "src/labels.py": "de0e5fb303a482a71a1f6055df625732ff2577d40c24be88548a1712df0cd80e",
+    "src/pipeline.py": "c96d8446ca531594f593e0dfbff335673b1bde08908e24d2aeaa09094929a4d9",
+    "src/policy.py": "07542295d5fef537ba1c17738e6fc99e4e21fd28ebdf2918ede4a7b49d2769f4",
+    "src/provider.py": "cbaf1576c67c193773fd25047c40e023aa2e00783a6dc31768483072d7ca0447",
+    "src/report.py": "54700ea9a5eb56831b8c85e23153e3ed9b6a7ab9e840f68aaddce7dd07cf73e3",
+    "src/roundvalue_cli.py": "22a42063c4de6340d526df7acf1cc07bc715ac5eff22af679a8422addc31a863",
+    "src/scorer.py": "35252d69275af9eb601d1c869e64929e7bc1dfc17e3a00ae1c11518fb4498cd0",
+    "src/storage.py": "ea346bc3f2ccf1a92df60e1ac85ea568d890cad9b771f0bda70f19e8f6e783d7",
+    "src/verify_real_benchmarks.py": "35a24f1338dc7d33ed81fee7302437e4d9ee33c0e1403efb7cdaab71f27dc0c2",
+    "src/visualize.py": "b042f6dd362cc2362d5d6251feaf7705a3eeaff6c6bd850b12d16b9b6a5a9c64"
+  },
+  "source_snapshot_hash": "ab85313a683bd43238f2fb0f3876b51a82cb3225fd1dd68d958c222543168ce4",
+  "status": "visualize_complete",
+  "task_count": 50,
+  "test_records": 10,
+  "training_records": 30,
+  "trajectory_dir": "/Users/zhiqi/Documents/RoundValue/trajectories/202608151712_MATH50_9793e493",
+  "updated_at": "2026-08-16T01:03:45.820516+00:00",
+  "validation_records": 10
+}

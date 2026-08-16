@@ -83,13 +83,13 @@ Debate 模块已被固化为一个整体：`topology.json` 只保留唯一且无
 |---|---|---|---|
 | `step1_smoke.py` | 小规模数学通路测试：配置、完整一轮 Debate、评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
 | `step2_collect_analyze.py` | 收集 `--benchmark` 指定单个数据集的 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误）；全部完成后立即检查完整性、逐轮评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 收集阶段是 | `trajectories/<run_id>/` 与 `results/<run_id>/` |
-| `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 报告、5 张 PNG 图表（分轮准确率、策略对比、质量-token、质量-延迟、停止轮分布）与简短结论 | 否 | `results/<run_id>/` |
+| `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 报告、`charts/` 下 5 张 policy-level PNG 图表（质量-token、质量-延迟、RoundValue vs baseline、自适应停止分布、oracle regret）与简短结论 | 否 | `results/<run_id>/` |
 
 执行顺序是强制的：
 
 1. `step1_smoke` 的每道数学验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。
 2. `step2_collect_analyze` 必须用 `--smoke-run-id` 指向一个已通过的 smoke run，并校验该 smoke 已全部通过、且三份 config 与源码快照未发生变化；不满足时拒绝开始。新 run 自动命名，无需传 `--run-id`；给定一个已存在的 collect `--run-id` 时先断点续跑，只重跑失败或缺失任务。它先保存原始轨迹；若全部完成，再只用 trajectories 做确定性离线评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估，把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results；若收集不完整则跳过分析并输出失败任务 ID（原因在 `results/<run>/failure_details.json`），可用同一命令加 `--run-id` 续跑。分析阶段绝不调用模型 API，也绝不回写 trajectories。
-3. `step3_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）、`summary_conclusion.txt`，以及 5 张独立 PNG 图表（`chart_accuracy_by_round.png`、`chart_policy_comparison.png`、`chart_quality_vs_tokens.png`、`chart_quality_vs_latency.png`、`chart_stop_round_distribution.png`）。可视化不读取 trajectories，不可能反向影响评分或策略。
+3. `step3_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）、`summary_conclusion.txt`，以及 `charts/` 下的 5 张 policy-level PNG 图表（`chart_policy_quality_vs_tokens.png`、`chart_policy_quality_vs_latency.png`、`chart_roundvalue_vs_baselines.png`、`chart_adaptive_stop_distribution.png`、`chart_oracle_regret.png`）。可视化不读取 trajectories，不可能反向影响评分或策略。
 
 `roundvalue smoke|collect-analyze|visualize` 分别转发到上述三个脚本的 `main`，不改变
 任何参数、强制顺序或门禁；`scripts/` 目录仍然只包含这三个用户入口。

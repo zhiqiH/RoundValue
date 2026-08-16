@@ -4,10 +4,10 @@ Reads only ``results/<run_id>/`` (analysis.json written by step2_collect_analyze
 writes ``task_level_results.csv``, a self-contained ``report.html`` with the
 per-round accuracy, token, wall-clock latency, Repair/Neutral/Harm/Recovery,
 stop-round, and policy-comparison tables plus SVG charts, and a short
-``summary_conclusion.txt``.  It also writes standalone PNG charts
-(``chart_accuracy_by_round.png``, ``chart_policy_comparison.png``,
-``chart_quality_vs_tokens.png``, ``chart_quality_vs_latency.png``,
-``chart_stop_round_distribution.png``) into the same directory.
+``summary_conclusion.txt``.  It also writes five standalone policy-level PNG
+charts (policy quality-vs-tokens, policy quality-vs-latency,
+RoundValue-vs-baselines, adaptive stop-round distribution, and oracle
+quality regret) into ``charts/``.
 
 Visualization never reads trajectories and cannot affect scoring or policy.
 """

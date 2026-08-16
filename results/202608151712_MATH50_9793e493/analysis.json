@@ -1,0 +1,3808 @@
+{
+  "cumulative": [
+    {
+      "accuracy": 0.7,
+      "mean_api_latency_ms": 12048.88,
+      "mean_cost_usd": 0.0006972673120000001,
+      "mean_input_tokens": 6322.14,
+      "mean_logical_calls": 7.0,
+      "mean_output_tokens": 939.82,
+      "mean_total_tokens": 7261.96,
+      "mean_wall_clock_ms": 5421.42,
+      "n_tasks": 50,
+      "round_index": 1
+    },
+    {
+      "accuracy": 0.68,
+      "mean_api_latency_ms": 23961.76,
+      "mean_cost_usd": 0.0014924684319999998,
+      "mean_input_tokens": 13109.3,
+      "mean_logical_calls": 14.0,
+      "mean_output_tokens": 1847.62,
+      "mean_total_tokens": 14956.92,
+      "mean_wall_clock_ms": 10769.74,
+      "n_tasks": 50,
+      "round_index": 2
+    },
+    {
+      "accuracy": 0.72,
+      "mean_api_latency_ms": 35653.68,
+      "mean_cost_usd": 0.0022796073440000003,
+      "mean_input_tokens": 19821.94,
+      "mean_logical_calls": 21.0,
+      "mean_output_tokens": 2725.0,
+      "mean_total_tokens": 22546.94,
+      "mean_wall_clock_ms": 16174.42,
+      "n_tasks": 50,
+      "round_index": 3
+    }
+  ],
+  "generated_at": "2026-08-15T22:25:55.406286+00:00",
+  "max_rounds": 3,
+  "pairwise_vs_fixed_1": {
+    "consensus": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 4338.3,
+        "ci95_low": 0.0,
+        "mean_difference": 1761.3,
+        "n_paired": 10
+      }
+    },
+    "fixed_1": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "fixed_2": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 8456.9,
+        "ci95_low": 6693.7,
+        "mean_difference": 7496.2,
+        "n_paired": 10
+      }
+    },
+    "fixed_3": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 17362.9,
+        "ci95_low": 13778.6,
+        "mean_difference": 15513.5,
+        "n_paired": 10
+      }
+    },
+    "oracle": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "oracle_one_step": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "roundvalue": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 15415.9,
+        "ci95_low": 7304.1,
+        "mean_difference": 11766.8,
+        "n_paired": 10
+      }
+    },
+    "task_only": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 12688.1,
+        "ci95_low": 1830.3,
+        "mean_difference": 6997.4,
+        "n_paired": 10
+      }
+    }
+  },
+  "per_round": [
+    {
+      "accuracy": 0.7,
+      "mean_api_latency_ms": 12048.88,
+      "mean_cost_usd": 0.0006972673120000001,
+      "mean_input_tokens": 6322.14,
+      "mean_logical_calls": 7.0,
+      "mean_output_tokens": 939.82,
+      "mean_total_tokens": 7261.96,
+      "mean_wall_clock_ms": 5421.42,
+      "n_tasks": 50,
+      "round_index": 1
+    },
+    {
+      "accuracy": 0.68,
+      "mean_api_latency_ms": 11912.88,
+      "mean_cost_usd": 0.0007952011200000002,
+      "mean_input_tokens": 6787.16,
+      "mean_logical_calls": 7.0,
+      "mean_output_tokens": 907.8,
+      "mean_total_tokens": 7694.96,
+      "mean_wall_clock_ms": 5348.32,
+      "n_tasks": 50,
+      "round_index": 2
+    },
+    {
+      "accuracy": 0.72,
+      "mean_api_latency_ms": 11691.92,
+      "mean_cost_usd": 0.0007871389119999999,
+      "mean_input_tokens": 6712.64,
+      "mean_logical_calls": 7.0,
+      "mean_output_tokens": 877.38,
+      "mean_total_tokens": 7590.02,
+      "mean_wall_clock_ms": 5404.68,
+      "n_tasks": 50,
+      "round_index": 3
+    }
+  ],
+  "policy_charts": {
+    "bootstrap": {
+      "samples": 2000,
+      "seed": 20260813
+    },
+    "oracle_regret": {
+      "consensus": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0,
+        "n_paired": 10
+      },
+      "fixed_1": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0,
+        "n_paired": 10
+      },
+      "fixed_2": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0,
+        "n_paired": 10
+      },
+      "fixed_3": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0,
+        "n_paired": 10
+      },
+      "oracle_one_step": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0,
+        "n_paired": 10
+      },
+      "roundvalue": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0,
+        "n_paired": 10
+      },
+      "task_only": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0,
+        "n_paired": 10
+      }
+    },
+    "policy_points": [
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 7216.4,
+        "mean_wall_clock_ms": 5970.2,
+        "n_available": 10,
+        "policy": "fixed_1",
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 2.0,
+        "mean_total_tokens": 14712.6,
+        "mean_wall_clock_ms": 11713.3,
+        "n_available": 10,
+        "policy": "fixed_2",
+        "stop_round_counts": {
+          "2": 10
+        }
+      },
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 3.0,
+        "mean_total_tokens": 22729.9,
+        "mean_wall_clock_ms": 18258.0,
+        "n_available": 10,
+        "policy": "fixed_3",
+        "stop_round_counts": {
+          "3": 10
+        }
+      },
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 1.2,
+        "mean_total_tokens": 8977.7,
+        "mean_wall_clock_ms": 7250.8,
+        "n_available": 10,
+        "policy": "consensus",
+        "stop_round_counts": {
+          "1": 8,
+          "2": 2
+        }
+      },
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 1.8,
+        "mean_total_tokens": 14213.8,
+        "mean_wall_clock_ms": 12284.5,
+        "n_available": 10,
+        "policy": "task_only",
+        "stop_round_counts": {
+          "1": 6,
+          "3": 4
+        }
+      },
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 2.6,
+        "mean_total_tokens": 18983.2,
+        "mean_wall_clock_ms": 14589.9,
+        "n_available": 10,
+        "policy": "roundvalue",
+        "stop_round_counts": {
+          "1": 2,
+          "3": 8
+        }
+      },
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 7216.4,
+        "mean_wall_clock_ms": 5970.2,
+        "n_available": 10,
+        "policy": "oracle_one_step",
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      {
+        "accuracy": 0.7,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 7216.4,
+        "mean_wall_clock_ms": 5970.2,
+        "n_available": 10,
+        "policy": "oracle",
+        "stop_round_counts": {
+          "1": 10
+        }
+      }
+    ],
+    "roundvalue_vs_baselines": {
+      "consensus": {
+        "accuracy_difference": {
+          "ci95_high": 0.0,
+          "ci95_low": 0.0,
+          "mean": 0.0,
+          "n_paired": 10
+        },
+        "total_tokens_difference": {
+          "ci95_high": 14495.1,
+          "ci95_low": 4566.4,
+          "mean": 10005.5,
+          "n_paired": 10
+        }
+      },
+      "fixed_1": {
+        "accuracy_difference": {
+          "ci95_high": 0.0,
+          "ci95_low": 0.0,
+          "mean": 0.0,
+          "n_paired": 10
+        },
+        "total_tokens_difference": {
+          "ci95_high": 15415.9,
+          "ci95_low": 7304.1,
+          "mean": 11766.8,
+          "n_paired": 10
+        }
+      },
+      "fixed_2": {
+        "accuracy_difference": {
+          "ci95_high": 0.0,
+          "ci95_low": 0.0,
+          "mean": 0.0,
+          "n_paired": 10
+        },
+        "total_tokens_difference": {
+          "ci95_high": 8325.0,
+          "ci95_low": -1054.5,
+          "mean": 4270.6,
+          "n_paired": 10
+        }
+      },
+      "fixed_3": {
+        "accuracy_difference": {
+          "ci95_high": 0.0,
+          "ci95_low": 0.0,
+          "mean": 0.0,
+          "n_paired": 10
+        },
+        "total_tokens_difference": {
+          "ci95_high": 0.0,
+          "ci95_low": -9323.7,
+          "mean": -3746.7,
+          "n_paired": 10
+        }
+      },
+      "task_only": {
+        "accuracy_difference": {
+          "ci95_high": 0.0,
+          "ci95_low": 0.0,
+          "mean": 0.0,
+          "n_paired": 10
+        },
+        "total_tokens_difference": {
+          "ci95_high": 10548.0,
+          "ci95_low": -1821.2,
+          "mean": 4769.4,
+          "n_paired": 10
+        }
+      }
+    },
+    "stop_distribution": {
+      "consensus": {
+        "1": 80.0,
+        "2": 20.0,
+        "3": 0.0
+      },
+      "oracle": {
+        "1": 100.0,
+        "2": 0.0,
+        "3": 0.0
+      },
+      "oracle_one_step": {
+        "1": 100.0,
+        "2": 0.0,
+        "3": 0.0
+      },
+      "roundvalue": {
+        "1": 20.0,
+        "2": 0.0,
+        "3": 80.0
+      },
+      "task_only": {
+        "1": 60.0,
+        "2": 0.0,
+        "3": 40.0
+      }
+    },
+    "task_rows": {
+      "consensus": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 6240.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 4015.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 11034.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 14231.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 6126.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 4135.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 2,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 17251.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 15795.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 5314.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 3666.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 6063.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 3882.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 6573.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 4697.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 6568.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 4462.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 15906.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 11914.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 8702.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 5711.0
+        }
+      ],
+      "fixed_1": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 6240.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 4015.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 11034.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 14231.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 6126.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 4135.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 7795.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 8211.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 5314.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 3666.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 6063.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 3882.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 6573.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 4697.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 6568.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 4462.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 7749.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 6692.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 8702.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 5711.0
+        }
+      ],
+      "fixed_2": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 12221.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 7850.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 21416.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 26911.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 2,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 13896.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 9781.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 2,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 17251.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 15795.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 11091.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 7025.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 12845.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 8135.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 2,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 13555.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 9603.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 13372.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 8733.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 15906.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 11914.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 2,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 15573.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 11386.0
+        }
+      ],
+      "fixed_3": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 19268.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 12969.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 29337.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 35499.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 3,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 26427.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 25354.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 3,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 26959.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 23624.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 16968.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 10941.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 19794.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 12195.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 3,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 20640.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 14250.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 19978.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 12619.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 25388.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 19035.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 22540.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 16094.0
+        }
+      ],
+      "oracle": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 6240.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 4015.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 11034.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 14231.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 6126.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 4135.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 7795.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 8211.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 5314.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 3666.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 6063.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 3882.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 6573.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 4697.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 6568.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 4462.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 7749.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 6692.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 8702.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 5711.0
+        }
+      ],
+      "oracle_one_step": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 6240.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 4015.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 11034.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 14231.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 6126.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 4135.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 7795.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 8211.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 5314.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 3666.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 6063.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 3882.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 6573.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 4697.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 6568.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 4462.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 7749.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 6692.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 8702.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 5711.0
+        }
+      ],
+      "roundvalue": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 19268.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 12969.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 11034.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 14231.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 3,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 26427.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 25354.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 7795.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 8211.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 16968.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 10941.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 19794.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 12195.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 3,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 20640.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 14250.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 19978.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 12619.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 25388.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 19035.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 22540.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 16094.0
+        }
+      ],
+      "task_only": [
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/geometry/477.json",
+          "total_tokens": 6240.0,
+          "trajectory_id": "1513aa2b63790c1b31b081a9",
+          "wall_clock_ms": 4015.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/geometry/965.json",
+          "total_tokens": 29337.0,
+          "trajectory_id": "308b114a9e015add5f0d69d7",
+          "wall_clock_ms": 35499.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 3,
+          "task_id": "math500::test/intermediate_algebra/1197.json",
+          "total_tokens": 26427.0,
+          "trajectory_id": "f8c4ce383e42e92edd9d1b2a",
+          "wall_clock_ms": 25354.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/precalculus/695.json",
+          "total_tokens": 7795.0,
+          "trajectory_id": "1cf43ac8a46ac62679fb3a54",
+          "wall_clock_ms": 8211.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/algebra/1004.json",
+          "total_tokens": 5314.0,
+          "trajectory_id": "682b2ab421cb33f251a1ba38",
+          "wall_clock_ms": 3666.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/counting_and_probability/803.json",
+          "total_tokens": 19794.0,
+          "trajectory_id": "8452445bb92e8af4ffd91e44",
+          "wall_clock_ms": 12195.0
+        },
+        {
+          "available": true,
+          "quality": 0.0,
+          "stop_round": 1,
+          "task_id": "math500::test/intermediate_algebra/1102.json",
+          "total_tokens": 6573.0,
+          "trajectory_id": "04542d66a2b3653a26d19f92",
+          "wall_clock_ms": 4697.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/prealgebra/1787.json",
+          "total_tokens": 6568.0,
+          "trajectory_id": "ca1d805431d0ba788abfd8dc",
+          "wall_clock_ms": 4462.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 3,
+          "task_id": "math500::test/algebra/1184.json",
+          "total_tokens": 25388.0,
+          "trajectory_id": "5afc333c120c4b25596ac858",
+          "wall_clock_ms": 19035.0
+        },
+        {
+          "available": true,
+          "quality": 1.0,
+          "stop_round": 1,
+          "task_id": "math500::test/number_theory/515.json",
+          "total_tokens": 8702.0,
+          "trajectory_id": "9f23f2f5a269dcf1329f34e2",
+          "wall_clock_ms": 5711.0
+        }
+      ]
+    }
+  },
+  "policy_table": [
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 12834.3,
+      "mean_cost_usd": 0.0006859697600000002,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 7216.4,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 5970.2,
+      "n_available": 10,
+      "policy": "fixed_1",
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 24902.5,
+      "mean_cost_usd": 0.0015217227200000005,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 2.0,
+      "mean_total_tokens": 14712.6,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 11713.3,
+      "n_available": 10,
+      "policy": "fixed_2",
+      "stop_round_counts": {
+        "2": 10
+      }
+    },
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 37829.0,
+      "mean_cost_usd": 0.00238991872,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 3.0,
+      "mean_total_tokens": 22729.9,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 18258.0,
+      "n_available": 10,
+      "policy": "fixed_3",
+      "stop_round_counts": {
+        "3": 10
+      }
+    },
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 15482.4,
+      "mean_cost_usd": 0.0009191336000000004,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 1.2,
+      "mean_total_tokens": 8977.7,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 7250.8,
+      "n_available": 10,
+      "policy": "consensus",
+      "stop_round_counts": {
+        "1": 8,
+        "2": 2
+      }
+    },
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 24767.4,
+      "mean_cost_usd": 0.0014604368800000002,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 1.8,
+      "mean_total_tokens": 14213.8,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 12284.5,
+      "n_available": 10,
+      "policy": "task_only",
+      "stop_round_counts": {
+        "1": 6,
+        "3": 4
+      }
+    },
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 31351.1,
+      "mean_cost_usd": 0.00190222928,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 2.6,
+      "mean_total_tokens": 18983.2,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 14589.9,
+      "n_available": 10,
+      "policy": "roundvalue",
+      "stop_round_counts": {
+        "1": 2,
+        "3": 8
+      }
+    },
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 12834.3,
+      "mean_cost_usd": 0.0006859697600000002,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 7216.4,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 5970.2,
+      "n_available": 10,
+      "policy": "oracle_one_step",
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 12834.3,
+      "mean_cost_usd": 0.0006859697600000002,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 7216.4,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 5970.2,
+      "n_available": 10,
+      "policy": "oracle",
+      "stop_round_counts": {
+        "1": 10
+      }
+    }
+  ],
+  "quality_latency_points": [
+    {
+      "round_index": 1,
+      "x": 5038.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 10245.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 15739.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8097.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 15710.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 24389.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 8848.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 23393.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 36837.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 4015.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 7850.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12969.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 3340.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 6647.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 9945.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7039.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 12019.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 16699.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5078.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 14625.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 19006.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 4105.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 7895.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 11683.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5501.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 11943.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 18090.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5700.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9467.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 13514.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4144.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 7812.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 11197.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 14231.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 26911.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 35499.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6135.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11107.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 20852.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4732.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 8766.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 12931.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5325.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 16599.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 22630.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5707.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 10048.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 16376.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4135.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 9781.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 25354.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5481.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9561.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 14666.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5708.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9839.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 14535.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5403.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11296.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 16273.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4696.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8328.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12015.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4550.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8529.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12509.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8211.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 15795.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 23624.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 3773.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 7268.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 11076.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 3995.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8447.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12352.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4990.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9755.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 14204.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7943.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 15356.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 25822.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5717.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11855.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 17654.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4327.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8734.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 13282.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 11736.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 20365.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 26156.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 4570.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9353.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 13349.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 3666.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 7025.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 10941.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 3882.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8135.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12195.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 3446.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 7522.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 10855.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4816.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 9753.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 14285.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 3515.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 7526.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 11376.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 4734.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8752.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12982.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4472.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8432.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12992.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5122.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 10247.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 15094.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5626.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 10817.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 16123.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4580.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8971.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 13492.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5187.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9525.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 13966.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4697.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 9603.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 14250.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 3395.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 7345.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 10894.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4462.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 8733.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 12619.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6692.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11914.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 19035.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 4303.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9246.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 13183.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5158.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 8949.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 13829.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5337.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 9307.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 13289.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5711.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11386.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 16094.0,
+      "y": 1.0
+    }
+  ],
+  "quality_token_points": [
+    {
+      "round_index": 1,
+      "x": 7397.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 15611.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 23400.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 10788.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 21276.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 30358.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 9504.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 28542.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 43173.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 6240.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 12221.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 19268.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5683.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11959.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 18238.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 9853.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 18109.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 26422.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 8322.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 19723.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 27437.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5714.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11883.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 17739.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7921.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 15885.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 24597.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 7039.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13631.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 20284.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6042.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 12444.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 18766.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 11034.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 21416.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 29337.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8486.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 16540.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 26863.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6676.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 13478.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 20259.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 7625.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 18655.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 26982.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7233.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13801.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 21139.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6126.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 13896.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 26427.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 7005.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13702.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 20756.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8041.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 14941.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 22836.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6974.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 15548.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 22749.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6995.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13207.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 19392.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6721.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13566.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 20302.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7795.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 17251.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 26959.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5699.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11947.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 18054.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6519.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13401.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 20325.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7006.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13883.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 20630.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8196.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 15936.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 25710.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 7756.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 16099.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 24851.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6535.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13543.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 20304.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 10531.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 21099.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 29958.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 6421.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13484.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 20165.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5314.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11091.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 16968.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6063.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 12845.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 19794.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 5180.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11102.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 16544.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6054.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 12895.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 19682.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5913.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 12101.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 18316.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 7374.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 14346.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 21350.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8024.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 15397.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 23230.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8248.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 16714.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 24826.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7184.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 14853.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 22428.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7139.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 14473.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 21859.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7190.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 14329.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 21309.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6573.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 13555.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 20640.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 5625.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 11738.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 17776.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6568.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 13372.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 19978.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7749.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 15906.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 25388.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 6626.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 14097.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 21093.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 7417.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 2,
+      "x": 14182.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 3,
+      "x": 21315.0,
+      "y": 0.0
+    },
+    {
+      "round_index": 1,
+      "x": 6278.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 12600.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 18631.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 1,
+      "x": 8702.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 2,
+      "x": 15573.0,
+      "y": 1.0
+    },
+    {
+      "round_index": 3,
+      "x": 22540.0,
+      "y": 1.0
+    }
+  ],
+  "run_id": "202608151712_MATH50_9793e493",
+  "schema_version": "1.0",
+  "split_counts": {
+    "test": 10,
+    "train": 30,
+    "validation": 10
+  },
+  "stop_round_matrix": {
+    "1": {
+      "consensus": 8,
+      "fixed_1": 10,
+      "oracle": 10,
+      "oracle_one_step": 10,
+      "roundvalue": 2,
+      "task_only": 6
+    },
+    "2": {
+      "consensus": 2,
+      "fixed_2": 10
+    },
+    "3": {
+      "fixed_3": 10,
+      "roundvalue": 8,
+      "task_only": 4
+    }
+  },
+  "task_rows": [
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 37713.0,
+      "cumulative_cost_usd": 0.0023492168,
+      "cumulative_input_tokens": 20361.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3039.0,
+      "cumulative_total_tokens": 23400.0,
+      "cumulative_wall_clock_ms": 15739.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/geometry/627.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 51062.0,
+      "cumulative_cost_usd": 0.0044142952000000004,
+      "cumulative_input_tokens": 25673.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 4685.0,
+      "cumulative_total_tokens": 30358.0,
+      "cumulative_wall_clock_ms": 24389.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/precalculus/1133.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 76764.0,
+      "cumulative_cost_usd": 0.0057145704000000005,
+      "cumulative_input_tokens": 35367.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 7806.0,
+      "cumulative_total_tokens": 43173.0,
+      "cumulative_wall_clock_ms": 36837.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/intermediate_algebra/966.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 29555.0,
+      "cumulative_cost_usd": 0.0017561096,
+      "cumulative_input_tokens": 17337.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1931.0,
+      "cumulative_total_tokens": 19268.0,
+      "cumulative_wall_clock_ms": 12969.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "test",
+      "task_id": "math500::test/geometry/477.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 23679.0,
+      "cumulative_cost_usd": 0.0011884376000000003,
+      "cumulative_input_tokens": 16823.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1415.0,
+      "cumulative_total_tokens": 18238.0,
+      "cumulative_wall_clock_ms": 9945.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/algebra/478.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 36540.0,
+      "cumulative_cost_usd": 0.0020971608,
+      "cumulative_input_tokens": 23815.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2607.0,
+      "cumulative_total_tokens": 26422.0,
+      "cumulative_wall_clock_ms": 16699.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/precalculus/1199.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 44188.0,
+      "cumulative_cost_usd": 0.0029586368000000004,
+      "cumulative_input_tokens": 24082.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3355.0,
+      "cumulative_total_tokens": 27437.0,
+      "cumulative_wall_clock_ms": 19006.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/prealgebra/378.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 26740.0,
+      "cumulative_cost_usd": 0.0014341432000000002,
+      "cumulative_input_tokens": 16077.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1662.0,
+      "cumulative_total_tokens": 17739.0,
+      "cumulative_wall_clock_ms": 11683.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/prealgebra/1298.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 40399.0,
+      "cumulative_cost_usd": 0.0026581464000000007,
+      "cumulative_input_tokens": 21301.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3296.0,
+      "cumulative_total_tokens": 24597.0,
+      "cumulative_wall_clock_ms": 18090.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/intermediate_algebra/1405.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 30663.0,
+      "cumulative_cost_usd": 0.0019029248,
+      "cumulative_input_tokens": 17944.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2340.0,
+      "cumulative_total_tokens": 20284.0,
+      "cumulative_wall_clock_ms": 13514.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/prealgebra/1388.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 25185.0,
+      "cumulative_cost_usd": 0.0014122472000000002,
+      "cumulative_input_tokens": 17033.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1733.0,
+      "cumulative_total_tokens": 18766.0,
+      "cumulative_wall_clock_ms": 11197.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/intermediate_algebra/1572.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 60511.0,
+      "cumulative_cost_usd": 0.0029604120000000004,
+      "cumulative_input_tokens": 24357.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 4980.0,
+      "cumulative_total_tokens": 29337.0,
+      "cumulative_wall_clock_ms": 35499.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "test",
+      "task_id": "math500::test/geometry/965.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 45808.0,
+      "cumulative_cost_usd": 0.0031462928,
+      "cumulative_input_tokens": 22848.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 4015.0,
+      "cumulative_total_tokens": 26863.0,
+      "cumulative_wall_clock_ms": 20852.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/number_theory/838.json",
+      "trajectory_status": "complete",
+      "transitions": "harm>recovery"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 30574.0,
+      "cumulative_cost_usd": 0.0015891176000000001,
+      "cumulative_input_tokens": 18003.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2256.0,
+      "cumulative_total_tokens": 20259.0,
+      "cumulative_wall_clock_ms": 12931.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/algebra/2043.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 44338.0,
+      "cumulative_cost_usd": 0.0037271024000000005,
+      "cumulative_input_tokens": 22826.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 4156.0,
+      "cumulative_total_tokens": 26982.0,
+      "cumulative_wall_clock_ms": 22630.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/algebra/2779.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>repair"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 34003.0,
+      "cumulative_cost_usd": 0.0020497848,
+      "cumulative_input_tokens": 18605.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2534.0,
+      "cumulative_total_tokens": 21139.0,
+      "cumulative_wall_clock_ms": 16376.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/algebra/858.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 49334.0,
+      "cumulative_cost_usd": 0.0035526176000000003,
+      "cumulative_input_tokens": 22586.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3841.0,
+      "cumulative_total_tokens": 26427.0,
+      "cumulative_wall_clock_ms": 25354.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "test",
+      "task_id": "math500::test/intermediate_algebra/1197.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 32057.0,
+      "cumulative_cost_usd": 0.0020547128,
+      "cumulative_input_tokens": 18431.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2325.0,
+      "cumulative_total_tokens": 20756.0,
+      "cumulative_wall_clock_ms": 14666.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/algebra/351.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 35249.0,
+      "cumulative_cost_usd": 0.0022727768,
+      "cumulative_input_tokens": 19779.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3057.0,
+      "cumulative_total_tokens": 22836.0,
+      "cumulative_wall_clock_ms": 14535.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/prealgebra/65.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 35791.0,
+      "cumulative_cost_usd": 0.00227472,
+      "cumulative_input_tokens": 19842.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2907.0,
+      "cumulative_total_tokens": 22749.0,
+      "cumulative_wall_clock_ms": 16273.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/intermediate_algebra/1014.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 29237.0,
+      "cumulative_cost_usd": 0.0016680384,
+      "cumulative_input_tokens": 17336.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2056.0,
+      "cumulative_total_tokens": 19392.0,
+      "cumulative_wall_clock_ms": 12015.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/number_theory/978.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 30518.0,
+      "cumulative_cost_usd": 0.0022848616,
+      "cumulative_input_tokens": 18137.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2165.0,
+      "cumulative_total_tokens": 20302.0,
+      "cumulative_wall_clock_ms": 12509.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/algebra/2253.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 46363.0,
+      "cumulative_cost_usd": 0.0038508736000000005,
+      "cumulative_input_tokens": 22774.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 4185.0,
+      "cumulative_total_tokens": 26959.0,
+      "cumulative_wall_clock_ms": 23624.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "test",
+      "task_id": "math500::test/precalculus/695.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 26128.0,
+      "cumulative_cost_usd": 0.0014819448000000003,
+      "cumulative_input_tokens": 16491.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1563.0,
+      "cumulative_total_tokens": 18054.0,
+      "cumulative_wall_clock_ms": 11076.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/precalculus/1289.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 29936.0,
+      "cumulative_cost_usd": 0.0016160424,
+      "cumulative_input_tokens": 18319.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2006.0,
+      "cumulative_total_tokens": 20325.0,
+      "cumulative_wall_clock_ms": 12352.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/prealgebra/1297.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 33156.0,
+      "cumulative_cost_usd": 0.0020012664000000004,
+      "cumulative_input_tokens": 18059.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2571.0,
+      "cumulative_total_tokens": 20630.0,
+      "cumulative_wall_clock_ms": 14204.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/number_theory/686.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 50618.0,
+      "cumulative_cost_usd": 0.0033924912000000006,
+      "cumulative_input_tokens": 21794.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3916.0,
+      "cumulative_total_tokens": 25710.0,
+      "cumulative_wall_clock_ms": 25822.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/intermediate_algebra/1544.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 39887.0,
+      "cumulative_cost_usd": 0.0024197040000000004,
+      "cumulative_input_tokens": 21756.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3095.0,
+      "cumulative_total_tokens": 24851.0,
+      "cumulative_wall_clock_ms": 17654.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/intermediate_algebra/2152.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 31091.0,
+      "cumulative_cost_usd": 0.0017009888000000001,
+      "cumulative_input_tokens": 18172.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2132.0,
+      "cumulative_total_tokens": 20304.0,
+      "cumulative_wall_clock_ms": 13282.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/intermediate_algebra/1898.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 52461.0,
+      "cumulative_cost_usd": 0.004239144,
+      "cumulative_input_tokens": 25246.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 4712.0,
+      "cumulative_total_tokens": 29958.0,
+      "cumulative_wall_clock_ms": 26156.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "validation",
+      "task_id": "math500::test/intermediate_algebra/345.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 29357.0,
+      "cumulative_cost_usd": 0.0016121840000000002,
+      "cumulative_input_tokens": 18152.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2013.0,
+      "cumulative_total_tokens": 20165.0,
+      "cumulative_wall_clock_ms": 13349.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/precalculus/356.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 25596.0,
+      "cumulative_cost_usd": 0.0012265568000000002,
+      "cumulative_input_tokens": 15516.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1452.0,
+      "cumulative_total_tokens": 16968.0,
+      "cumulative_wall_clock_ms": 10941.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "test",
+      "task_id": "math500::test/algebra/1004.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 29336.0,
+      "cumulative_cost_usd": 0.0016472120000000001,
+      "cumulative_input_tokens": 17787.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2007.0,
+      "cumulative_total_tokens": 19794.0,
+      "cumulative_wall_clock_ms": 12195.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "test",
+      "task_id": "math500::test/counting_and_probability/803.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 24872.0,
+      "cumulative_cost_usd": 0.0016227400000000003,
+      "cumulative_input_tokens": 15225.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1319.0,
+      "cumulative_total_tokens": 16544.0,
+      "cumulative_wall_clock_ms": 10855.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/number_theory/132.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 32352.0,
+      "cumulative_cost_usd": 0.0026401032,
+      "cumulative_input_tokens": 17621.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2061.0,
+      "cumulative_total_tokens": 19682.0,
+      "cumulative_wall_clock_ms": 14285.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "validation",
+      "task_id": "math500::test/prealgebra/105.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 25831.0,
+      "cumulative_cost_usd": 0.0016017512,
+      "cumulative_input_tokens": 16661.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1655.0,
+      "cumulative_total_tokens": 18316.0,
+      "cumulative_wall_clock_ms": 11376.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/prealgebra/954.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 31619.0,
+      "cumulative_cost_usd": 0.0019875968,
+      "cumulative_input_tokens": 18844.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2506.0,
+      "cumulative_total_tokens": 21350.0,
+      "cumulative_wall_clock_ms": 12982.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/algebra/975.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 30841.0,
+      "cumulative_cost_usd": 0.0016862104,
+      "cumulative_input_tokens": 21119.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2111.0,
+      "cumulative_total_tokens": 23230.0,
+      "cumulative_wall_clock_ms": 12992.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/geometry/226.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 35032.0,
+      "cumulative_cost_usd": 0.0027112792,
+      "cumulative_input_tokens": 22383.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2443.0,
+      "cumulative_total_tokens": 24826.0,
+      "cumulative_wall_clock_ms": 15094.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/precalculus/990.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 36239.0,
+      "cumulative_cost_usd": 0.0021201320000000003,
+      "cumulative_input_tokens": 19677.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2751.0,
+      "cumulative_total_tokens": 22428.0,
+      "cumulative_wall_clock_ms": 16123.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/algebra/276.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 31876.0,
+      "cumulative_cost_usd": 0.0018292176000000002,
+      "cumulative_input_tokens": 19488.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2371.0,
+      "cumulative_total_tokens": 21859.0,
+      "cumulative_wall_clock_ms": 13492.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/counting_and_probability/894.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 32210.0,
+      "cumulative_cost_usd": 0.0016754696000000004,
+      "cumulative_input_tokens": 18859.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2450.0,
+      "cumulative_total_tokens": 21309.0,
+      "cumulative_wall_clock_ms": 13966.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/algebra/1547.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 32766.0,
+      "cumulative_cost_usd": 0.0017893904000000002,
+      "cumulative_input_tokens": 18338.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2302.0,
+      "cumulative_total_tokens": 20640.0,
+      "cumulative_wall_clock_ms": 14250.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "test",
+      "task_id": "math500::test/intermediate_algebra/1102.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 24617.0,
+      "cumulative_cost_usd": 0.0010773728,
+      "cumulative_input_tokens": 16316.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1460.0,
+      "cumulative_total_tokens": 17776.0,
+      "cumulative_wall_clock_ms": 10894.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/counting_and_probability/14.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 29151.0,
+      "cumulative_cost_usd": 0.0017689784000000002,
+      "cumulative_input_tokens": 17787.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2191.0,
+      "cumulative_total_tokens": 19978.0,
+      "cumulative_wall_clock_ms": 12619.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "test",
+      "task_id": "math500::test/prealgebra/1787.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 38243.0,
+      "cumulative_cost_usd": 0.002518124,
+      "cumulative_input_tokens": 22127.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 3261.0,
+      "cumulative_total_tokens": 25388.0,
+      "cumulative_wall_clock_ms": 19035.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "test",
+      "task_id": "math500::test/algebra/1184.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 31593.0,
+      "cumulative_cost_usd": 0.0019632200000000003,
+      "cumulative_input_tokens": 18755.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2338.0,
+      "cumulative_total_tokens": 21093.0,
+      "cumulative_wall_clock_ms": 13183.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "train",
+      "task_id": "math500::test/number_theory/156.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 34277.0,
+      "cumulative_cost_usd": 0.0019404336,
+      "cumulative_input_tokens": 18860.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2455.0,
+      "cumulative_total_tokens": 21315.0,
+      "cumulative_wall_clock_ms": 13829.0,
+      "domain": "math",
+      "final_quality": 0.0,
+      "quality_round_1": 0.0,
+      "quality_round_2": 0.0,
+      "quality_round_3": 0.0,
+      "split": "train",
+      "task_id": "math500::test/algebra/1787.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 29893.0,
+      "cumulative_cost_usd": 0.0015647016000000004,
+      "cumulative_input_tokens": 16803.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 1828.0,
+      "cumulative_total_tokens": 18631.0,
+      "cumulative_wall_clock_ms": 13289.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "validation",
+      "task_id": "math500::test/counting_and_probability/913.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    },
+    {
+      "completed_rounds": 3,
+      "cumulative_api_latency_ms": 37435.0,
+      "cumulative_cost_usd": 0.0028289128,
+      "cumulative_input_tokens": 19605.0,
+      "cumulative_logical_calls": 21.0,
+      "cumulative_output_tokens": 2935.0,
+      "cumulative_total_tokens": 22540.0,
+      "cumulative_wall_clock_ms": 16094.0,
+      "domain": "math",
+      "final_quality": 1.0,
+      "quality_round_1": 1.0,
+      "quality_round_2": 1.0,
+      "quality_round_3": 1.0,
+      "split": "test",
+      "task_id": "math500::test/number_theory/515.json",
+      "trajectory_status": "complete",
+      "transitions": "neutral>neutral"
+    }
+  ],
+  "tasks_complete": 50,
+  "tasks_failed": 0,
+  "tasks_total": 50,
+  "transition_counts": {
+    "harm": 1,
+    "neutral": 97,
+    "recovery": 1,
+    "repair": 1,
+    "terminal": 50,
+    "unknown": 0
+  }
+}
