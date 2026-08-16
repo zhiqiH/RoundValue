@@ -54,16 +54,30 @@ ROLE_OUTPUTS = {
 class FakeProvider:
     """Return scripted chat completions and retain every request for checks."""
 
-    def __init__(self, script: list[tuple[str | None, str]]) -> None:
-        self.script = list(script)
+    def __init__(
+        self,
+        script: list[tuple[str | None, str]] | None = None,
+        *,
+        by_node: dict[str, tuple[str | None, str]] | None = None,
+    ) -> None:
+        self.script = list(script or [])
+        self.by_node = dict(by_node or {})
         self.requests: list[ModelRequest] = []
         self.closed = False
 
     def generate(self, request: ModelRequest) -> tuple[ModelResponse, list[dict[str, Any]]]:
         self.requests.append(request)
+        node_id = request.metadata.get("node_id")
+        if node_id in self.by_node:
+            finish_reason, text = self.by_node[node_id]
+            scripted = True
+        else:
+            scripted = False
         if not self.script:
-            raise AssertionError("fake provider ran out of scripted responses")
-        finish_reason, text = self.script.pop(0)
+            if not scripted:
+                raise AssertionError("fake provider ran out of scripted responses")
+        elif not scripted:
+            finish_reason, text = self.script.pop(0)
         attempts = [
             {
                 "status": "succeeded",
@@ -100,9 +114,15 @@ class FakeProvider:
 def _task() -> dict[str, Any]:
     return {
         "task_id": "dev::selfcheck",
-        "domain": "math",
-        "prompt": "Solve for x: 3x + 5 = 20.",
-        "reference_answer": "5",
+        "domain": "mmlu_pro",
+        "prompt": (
+            "What is 2 + 2?\n\nChoices:\n"
+            "(A) 2\n(B) 3\n(C) 4\n(D) 5\n(E) 6\n(F) 7\n(G) 8\n(H) 9\n(I) 10\n(J) 11\n\n"
+            "Return only the letter of the correct choice (A-J)."
+        ),
+        "options": ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+        "answer_index": 2,
+        "reference_answer": "C",
     }
 
 
@@ -226,11 +246,14 @@ def main() -> int:
         "non-writer fallback keeps the answer and marks omitted fields",
     )
 
-    full_script: list[tuple[str | None, str]] = []
+    full_by_node: dict[str, tuple[str | None, str]] = {}
     for node_id in ("planner_stage_1", "analyst_stage_1", "critic_stage_1", "planner_stage_2", "analyst_stage_2", "critic_stage_2", "writer"):
         role = node_id.split("_")[0]
-        full_script.append(("stop", json.dumps(ROLE_OUTPUTS[role], separators=(",", ":"))))
-    provider = FakeProvider(full_script)
+        full_by_node[node_id] = (
+            "stop",
+            json.dumps(ROLE_OUTPUTS[role], separators=(",", ":")),
+        )
+    provider = FakeProvider([], by_node=full_by_node)
     runner = FixedDebateRunner(dict(experiment), provider)
     round_record = runner.run_round(
         task=_task(),

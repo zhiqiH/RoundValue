@@ -1,7 +1,7 @@
-"""Step 1: small-scale math smoke acceptance run.
+"""Step 1: small-scale real-API smoke acceptance run.
 
 Runs one complete fixed Debate round with the real model provider against the
-independent repository math acceptance tasks.  Every task must complete and
+independent repository acceptance tasks.  Every task must complete and
 score exactly 1, otherwise this script exits nonzero and step2 must not start.
 
 Smoke trajectories are stored under their own ``smoke`` split and never enter

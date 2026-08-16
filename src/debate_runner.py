@@ -157,7 +157,7 @@ class FixedDebateRunner:
         return budgets
 
     def _answer_only_budget(self) -> int:
-        """Cap for the answer-only fallback; roomy for LaTeX, tight for prose."""
+        """Cap for the answer-only fallback; roomy for a LaTeX or option answer."""
 
         return min(int(self.model["max_output_tokens"]), 128)
 
@@ -173,7 +173,7 @@ class FixedDebateRunner:
             "instruction": (
                 "Your earlier replies were rejected because they did not form "
                 "a complete JSON object. Return ONLY the final answer to the "
-                'task as one short JSON string, for example "63". Do not '
+                'task as one short JSON string, for example "B" or "42". Do not '
                 "derive, restate, explain, or add anything else."
             ),
             "task": public_task(task),

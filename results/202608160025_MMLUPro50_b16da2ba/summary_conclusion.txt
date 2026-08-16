@@ -1,0 +1,8 @@
+RoundValue summary for run 202608160025_MMLUPro50_b16da2ba
+tasks: 50 total, 50 complete, 0 failed
+round 1: accuracy=0.780, tasks=50, tokens=7877, wall_clock_ms=5468, logical_calls=7
+round 2: accuracy=0.760, tasks=50, tokens=8174, wall_clock_ms=5521, logical_calls=7
+round 3: accuracy=0.780, tasks=50, tokens=8199, wall_clock_ms=5565, logical_calls=7
+transitions: repair=1, neutral=98, harm=1, recovery=0
+RoundValue policy: accuracy=0.600, tokens=8362, wall_clock_ms=5611, stop_round=1.00
+RoundValue vs fixed-1 paired accuracy difference: mean=0.000, 95% CI=[0.000, 0.000], n_paired=10

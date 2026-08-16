@@ -244,8 +244,12 @@ def build(parent_path: Path, output_path: Path) -> dict[str, Any]:
         },
     }
     _write_json(output_path, document)
+    try:
+        relative_output = str(output_path.relative_to(PROJECT_ROOT))
+    except ValueError:
+        relative_output = str(output_path)
     return {
-        "output": str(output_path.relative_to(PROJECT_ROOT)),
+        "output": relative_output,
         "subject_counts": dict(targets),
         "split_counts": dict(split_counts),
         "split_seed": split_seed,

@@ -1,4 +1,11 @@
-"""Load JSON benchmark manifests while separating public task inputs from labels."""
+"""Load JSON benchmark manifests while separating public task inputs from labels.
+
+The runner and policy stages are benchmark-agnostic: a benchmark supplies one
+``domain``, a self-contained ``prompt`` (including any answer choices), and
+offline-only label fields.  This module enforces the per-domain task contract
+for the two supported representations, ``math`` and ``mmlu_pro``, while
+keeping gold answers and choice indices out of every Agent-facing view.
+"""
 
 from __future__ import annotations
 
@@ -12,11 +19,21 @@ from contracts import ConfigurationError, file_hash, require_list, require_objec
 
 PRIVATE_TASK_FIELDS = {
     "reference_answer",
+    "answer",
+    "answer_index",
     "expected",
     "gold",
     "label",
     "solution",
 }
+
+# The domains the offline scorer and benchmark validation understand.  New
+# benchmarks must add their domain-specific contract and scoring path here;
+# the Debate runner itself does not care which domain it is executing.
+SUPPORTED_DOMAINS = frozenset({"math", "mmlu_pro"})
+
+# Multiple-choice tasks label their choices ``A`` through ``J`` in order.
+MULTIPLE_CHOICE_OPTION_LABELS = tuple(chr(ord("A") + index) for index in range(26))
 
 # These fields are explicitly permitted in runtime prompts/features.  New
 # benchmark formats should expose only summary metadata here; raw answer keys,
@@ -51,15 +68,62 @@ def _safe_project_path(root: Path, supplied: str | Path) -> Path:
     return resolved
 
 
+def _validate_math_task(
+    task: dict[str, Any], task_id: str, source: Path
+) -> None:
+    require_string(
+        task.get("reference_answer"), f"{source} math task {task_id}.reference_answer"
+    )
+
+
+def _validate_mmlu_pro_task(
+    task: dict[str, Any], task_id: str, source: Path
+) -> None:
+    options = require_list(task.get("options"), f"{source} task {task_id}.options")
+    if not 2 <= len(options) <= len(MULTIPLE_CHOICE_OPTION_LABELS):
+        raise ConfigurationError(
+            f"{source} task {task_id} must carry between 2 and "
+            f"{len(MULTIPLE_CHOICE_OPTION_LABELS)} multiple-choice options"
+        )
+    for index, option in enumerate(options):
+        require_string(option, f"{source} task {task_id}.options[{index}]")
+    answer_index = task.get("answer_index")
+    if (
+        isinstance(answer_index, bool)
+        or not isinstance(answer_index, int)
+        or not 0 <= answer_index < len(options)
+    ):
+        raise ConfigurationError(
+            f"{source} task {task_id}.answer_index must be an integer option index"
+        )
+    reference = require_string(
+        task.get("reference_answer"),
+        f"{source} task {task_id}.reference_answer",
+    )
+    labels = MULTIPLE_CHOICE_OPTION_LABELS[: len(options)]
+    if reference not in labels:
+        raise ConfigurationError(
+            f"{source} task {task_id}.reference_answer must be one of {labels}"
+        )
+    if labels[answer_index] != reference:
+        raise ConfigurationError(
+            f"{source} task {task_id}.answer_index does not agree with reference_answer"
+        )
+
+
 def _validate_task(task: dict[str, Any], *, source: Path) -> dict[str, Any]:
     task_id = require_string(task.get("task_id"), f"{source} task_id")
     domain = require_string(task.get("domain"), f"{source} task {task_id}.domain")
-    if domain != "math":
+    if domain not in SUPPORTED_DOMAINS:
         raise ConfigurationError(
-            f"{source} task {task_id} domain must be math; the project is math-only"
+            f"{source} task {task_id} has unsupported domain {domain!r}; "
+            f"supported domains are {sorted(SUPPORTED_DOMAINS)}"
         )
     require_string(task.get("prompt"), f"{source} task {task_id}.prompt")
-    require_string(task.get("reference_answer"), f"{source} math task {task_id}.reference_answer")
+    if domain == "math":
+        _validate_math_task(task, task_id, source)
+    else:
+        _validate_mmlu_pro_task(task, task_id, source)
     return task
 
 

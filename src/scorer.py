@@ -1,13 +1,18 @@
-"""Deterministic, dependency-free offline scorer for RoundValue math checkpoints.
+"""Deterministic, dependency-free offline scorer for RoundValue checkpoints.
 
 The public functions in this module operate on plain JSON-shaped dictionaries.
 They deliberately never contact a model provider and never mutate a saved
 trajectory.  A scorer may therefore be used during ``fit``, ``evaluate``, or
 ``reproduce`` without creating a new experiment run.
 
-Every benchmark task carries ``reference_answer`` (or ``accepted_answers``)
-and is scored by conservative normalized / numeric equivalence.  There is no
-code execution path: the project is a math-only benchmark.
+Scoring dispatches on the task ``domain`` and remains the single source of
+truth for every stage of the pipeline:
+
+* ``math`` keeps the conservative PRM800K/MATH normalization plus a narrow
+  numeric fallback used by the legacy MATH manifests;
+* ``mmlu_pro`` requires one unambiguous canonical option label (``A``-``J``)
+  and compares it exactly against the gold label.  There is no LLM judge and
+  no textual-similarity fallback.
 
 The canonical trajectory shape is documented in :func:`score_trajectory`,
 but compatibility readers also accept common older flat checkpoint fields.
@@ -24,8 +29,9 @@ from collections.abc import Mapping, Sequence
 from decimal import Decimal, InvalidOperation, localcontext
 from typing import Any
 
-SCORER_VERSION = "roundvalue-offline-scorer-v3"
+SCORER_VERSION = "roundvalue-offline-scorer-v4"
 _FINAL_ANSWER_RE = re.compile(r"(?:final[_ ]?answer|answer)\s*:\s*([^\r\n]+)", re.I)
+_OPTION_LABEL_RE = re.compile(r"(?<![A-Za-z])([A-J])(?![A-Za-z])")
 # A comma is treated as a thousands separator only inside a bare digit run
 # such as ``1,234`` or ``11,111,100``.  It is never removed inside a tuple,
 # interval, or set, so ``(1,2)`` stays distinct from ``(12)`` and ``12``.
@@ -309,6 +315,25 @@ def normalize_math_answer(value: str) -> str:
     return text
 
 
+def normalize_mc_answer(value: str) -> str | None:
+    """Extract one unambiguous multiple-choice option label, conservatively.
+
+    Ordinary wrappers such as ``E``, ``e``, ``Answer: E``, ``(E)``, ``[E]``,
+    or ``E.`` normalize to the canonical uppercase label.  A reply is
+    accepted only when exactly one distinct ``A``-``J`` letter appears as a
+    standalone token; zero labels and replies naming two or more distinct
+    labels are rejected as missing or ambiguous.  There is intentionally no
+    numeric, keyword, or similarity fallback: malformed Writer output must
+    not be silently converted into a correct answer.
+    """
+
+    text = unicodedata.normalize("NFKC", value).strip().upper()
+    if not text:
+        return None
+    labels = set(_OPTION_LABEL_RE.findall(text))
+    return labels.pop() if len(labels) == 1 else None
+
+
 def _balanced_group(value: str, start: int) -> tuple[str, int] | None:
     if start >= len(value) or value[start] != "{":
         return None
@@ -505,15 +530,87 @@ def score_math(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]:
     return _result(task, domain="math", answer=answer, quality=0.0, reason="not_equivalent")
 
 
+def _mc_reference_label(task: Mapping[str, Any]) -> str | None:
+    """Read the canonical gold option label from a multiple-choice task."""
+
+    reference = task.get("reference_answer")
+    label = normalize_mc_answer(reference) if isinstance(reference, str) else None
+    if label is not None:
+        return label
+    answer_index = task.get("answer_index")
+    options = task.get("options")
+    if (
+        isinstance(answer_index, int)
+        and not isinstance(answer_index, bool)
+        and isinstance(options, Sequence)
+        and not isinstance(options, str | bytes | bytearray)
+        and 0 <= answer_index < len(options) <= 26
+    ):
+        return chr(ord("A") + answer_index)
+    return None
+
+
+def score_mmlu_pro(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]:
+    """Score one Writer answer against the canonical MMLU-Pro option label.
+
+    Correctness is the exact equality of the normalized predicted label and
+    the gold label; no judge model or textual reasoning score is involved.
+    """
+
+    answer = extract_final_answer(final_answer)
+    if answer is None:
+        return _result(
+            task,
+            domain="mmlu_pro",
+            answer=None,
+            quality=0.0,
+            reason="missing_final_answer",
+        )
+    reference = _mc_reference_label(task)
+    if reference is None:
+        return _result(
+            task,
+            domain="mmlu_pro",
+            answer=answer,
+            quality=0.0,
+            reason="missing_or_invalid_reference_answer",
+        )
+    predicted = normalize_mc_answer(answer)
+    if predicted is None:
+        return _result(
+            task,
+            domain="mmlu_pro",
+            answer=answer,
+            quality=0.0,
+            reason="ambiguous_or_missing_option",
+        )
+    matched = predicted == reference
+    return _result(
+        task,
+        domain="mmlu_pro",
+        answer=predicted,
+        quality=1.0 if matched else 0.0,
+        reason="exact_option_match" if matched else "option_mismatch",
+    )
+
+
 def score_task(
     task: Mapping[str, Any],
     final_answer: Any,
 ) -> dict[str, Any]:
-    """Score one Writer answer with the math-only offline scorer."""
+    """Score one Writer answer with the domain's deterministic offline scorer."""
 
     if not isinstance(task, Mapping):
         raise TypeError("task must be a JSON object")
-    return score_math(task, final_answer)
+    domain = task.get("domain")
+    if domain == "mmlu_pro":
+        return score_mmlu_pro(task, final_answer)
+    if domain == "math":
+        return score_math(task, final_answer)
+    raise TypeError(
+        "task scoring requires domain 'math' or 'mmlu_pro'; "
+        f"got {domain!r}"
+    )
 
 
 def _checkpoint_answer(checkpoint: Mapping[str, Any]) -> Any:
@@ -629,8 +726,10 @@ __all__ = [
     "SCORER_VERSION",
     "extract_final_answer",
     "normalize_math_answer",
+    "normalize_mc_answer",
     "score_checkpoint",
     "score_math",
+    "score_mmlu_pro",
     "score_task",
     "score_task_answer",
     "score_task_record",

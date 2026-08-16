@@ -21,7 +21,12 @@ SRC_DIRECTORY = PROJECT_ROOT / "src"
 if str(SRC_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SRC_DIRECTORY))
 
-from benchmark_io import benchmark_provenance, freeze_splits, load_benchmark  # noqa: E402
+from benchmark_io import (  # noqa: E402
+    SUPPORTED_DOMAINS,
+    benchmark_provenance,
+    freeze_splits,
+    load_benchmark,
+)
 from config_loader import config_snapshot  # noqa: E402
 from contracts import file_hash, json_hash, utc_now  # noqa: E402
 from debate_runner import FixedDebateRunner  # noqa: E402
@@ -158,7 +163,7 @@ def _write_benchmark_snapshot(
 
 
 def _score_record(record: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """Score every saved checkpoint of one math task record."""
+    """Score every saved checkpoint of one benchmark task record."""
 
     return score_trajectory(record)
 
@@ -365,17 +370,24 @@ def _run_smoke(
     experiment: Mapping[str, Any],
     state: dict[str, Any],
 ) -> int:
-    """Run the math acceptance tasks with real API calls."""
+    """Run the repository acceptance tasks with real API calls."""
 
-    domain = "math"
     benchmark = args.benchmark or DEFAULT_BENCHMARK
     benchmark_path, benchmark_document, tasks = load_benchmark(PROJECT_ROOT, benchmark)
-    selected_tasks = [task for task in tasks if task.get("domain") == domain]
-    skipped_other_domain_task_ids = [
-        str(task["task_id"]) for task in tasks if task.get("domain") != domain
-    ]
-    if not selected_tasks:
-        raise ValueError(f"smoke benchmark has no runnable {domain} task")
+    domains = {task.get("domain") for task in tasks}
+    if len(domains) != 1:
+        raise ValueError(
+            "smoke benchmark must declare exactly one task domain; "
+            f"found {sorted(str(domain) for domain in domains)}"
+        )
+    domain = domains.pop()
+    if domain not in SUPPORTED_DOMAINS:
+        raise ValueError(
+            f"smoke benchmark domain {domain!r} is not supported; "
+            f"supported domains are {sorted(SUPPORTED_DOMAINS)}"
+        )
+    selected_tasks = tasks
+    skipped_other_domain_task_ids: list[str] = []
     manifest = _create_run(args, experiment, state, "smoke", domain)
     _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
     provider = build_provider(dict(experiment))
@@ -472,9 +484,10 @@ def _run_collect(
     domain = benchmark_document.get("domain")
     if not isinstance(dataset_name, str) or not dataset_name:
         raise ValueError("benchmark must declare a non-empty dataset_id")
-    if domain != "math":
+    if domain not in SUPPORTED_DOMAINS:
         raise ValueError(
-            f"benchmark must be a math dataset: {domain!r} is not supported"
+            f"benchmark must declare a supported domain; {domain!r} is not in "
+            f"{sorted(SUPPORTED_DOMAINS)}"
         )
     if not tasks or any(task.get("domain") != domain for task in tasks):
         raise ValueError(

@@ -36,16 +36,18 @@ D1 = 确定性 JSON packet [P1, A1, C1]
 
 所有角色必须返回严格 JSON。节点输出预算由角色 output_schema 推导并逐节点限制 `max_output_tokens`，这是硬的有界性保证；非法 JSON、`finish_reason=length` 截断或缺失/空字段会被检测，进入带具体违规反馈的验证-修复重试，每次尝试都被记录，非最终修复的预算逐级减半。最后一次修复是确定性的 **answer-only 回退**：只请求模型返回最终答案，runner 用自描述占位符补全其余字段并在轨迹 `fallback` 字段记录这次降级；Writer 的 `final_answer` 始终是模型给出的真实答案，不产生占位。字段的 `max_length` 是 prompt 层软目标：模型无法可靠地数字符，因此少量超出不视为致命错误，也不静默裁剪。回退仍拿不到可用答案时节点如实失败；不存在静默修正。未知 token、缓存计数、费用和延迟保持未知，不可用零填充。
 
-Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。原 ID 与完整标签只保存在磁盘记录和离线评分中。
+Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata` 会剔除 `source_task_id` 与 `base_input_count`/`plus_input_count` 等可识别具体上游题目或暴露隐藏测试规模的信息。MMLU-Pro 的题目与全部选项已内嵌在公开 `prompt` 中，而 `answer_index`、`reference_answer`、原 ID 与完整标签只保存在磁盘记录和离线评分中。
 
 ## 4. 实现边界
 
 ```text
-benchmark/math/MATH-500.json      MATH-500 独立任务文件（300/100/100），provenance 内嵌
-benchmark/math/MATH-50.json       MATH-500 分层验证子集（30/10/10），provenance 内嵌
+benchmark/mmlu_pro/MMLU-Pro-500.json   主实验基准（300/100/100），provenance 内嵌
+benchmark/mmlu_pro/MMLU-Pro-50.json    MMLU-Pro-500 分层验证子集（30/10/10），provenance 内嵌
+benchmark/math/MATH-500.json           旧数学基准，仅保留用于追溯与回归验证
+benchmark/math/MATH-50.json            旧 MATH-500 子集，仅保留用于追溯与回归验证
 benchmark/test/                   独立仓库验收题；不来自主基准且不用于论文结果
 configs/                          agents.json, model_config.json, topology.json
-scripts/step1_smoke.py            三个顺序用户入口（scripts/ 只有这三个 Python 入口）
+scripts/step1_smoke.py            三个顺序用户入口（dev_*.py 为纯离线自检）
 scripts/step2_run.py
 scripts/step3_visualize.py
 pyproject.toml                    运行依赖管理 + roundvalue 控制台命令注册
@@ -58,17 +60,20 @@ results/YYYYMMDDHHMM_<数据集>_<hex>/         聚合指标、置信区间、�
 
 三份配置同时校验。`agents.json` 固定 Debate 角色提示词和字段；`topology.json` 只保留唯一且无版本号的 `debate` 通信流；`model_config.json` 只保留唯一的 `deepseek_flash` profile。Debate 模块是一个不可选的固定整体：运行时不接受模型或拓扑选择参数，任何变更都会通过 config/源码哈希与 smoke gate 强制重跑验收。默认使用 `deepseek-v4-flash`、`temperature: 0.0`，适配器显式发送 `thinking: {"type":"disabled"}`。
 
-正式基准是两个数学数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
-确定性划分，余数计入 Test：MATH-500（500 → 300/100/100）与 MATH-50（50 → 30/10/10）。
+正式基准是两个 MMLU-Pro 数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
+确定性划分，余数计入 Test：MMLU-Pro-500（500 → 300/100/100）与
+MMLU-Pro-50（50 → 30/10/10）。两者都从钉死的 MMLU-Pro `test` 分片按
+category/src 分层确定性选取，不按任何实验结果筛选；评分只比较保守归一化后的
+规范选项字母与金标准字母，`src/scorer.py` 是唯一的评分来源。
 每个 run 通过 `--benchmark <数据集 json>` 只选取一个数据集，Train/Validation/Test
 绝不跨数据集混用。每个数据集文件内嵌的 `provenance`
-字段冻结来源 revision、上游校验信息、原始记录 hash、划分种子、比例和全部测试 task ID；
+字段冻结来源 revision、上游校验信息、原始记录 hash、选取与划分种子、比例和全部测试 task ID；
 collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照。
 
 ## 5. 实验链路
 
-1. `step1_smoke.py`：运行独立数学验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
-2. `step2_run.py`：用 `--benchmark` 选择单个数学数据集文件，校验 smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
+1. `step1_smoke.py`：运行独立仓库验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
+2. `step2_run.py`：用 `--benchmark` 选择单个数据集文件，校验 smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多三轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
 3. `step3_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 报告、5 张 PNG 图表与简短结论。
 
 `roundvalue smoke|run|visualize` 是这三个入口的等价转发命令，参数、门禁与退出码

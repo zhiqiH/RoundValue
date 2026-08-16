@@ -38,7 +38,8 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help=(
             "Project-relative self-contained dataset document, e.g. "
-            "benchmark/math/MATH-500.json or benchmark/math/MATH-50.json."
+            "benchmark/mmlu_pro/MMLU-Pro-500.json or "
+            "benchmark/mmlu_pro/MMLU-Pro-50.json."
         ),
     )
     parser.add_argument(

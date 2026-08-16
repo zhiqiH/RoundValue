@@ -9,7 +9,7 @@ conda create -n roundvalue python=3.11 -y   # 首次创建环境；项目要求 
 conda activate roundvalue
 python -m pip install -e .                  # 安装 pyproject.toml 声明的依赖并注册 roundvalue 命令
 roundvalue smoke
-roundvalue run --benchmark benchmark/math/MATH-500.json \
+roundvalue run --benchmark benchmark/mmlu_pro/MMLU-Pro-500.json \
   --smoke-run-id <SMOKE_RUN_ID>
 roundvalue visualize --run-id <RUN_ID>
 ```
@@ -23,8 +23,8 @@ roundvalue visualize --run-id <RUN_ID>
 `benchmark-build`，即 `datasets>=3,<5`）。项目要求 Python 3.11+。
 
 每个数据集都是独立的自包含基准文件：`collect` 用 `--benchmark <数据集 json>` 选择，
-run 命名直接带数据集名称，任何 run 都不会混合两个数据集。本项目只测试数学：
-可用数据集是 MATH-500 全集与其验证子集 MATH-50。
+run 命名直接带数据集名称，任何 run 都不会混合两个数据集。当前主实验基准是
+MMLU-Pro：可用数据集是 500 题主集 MMLU-Pro-500 与其 50 题验证子集 MMLU-Pro-50。
 
 ## 配置密钥
 
@@ -81,22 +81,23 @@ Debate 模块已被固化为一个整体：`topology.json` 只保留唯一且无
 
 | 脚本 | 职责 | 模型 API | 写入位置 |
 |---|---|---|---|
-| `step1_smoke.py` | 小规模数学通路测试：配置、完整一轮 Debate、评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
+| `step1_smoke.py` | 小规模真实 API 通路测试：配置、完整一轮 Debate、评分、token、延迟、落盘 | 是 | 独立 smoke run（split 恒为 `smoke`） |
 | `step2_run.py` | 跑主实验：收集 `--benchmark` 指定单个数据集的 1/2/3 轮原始轨迹（节点输出、Writer checkpoint、token、延迟、重试、错误）；全部完成后立即检查完整性、逐轮评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估 | 收集阶段是 | `trajectories/<run_id>/` 与 `results/<run_id>/` |
 | `step3_visualize.py` | 只读 `results`，输出 CSV、自包含 HTML/SVG 报告、`charts/` 下 5 张 policy-level PNG 图表（质量-token、质量-延迟、RoundValue vs baseline、自适应停止分布、oracle regret）与简短结论 | 否 | `results/<run_id>/` |
 
 执行顺序是强制的：
 
-1. `step1_smoke` 的每道数学验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。
+1. `step1_smoke` 的每道仓库验收题都必须得到分数 1，任一失败会以非零退出码结束，因此不能进入正式收集。Smoke 数据永远使用独立 run 与 `smoke` split，不进入论文结果。
 2. `step2_run` 必须用 `--smoke-run-id` 指向一个已通过的 smoke run，并校验该 smoke 已全部通过、且三份 config 与源码快照未发生变化；不满足时拒绝开始。新 run 自动命名，无需传 `--run-id`；给定一个已存在的 collect `--run-id` 时先断点续跑，只重跑失败或缺失任务。它先保存原始轨迹；若全部完成，再只用 trajectories 做确定性离线评分、构建 `ΔQ/V/G`、Train 拟合、Validation 选阈值、Test 评估，把 `scores.json`、`labels.json`、`policy.json`、`test_policy_replay.json`、`analysis.json` 与汇总写入 results；若收集不完整则跳过分析并输出失败任务 ID（原因在 `results/<run>/failure_details.json`），可用同一命令加 `--run-id` 续跑。分析阶段绝不调用模型 API，也绝不回写 trajectories。
 3. `step3_visualize` 只读 `results/<run_id>/analysis.json` 与 manifest，生成 `task_level_results.csv`、`report.html`（内嵌每轮准确率、token、wall-clock、R/N/H/R、停止轮次、策略对比及质量—token/质量—延迟 SVG 图）、`summary_conclusion.txt`，以及 `charts/` 下的 5 张 policy-level PNG 图表（`chart_policy_quality_vs_tokens.png`、`chart_policy_quality_vs_latency.png`、`chart_roundvalue_vs_baselines.png`、`chart_adaptive_stop_distribution.png`、`chart_oracle_regret.png`）。可视化不读取 trajectories，不可能反向影响评分或策略。
 
 `roundvalue smoke|run|visualize` 分别转发到上述三个脚本的 `main`，不改变
-任何参数、强制顺序或门禁；`scripts/` 目录仍然只包含这三个用户入口。
+任何参数、强制顺序或门禁；`scripts/` 中的 `step*.py` 仍然是仅有的三个用户入口，
+`dev_*.py` 是纯离线自检工具，不属于实验步骤。
 
 run 命名统一为 `YYYYMMDDHHMM_<数据集名称>_<hex>`：trajectories 与 results 使用
 完全相同的目录名，时间取达拉斯本地时区（America/Chicago），精确到分钟。例如
-MATH-500 的 collect run 是 `202608142334_MATH500_15193d5a`（数据集名中的连字符
+MMLU-Pro-500 的 collect run 是 `202608142334_MMLUPro500_15193d5a`（数据集名中的连字符
 会被去掉，run 名只含两个下划线），smoke run 用 `smoke` 作为数据集占位名。
 
 因此 `trajectories/` 是原始且尽量不被后续阶段修改的模型轨迹；`results/` 必须能由 trajectories 完全离线重建（重跑 step3）。`run_id` 是 step3/step4 唯一接受的实验标识，不要混用不同 run。代码任务的本地执行必须显式允许，并在去除密钥的临时子进程中进行；它不替代专用隔离执行环境。
@@ -105,29 +106,43 @@ MATH-500 的 collect run 是 `202608142334_MATH500_15193d5a`（数据集名中�
 
 ### 防泄漏与 Agent 可见信息
 
-Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的公开元数据。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
+Agent 只能看到 `task_id`、`domain`、`prompt` 以及少量明确允许的公开元数据。其中 `task_id` 在送入 Agent 前会被替换为确定性的匿名哈希（原始 ID 只保留在磁盘记录中），并且会剔除 `source_task_id`、`base_input_count`、`plus_input_count` 等能暴露具体上游题号或隐藏测试规模的信息。MMLU-Pro 的题干与全部选项已内嵌在 `prompt` 中，而 `answer_index`、`reference_answer`、参考答案、隐藏测试与离线 Judge 只用于离线评分和标签构建。
 
 ## Benchmark 边界
 
-`benchmark/test/` 是仓库独立数学验收题，只用于检查 API、DAG、JSON 输出、评分与落盘是否正常；它不从论文基准抽样，也不得出现在训练、验证、测试或论文结果中。
+`benchmark/test/` 是仓库独立验收题，只用于检查 API、DAG、JSON 输出、评分与落盘是否正常；它不从论文基准抽样，也不得出现在训练、验证、测试或论文结果中。
 
-论文主实验使用两个**各自独立**的冻结数学数据集文件：`benchmark/math/MATH-500.json`
-及其验证子集 `benchmark/math/MATH-50.json`。每个数据集文件自带 `dataset_id`、`domain`、
+论文主实验使用两个**各自独立**的冻结 MMLU-Pro 数据集文件：
+`benchmark/mmlu_pro/MMLU-Pro-500.json` 及其验证子集
+`benchmark/mmlu_pro/MMLU-Pro-50.json`。每个数据集文件自带 `dataset_id`、`domain`、
 划分与内嵌 provenance，彼此不混合。
 
-## 正式真实数据基准（v3：按数据集独立）
+旧的 MATH-500/MATH-50 数据文件保留在 `benchmark/math/`，仅用于追溯已完成的
+MATH 实验与回归验证，不再是默认/主实验路径；其评分归一化作为独立的
+`math` 域适配器保留在 `src/scorer.py`，不参与 MMLU-Pro 运行。
+
+## 正式真实数据基准（MMLU-Pro）
 
 每个数据集内部按统一比例 60/20/20 划分（余数计入 Test），并用固定种子确定性分配：
 
 | 数据集 | 文件 | Train | Validation | Test | 合计 |
 |---|---|---:|---:|---:|---:|
-| MATH-500 | `benchmark/math/MATH-500.json` | 300 | 100 | 100 | 500 |
-| MATH-50 | `benchmark/math/MATH-50.json` | 30 | 10 | 10 | 50 |
+| MMLU-Pro-500 | `benchmark/mmlu_pro/MMLU-Pro-500.json` | 300 | 100 | 100 | 500 |
+| MMLU-Pro-50 | `benchmark/mmlu_pro/MMLU-Pro-50.json` | 30 | 10 | 10 | 50 |
 
-MATH-500 的 500 道题只在自己的 train/validation/test 三个互不相交分区之间流动。
-MATH-50 是 MATH-500 的确定性分层子集（按学科比例、难度均匀抽样，60/20/20 划分），只用于快速验证；任务 ID、题面、参考答案与原集逐字一致，可用 `python src/build_math50.py` 重建。
+两个基准都从钉死的 MMLU-Pro `test` 分片（12,032 题，revision
+`b189ec765aa7ed75c8acfea42df31fdae71f97be`）确定性选取，不做任何基于实验结果的
+筛选。MMLU-Pro-500 的 500 题按 14 个 `category` 学科用最大余数法分配配额，并在每个
+学科内按 `src` 标签均匀取样，随后以固定种子划分 300/100/100。MMLU-Pro-50 是
+MMLU-Pro-500 的确定性分层子集（同样按 category/src 分层，30/10/10 划分），只用于
+快速验证；任务 ID、题面、选项、`answer_index`、`reference_answer` 与公开元数据与
+原集逐字一致，可用 `python src/build_mmlu_pro_50.py` 离线重建。
 
-数学评分采用与 MATH-500 provenance 同源的 PRM800K/MATH 归一化约定（分数简写、`\sqrt`、度数、单位、`\%` 等先统一写法）做精确比较，并附一个只支持有限数值表达式与 `\frac` 的保守数值回退，数学题默认零容差。普通百分号不当作噪声删除（`5%` 不会误判成 `5`），而是经数值回退按 `/100` 解释（`50%` 与 `0.5` 等价）。该约定外的等价改写（例如 `14/3` 与 `4.666…` 互换）不会被自动判等价，以保证与公开 MATH-500 评分口径可比。
+MMLU-Pro 评分保持客观二值：Writer 输出被保守归一化为唯一的规范选项字母
+（`A`–`J`），且只有“预测规范选项 == 金标准规范选项”时 `Q=1`，否则 `Q=0`。归一化
+容忍 `E`、`e`、`Answer: E`、`(E)`、`[E]`、`E.` 这类普通格式；输出中出现零个或
+多个不同选项字母时一律判错，绝不使用文本相似度、数值回退或 LLM-as-a-judge。
+归一化与评分只有 `src/scorer.py` 一个实现来源，runner、replay 与分析共用同一路径。
 
 策略默认 `λ_cost=μ_latency=0`：值函数 `G` 就是纯质量收益，阈值选择只在质量相同的情况下用更少 token 作为决胜项。质量—token 与质量—延迟的 Pareto、任务级配对置信区间和 Oracle regret 作为独立坐标报告，而不是把价格系数折叠进一个不可解释的标量。
 
@@ -137,34 +152,37 @@ MATH-50 是 MATH-500 的确定性分层子集（按学科比例、难度均匀�
 # 先做 smoke
 roundvalue smoke
 
-# MATH-500
-roundvalue run --benchmark benchmark/math/MATH-500.json \
-  --smoke-run-id <MATH_SMOKE_RUN_ID>
+# MMLU-Pro-500 主实验
+roundvalue run --benchmark benchmark/mmlu_pro/MMLU-Pro-500.json \
+  --smoke-run-id <MMLU_PRO_SMOKE_RUN_ID>
 
-# MATH-50 快速验证
-roundvalue run --benchmark benchmark/math/MATH-50.json \
-  --smoke-run-id <MATH_SMOKE_RUN_ID>
+# MMLU-Pro-50 快速验证
+roundvalue run --benchmark benchmark/mmlu_pro/MMLU-Pro-50.json \
+  --smoke-run-id <MMLU_PRO_SMOKE_RUN_ID>
 ```
 
 每个数据集的 provenance 都内嵌在任务文件本身的 `provenance` 字段里，固定记录生成器
-版本、来源 revision/URL 与 SHA-256、原始记录 SHA-256、划分种子与比例、以及该数据集
-的全部测试 task ID；collect 时整个文件（含 provenance）都会被冻结进 run 快照。若需
-从已固定来源重新构建数据，先
+版本、来源 revision/URL 与 SHA-256、原始记录 SHA-256、选取种子与分层方法、划分种子
+与比例、以及该数据集的全部测试 task ID；collect 时整个文件（含 provenance）都会被
+冻结进 run 快照。若需从已固定来源重新构建数据，先
 `python -m pip install -e ".[benchmark-build]"`，再运行
-`python src/build_real_benchmarks.py` 和 `python src/verify_real_benchmarks.py`。
+`python src/build_mmlu_pro.py`、`python src/build_mmlu_pro_50.py` 和
+`python src/verify_real_benchmarks.py`。
 
 ## 目录与产物
 
 ```text
 RoundValue/
-├── benchmark/{math,test}/
+├── benchmark/{mmlu_pro,math,test}/
 ├── configs/{agents.json,model_config.json,topology.json}
 ├── .secret/model_key.json              # 仅本地存在
 ├── pyproject.toml                      # 依赖管理 + roundvalue 控制台命令
-├── benchmark/math/MATH-500.json         # 一个数据集一个文件，provenance 内嵌
-├── benchmark/math/MATH-50.json          # MATH-500 的验证子集
+├── benchmark/mmlu_pro/MMLU-Pro-500.json # 主实验基准（300/100/100），provenance 内嵌
+├── benchmark/mmlu_pro/MMLU-Pro-50.json  # MMLU-Pro-500 的验证子集（30/10/10）
+├── benchmark/math/MATH-500.json        # 旧数学基准（仅保留用于追溯）
+├── benchmark/math/MATH-50.json
 ├── results/YYYYMMDDHHMM_<数据集>_<hex>/
-├── scripts/step1_smoke.py              # scripts/ 只有这三个 Python 用户入口
+├── scripts/step1_smoke.py              # 三个用户入口（dev_*.py 为离线自检）
 ├── scripts/step2_run.py
 ├── scripts/step3_visualize.py
 ├── src/                                # 底层模块 + pipeline 编排 + benchmark 构建/验证工具
