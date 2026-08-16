@@ -20,7 +20,6 @@ from contracts import canonical_json, file_hash, json_hash, utc_now
 _RUN_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,119}\Z")
 _WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[\\/].*")
 _DATASET_TOKEN_RE = re.compile(r"^[A-Za-z0-9]+\Z")
-_TOPOLOGY_TOKEN_RE = re.compile(r"^[a-z][a-z0-9]*\Z")
 _MODEL_TOKEN_RE = re.compile(r"^[a-z0-9][a-z0-9-]*\Z")
 _SNAPSHOT_SUFFIX_RE = re.compile(r"-20\d{2}-\d{2}-\d{2}\Z")
 RUN_ID_TIMEZONE = ZoneInfo("America/Chicago")
@@ -155,30 +154,20 @@ def canonical_model_token(requested_model: str) -> str:
     return token
 
 
-def canonical_topology_token(topology_id: str) -> str:
-    """Normalize the selected topology name for the directory component."""
-
-    if not isinstance(topology_id, str) or not topology_id.strip():
-        raise ValueError("topology_id must be a non-empty string")
-    token = topology_id.strip().casefold()
-    if not _TOPOLOGY_TOKEN_RE.fullmatch(token):
-        raise ValueError(f"topology id produces an invalid directory token: {topology_id!r}")
-    return token
-
-
 def compose_run_name(
     *,
     dataset_name: str,
-    topology_id: str,
     requested_model: str,
     timestamp: str | None = None,
     hex_suffix: str | None = None,
 ) -> str:
     """The single source of canonical run identity.
 
-    Format is ``YYYYMMDDHHMM_<dataset>_<topology>_<model>_<hex>``.  The
-    timestamp and suffix are generated exactly once at run creation and are
-    never recomputed by later offline analysis.
+    Format is ``YYYYMMDDHHMM_<model>_<dataset>_<hex>``.  The debate topology is
+    frozen and the Single-Agent baseline is automatically included in every
+    run, so topology never appears in a directory name.  The timestamp and
+    suffix are generated exactly once at run creation and are never recomputed
+    by later offline analysis.
     """
 
     run_timestamp = make_run_id() if timestamp is None else timestamp
@@ -190,9 +179,8 @@ def compose_run_name(
     if not isinstance(suffix, str) or not re.fullmatch(r"[0-9a-f]{8}", suffix):
         raise ValueError("run hex suffix must be 8 lowercase hexadecimal characters")
     return (
-        f"{run_timestamp}_{canonical_dataset_token(dataset_name)}_"
-        f"{canonical_topology_token(topology_id)}_"
-        f"{canonical_model_token(requested_model)}_{suffix}"
+        f"{run_timestamp}_{canonical_model_token(requested_model)}_"
+        f"{canonical_dataset_token(dataset_name)}_{suffix}"
     )
 
 
@@ -224,31 +212,26 @@ def create_run(
     run_id: str | None = None,
     dataset_name: str,
     domain: str,
-    topology_id: str | None = None,
     requested_model: str | None = None,
 ) -> dict[str, Any]:
     """Create matching raw-trajectory and aggregate-result directories."""
 
     root = root.resolve()
-    # The canonical name is YYYYMMDDHHMM_<dataset>_<topology>_<model>_<hex> and
-    # is generated once here; analysis and visualization reuse the stored id.
+    # The canonical name is YYYYMMDDHHMM_<model>_<dataset>_<hex> and is
+    # generated once here; analysis and visualization reuse the stored id.
     name_components: dict[str, Any] | None = None
     if run_id is None:
-        if topology_id is None or requested_model is None:
-            raise ValueError(
-                "auto-named runs require topology_id and requested_model"
-            )
+        if requested_model is None:
+            raise ValueError("auto-named runs require requested_model")
         composed = compose_run_name(
             dataset_name=dataset_name,
-            topology_id=topology_id,
             requested_model=requested_model,
         )
-        timestamp, dataset_token, topology_token, model_token, suffix = composed.split("_")
+        timestamp, model_token, dataset_token, suffix = composed.split("_")
         name_components = {
             "timestamp": timestamp,
-            "dataset": dataset_token,
-            "topology": topology_token,
             "model": model_token,
+            "dataset": dataset_token,
             "hex": suffix,
         }
         chosen_id = _validated_run_id(composed)

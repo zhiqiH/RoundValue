@@ -1,0 +1,490 @@
+{
+  "command": [
+    "step1_smoke.py"
+  ],
+  "complete_task_count": 2,
+  "config_hash": "60f1b496162a77b14b47152fc490e8959127f0cbcf6ef68a3f0d378cd7b24b79",
+  "configs": {
+    "agents.json": {
+      "content": {
+        "format_budget_margin": 2.0,
+        "format_retries": 2,
+        "roles": [
+          {
+            "id": "planner",
+            "output_schema": {
+              "properties": {
+                "assumptions": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "candidate_answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "plan": {
+                  "max_length": 180,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "verification_steps": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "plan",
+                "assumptions",
+                "verification_steps",
+                "candidate_answer"
+              ]
+            },
+            "system_prompt": "You are the Planner in a fixed RoundValue debate DAG. Analyze the task, identify constraints and assumptions, propose a concise, verifiable plan, and state your current best candidate answer based only on visible evidence. Use only the task and messages explicitly provided to you. If a previous Writer checkpoint is supplied, treat its answer and reasoning summary as visible evidence: keep, challenge, or refine them only on the basis of the task and visible messages, without assuming that the previous answer is right or wrong. Do not claim access to hidden answers or hidden tests. Do not restate the task, do not repeat yourself, and do not write any derivation, chain of thought, or step-by-step computation; keep every field near its max_length target, and keep the whole response well within the model output limit. Return the required JSON object only."
+          },
+          {
+            "id": "analyst",
+            "output_schema": {
+              "properties": {
+                "analysis": {
+                  "max_length": 180,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "candidate_answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "evidence": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "analysis",
+                "candidate_answer",
+                "evidence"
+              ]
+            },
+            "system_prompt": "You are the Analyst in a fixed RoundValue debate DAG. Independently solve the task and state a candidate answer with concise supporting reasoning. If a plan or evidence is supplied, check it and flag concrete errors; if none is supplied, form your own plan from the task alone. If a previous Writer checkpoint is supplied, evaluate its answer and reasoning summary against visible evidence; you may preserve or revise them. Use only visible task inputs and messages. Do not claim access to hidden answers or hidden tests. Do not restate the task, do not repeat yourself, and do not reproduce a derivation or chain of thought; keep every field near its max_length target, and keep the whole response well within the model output limit. Return the required JSON object only."
+          },
+          {
+            "id": "critic",
+            "output_schema": {
+              "properties": {
+                "candidate_answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "evidence": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "issues": {
+                  "max_length": 180,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "revision_advice": {
+                  "max_length": 140,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "issues",
+                "evidence",
+                "revision_advice",
+                "candidate_answer"
+              ]
+            },
+            "system_prompt": "You are the Critic in a fixed RoundValue debate DAG. Inspect any visible proposals, analyses, and the previous Writer checkpoint (if supplied) for concrete errors, missing constraints, unsupported claims, and unresolved disagreement, then state your own current best candidate answer based only on visible evidence. Do not assume the previous answer is right or wrong; preserving it, repairing it, and changing a previously correct answer are all possible outcomes. If no visible proposals are supplied, act as an independent verifier: solve the task directly from the prompt and report only concrete risk points; do not invent prior proposals and do not claim to have inspected messages you cannot see. Give evidence-based, actionable revision advice; do not invent hidden-test results or a reference answer. Do not restate the task, do not repeat yourself or loop, do not rewrite derivations, and if there is nothing concrete to flag, say so in one sentence; keep every field near its max_length target, and keep the whole response well within the model output limit. Return the required JSON object only."
+          },
+          {
+            "id": "writer",
+            "output_schema": {
+              "is_checkpoint_answer": true,
+              "properties": {
+                "answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "reasoning_summary": {
+                  "max_length": 400,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "answer",
+                "reasoning_summary"
+              ]
+            },
+            "system_prompt": "You are the Writer in a fixed RoundValue debate DAG. Synthesize the visible Planner, Analyst, and Critic messages, and any previous Writer checkpoint, into the current best answer to the task. Resolve disagreements using evidence, obey the task's requested answer format, and do not mention hidden answers or hidden tests. Return exactly two fields. The 'answer' field must contain the task's final answer in the requested format; only this field is scored. The 'reasoning_summary' field must contain a concise, externally communicable summary of the key evidence, assumptions, important distinctions between plausible options, and residual uncertainty that support the answer; it must not merely restate the answer and must not contain hidden step-by-step reasoning or a chain of thought. Return the required JSON object only."
+          },
+          {
+            "id": "single_solver",
+            "output_schema": {
+              "is_checkpoint_answer": true,
+              "properties": {
+                "answer": {
+                  "max_length": 300,
+                  "min_length": 1,
+                  "type": "string"
+                },
+                "reasoning_summary": {
+                  "max_length": 400,
+                  "min_length": 1,
+                  "type": "string"
+                }
+              },
+              "required_fields": [
+                "answer",
+                "reasoning_summary"
+              ]
+            },
+            "system_prompt": "You are an independent solver for a multiple-choice task. Solve the task using only the information explicitly provided. Read the question and every answer option carefully, select the single best option, and return exactly two fields. The 'answer' field must contain only the canonical option in the requested answer format; only this field is evaluated. The 'reasoning_summary' field must be a concise, externally communicable explanation of the key evidence, assumptions, and important distinctions between the plausible options that support the answer; it must not merely restate the answer and must not contain hidden step-by-step reasoning or a chain of thought. Keep both fields short. Return the required JSON object only."
+          }
+        ],
+        "schema_version": "1.0"
+      },
+      "sha256": "c544d85b775f2a2b908833bad51ad52e31e606dbb805f7063248943637bd2db0"
+    },
+    "model_config.json": {
+      "content": {
+        "default_model_id": "deepseek_flash",
+        "models": {
+          "deepseek_flash": {
+            "max_output_tokens": 32768,
+            "model_name": "deepseek-v4-flash",
+            "pricing": {
+              "currency": "USD",
+              "effective_date": "2026-08-13",
+              "input_cache_hit_per_million": 0.0028,
+              "input_cache_miss_per_million": 0.14,
+              "output_per_million": 0.28
+            },
+            "provider": "deepseek",
+            "reasoning": {
+              "effort": "high",
+              "enabled": true
+            },
+            "request_defaults": {
+              "response_format": {
+                "type": "json_object"
+              }
+            },
+            "temperature": 0.2
+          },
+          "gpt4o_mini": {
+            "max_output_tokens": 16384,
+            "model_name": "gpt-4o-mini-2024-07-18",
+            "pricing": {
+              "currency": "USD",
+              "effective_date": "2026-08-16",
+              "input_cache_hit_per_million": 0.075,
+              "input_cache_miss_per_million": 0.15,
+              "output_per_million": 0.6
+            },
+            "provider": "openai",
+            "reasoning": {
+              "enabled": false
+            },
+            "request_defaults": {
+              "response_format": {
+                "type": "json_object"
+              }
+            },
+            "temperature": 0
+          },
+          "gpt5_nano": {
+            "max_output_tokens": 32768,
+            "model_name": "gpt-5-nano",
+            "pricing": {
+              "currency": "USD",
+              "effective_date": "2026-08-16",
+              "input_cache_hit_per_million": 0.005,
+              "input_cache_miss_per_million": 0.05,
+              "output_per_million": 0.4
+            },
+            "provider": "openai",
+            "reasoning": {
+              "effort": "medium",
+              "enabled": true
+            },
+            "request_defaults": {
+              "response_format": {
+                "type": "json_object"
+              }
+            },
+            "temperature": 1.0
+          }
+        },
+        "providers": {
+          "deepseek": {
+            "adapter": "openai_compatible",
+            "api_key": {
+              "environment_variable": "DEEPSEEK_API_KEY",
+              "field": "deepseek.api_key",
+              "file": ".secret/model_key.json"
+            },
+            "base_url": "https://api.deepseek.com",
+            "max_attempts": 3,
+            "max_output_tokens_field": "max_tokens",
+            "retry_backoff_seconds": 1.0,
+            "supports_thinking_toggle": true,
+            "timeout_seconds": 120
+          },
+          "openai": {
+            "adapter": "openai_compatible",
+            "api_key": {
+              "environment_variable": "OPENAI_API_KEY",
+              "field": "openai.api_key",
+              "file": ".secret/model_key.json"
+            },
+            "base_url": "https://api.openai.com/v1",
+            "max_attempts": 3,
+            "max_output_tokens_field": "max_completion_tokens",
+            "retry_backoff_seconds": 1.0,
+            "supports_thinking_toggle": false,
+            "timeout_seconds": 120
+          }
+        },
+        "schema_version": "1.0"
+      },
+      "sha256": "4427eb634f8ffa349f546cbd2ee88b7319610a77ad76698e9ab935c91dca068a"
+    },
+    "topology.json": {
+      "content": {
+        "default_topology_id": "debate",
+        "schema_version": "1.0",
+        "topologies": {
+          "debate": {
+            "edges": [
+              [
+                "planner_stage_1",
+                "stage_1_packet"
+              ],
+              [
+                "analyst_stage_1",
+                "stage_1_packet"
+              ],
+              [
+                "critic_stage_1",
+                "stage_1_packet"
+              ],
+              [
+                "stage_1_packet",
+                "planner_stage_2"
+              ],
+              [
+                "stage_1_packet",
+                "analyst_stage_2"
+              ],
+              [
+                "stage_1_packet",
+                "critic_stage_2"
+              ],
+              [
+                "stage_1_packet",
+                "writer_packet"
+              ],
+              [
+                "planner_stage_2",
+                "writer_packet"
+              ],
+              [
+                "analyst_stage_2",
+                "writer_packet"
+              ],
+              [
+                "critic_stage_2",
+                "writer_packet"
+              ],
+              [
+                "writer_packet",
+                "writer"
+              ]
+            ],
+            "max_rounds": 5,
+            "nodes": [
+              {
+                "id": "planner_stage_1",
+                "parallel_group": "stage_1",
+                "role": "planner",
+                "stage": 1
+              },
+              {
+                "id": "analyst_stage_1",
+                "parallel_group": "stage_1",
+                "role": "analyst",
+                "stage": 1
+              },
+              {
+                "id": "critic_stage_1",
+                "parallel_group": "stage_1",
+                "role": "critic",
+                "stage": 1
+              },
+              {
+                "id": "planner_stage_2",
+                "parallel_group": "stage_2",
+                "role": "planner",
+                "stage": 2
+              },
+              {
+                "id": "analyst_stage_2",
+                "parallel_group": "stage_2",
+                "role": "analyst",
+                "stage": 2
+              },
+              {
+                "id": "critic_stage_2",
+                "parallel_group": "stage_2",
+                "role": "critic",
+                "stage": 2
+              },
+              {
+                "id": "writer",
+                "parallel_group": null,
+                "role": "writer",
+                "stage": 3
+              }
+            ],
+            "packets": [
+              {
+                "id": "stage_1_packet",
+                "sources": [
+                  "planner_stage_1",
+                  "analyst_stage_1",
+                  "critic_stage_1"
+                ]
+              },
+              {
+                "id": "writer_packet",
+                "sources": [
+                  "stage_1_packet",
+                  "planner_stage_2",
+                  "analyst_stage_2",
+                  "critic_stage_2"
+                ]
+              }
+            ],
+            "runner": "two_stage_pac_writer"
+          }
+        }
+      },
+      "sha256": "4aaabb822c392eed0e28a4a6d21493f3a83a03b83da784d138b66f2a802a63f5"
+    }
+  },
+  "created_at": "2026-08-16T21:42:39.894510+00:00",
+  "dataset": "SmokeTasks",
+  "dataset_label": "SmokeTasks",
+  "domain": "mmlu_pro",
+  "failed_task_ids": [],
+  "git": {
+    "commit": "3d341eb58934f44a241ee94f7d8e58cb6de07c72",
+    "dirty": true,
+    "status_porcelain": [
+      " M EXPERIMENT_ARCHITECTURE.md",
+      " M README.md",
+      " M configs/README.md",
+      " M configs/topology.json",
+      " M pyproject.toml",
+      " M results/README.md",
+      " M scripts/README.md",
+      " M scripts/dev_model_selfcheck.py",
+      " M scripts/dev_naming_selfcheck.py",
+      " M scripts/dev_single_selfcheck.py",
+      " M scripts/step1_smoke.py",
+      " M scripts/step2_run.py",
+      " M scripts/step3_visualize.py",
+      " M src/README.md",
+      " D src/comparison.py",
+      " M src/config_loader.py",
+      " M src/pipeline.py",
+      " M src/scorer.py",
+      " M src/single_analysis.py",
+      " M src/single_runner.py",
+      " M src/storage.py",
+      " M src/visualize.py",
+      " M trajectories/README.md"
+    ]
+  },
+  "mode": "smoke",
+  "model_selection": {
+    "max_output_tokens": 32768,
+    "model_id": "deepseek_flash",
+    "provider": "deepseek",
+    "reasoning": {
+      "effort": "high",
+      "enabled": true
+    },
+    "requested_model": "deepseek-v4-flash",
+    "temperature": 0.2
+  },
+  "package_versions": {
+    "httpx": "0.28.1",
+    "numpy": "2.4.6"
+  },
+  "platform": "macOS-26.6.1-arm64-arm-64bit",
+  "project_root": "/Users/zhiqi/Documents/RoundValue",
+  "python": "3.11.15 | packaged by conda-forge | (main, Aug 11 2026, 10:24:21) [Clang 19.1.7 ]",
+  "result_dir": "/Users/zhiqi/Documents/RoundValue/results/202608161642_deepseek-v4-flash_SmokeTasks_a3b8051c",
+  "run_id": "202608161642_deepseek-v4-flash_SmokeTasks_a3b8051c",
+  "run_name": "202608161642_deepseek-v4-flash_SmokeTasks_a3b8051c",
+  "run_name_components": {
+    "dataset": "SmokeTasks",
+    "hex": "a3b8051c",
+    "model": "deepseek-v4-flash",
+    "timestamp": "202608161642"
+  },
+  "schema_version": "1.0",
+  "selected_model_id": "deepseek_flash",
+  "source_file_hashes": {
+    "EXPERIMENT_ARCHITECTURE.md": "93e9755bc793105532b633d3a06e02e0131bff14d023ca75a78950d1dd70122b",
+    "README.md": "e244266508bb61e3e9276e5c4d659c8e6f07498c9a3c9f8e240fac2474b414d1",
+    "pyproject.toml": "25e693af0b26efe5c3fa770fea4993c50e175979923eaee88d9d9ffb6646e56f",
+    "scripts/dev_benchmark_selfcheck.py": "e2e544f016c2e329aba06b42f168d0ab58852a134ea0c18d23896f93c6b7997f",
+    "scripts/dev_model_selfcheck.py": "8e553584707934a0672c589bebe53b5b927b47869fb9f74e6f17f77673cb577e",
+    "scripts/dev_naming_selfcheck.py": "fc86d033d6a251d26058e81b9a1487bd0da7c7aa277b5c686e2048eb88e70691",
+    "scripts/dev_selfcheck.py": "f8baec0f1e3c749049cdd94a9977b24c16dd26ddc43499b238d260089e238a4f",
+    "scripts/dev_single_selfcheck.py": "f5d0d5a0e55ddd6b26468c8ec2f3eb499c41c5aebc74c14034b67b5458dc2736",
+    "scripts/step1_smoke.py": "2526cb62a0eb30d53822fd41ec18a8b1bbba7a948aaa8f1d7d6025abf34d9576",
+    "scripts/step2_run.py": "b6493d50eca20de2f11229d7d2607b6163ac11b0c66a77fc13f090d0f76bd07d",
+    "scripts/step3_visualize.py": "1e92e5732fec00e11e54538ceef586a42de9ef4558e427e81ae03c3c910c4031",
+    "src/accounting.py": "d3772e190e62f772a19d693a45449c5d9bf5c8a01ccba1d5fc15a7db2fd112c6",
+    "src/benchmark_io.py": "64e069f1ace78c55e320ecc5de7a9e95d13e7425c8f0129d5f929bc533bf9ada",
+    "src/build_math50.py": "e1432ed8e85f330c1b2cd63d8413e6b0622e51574bb7b3be646da2fa98a4960f",
+    "src/build_mmlu_pro.py": "5d6872c472e5eac5572b5020148893bc308d20eb322a5bb8fd7de01e8e75a9f1",
+    "src/build_mmlu_pro_50.py": "e3edd352c54568ac755daf5eace2ade2b7e977b08cf0dbd3a7cb6721a23a8a22",
+    "src/build_real_benchmarks.py": "f745fa1c24d54de2234d39ea88ac118b5ae49609525f06cb1aef02abfed44faf",
+    "src/config_loader.py": "ef5f01b7e5c5cadf600d8139159ae3ef6be3284bb57c835ad138de3eb8df8465",
+    "src/contracts.py": "23e29c18bb43cf0bf5ef8e2824d6667f81832f3f2b8dd028609b3f26a20c9378",
+    "src/debate_runner.py": "05fb274b37bda57b207d9abfb1f0be2c90a964f6b7f34c41bf459c2dc147f192",
+    "src/labels.py": "de0e5fb303a482a71a1f6055df625732ff2577d40c24be88548a1712df0cd80e",
+    "src/pipeline.py": "1b8e7b3d0271dc88dae676953b472b5d44b701cefbeab02353e025dac619e6a9",
+    "src/policy.py": "cff26d4b8d5e4c2e192ea52269f645098f0a485ff8f4af50c12572a4183257b8",
+    "src/provider.py": "dfd6b2a7184498b3053fbcfa09c4decc8eb1ac77992568776fdffa43cba22bda",
+    "src/report.py": "54700ea9a5eb56831b8c85e23153e3ed9b6a7ab9e840f68aaddce7dd07cf73e3",
+    "src/roundvalue_cli.py": "7247fe139fda570610ea0932437ddba317868c236e74425fba0070365406daf0",
+    "src/scorer.py": "340d893c6452b0098261aadd727d43aedb38425b00157828f98dd8906ee99176",
+    "src/single_analysis.py": "239ae1d93b154e40cdd65ddb81bad794275d4376cae8a4a5eb8246c66757aea1",
+    "src/single_runner.py": "12cf58526eb68aeb13ee8e0a98aea12a35fc8d82e180b837216c86916ba11ea4",
+    "src/storage.py": "e2c92a0a16544b8499b8e9dc9873da57367bb9b3abd56cb95f9f08db88a3848f",
+    "src/verify_real_benchmarks.py": "0fb6605f35ad2a4bfeea5b670409abc1302b1a2dc69b7aab76edb8dbca2516e6",
+    "src/visualize.py": "9cdcc6533b8a36ae45cd0e6a9680d165b604630f968401292ecb3123be40ddbb"
+  },
+  "source_snapshot_hash": "26e80359c2dc78c4dd48f2252f776f8761f4fbce511c2ea4b417389eb0c37b79",
+  "status": "smoke_complete",
+  "task_count": 2,
+  "trajectory_dir": "/Users/zhiqi/Documents/RoundValue/trajectories/202608161642_deepseek-v4-flash_SmokeTasks_a3b8051c",
+  "updated_at": "2026-08-16T21:42:58.405057+00:00"
+}

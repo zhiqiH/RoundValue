@@ -30,6 +30,13 @@ from pathlib import Path
 from typing import Any
 
 from labels import build_labels
+from single_analysis import (
+    baseline_table,
+    build_single_baseline,
+    paired_single_vs_debate,
+    single_observation_rows,
+    summarize_single_baseline,
+)
 from storage import read_json, write_json
 
 
@@ -135,6 +142,7 @@ def _task_row(
     checkpoints: Sequence[Mapping[str, Any]],
     transitions: Sequence[str],
     max_rounds: int,
+    single_row: Mapping[str, Any],
 ) -> dict[str, Any]:
     task = record.get("task", {})
     trajectory = record.get("trajectory", {})
@@ -164,6 +172,31 @@ def _task_row(
     }
     for round_index in range(1, max_rounds + 1):
         row[f"quality_round_{round_index}"] = scores.get(round_index)
+    for key in (
+        "observation_status",
+        "predicted_answer",
+        "canonical_answer",
+        "quality",
+        "is_correct",
+        "input_tokens",
+        "output_tokens",
+        "total_tokens",
+        "wall_clock_ms",
+        "api_latency_ms",
+        "cost_usd",
+        "logical_calls",
+        "api_attempts",
+        "transport_retries",
+        "format_repairs",
+        "fallback",
+        "fallback_type",
+        "finish_reason",
+        "truncated",
+        "truncated_attempts",
+        "failure_reason",
+        "scoring_error",
+    ):
+        row[f"single_{key}"] = single_row.get(key)
     return row
 
 
@@ -502,6 +535,33 @@ def _build_policy_chart_data(replay: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _single_agent_chart_point(
+    single_summary: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Reduce the Single-Agent summary to the fields the shared figures need."""
+
+    resources = single_summary.get("resources")
+    if not isinstance(resources, Mapping):
+        resources = {}
+
+    def mean(key: str) -> float | None:
+        stat = resources.get(key)
+        return _number(stat.get("mean")) if isinstance(stat, Mapping) else None
+
+    accuracy = single_summary.get("accuracy")
+    return {
+        "condition": "single_agent",
+        "defined": bool(single_summary.get("defined")),
+        "accuracy": _number(
+            accuracy.get("accuracy") if isinstance(accuracy, Mapping) else None
+        ),
+        "mean_total_tokens": mean("total_tokens"),
+        "mean_wall_clock_ms": mean("wall_clock_ms"),
+        "mean_api_latency_ms": mean("api_latency_ms"),
+        "n_tasks": single_summary.get("tasks_complete"),
+    }
+
+
 def _scatter_points(records: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     token_points: list[dict[str, Any]] = []
     latency_points: list[dict[str, Any]] = []
@@ -649,6 +709,8 @@ def _render_html(report: Mapping[str, Any]) -> str:
     transitions = report["transition_counts"]
     policies = report["policy_table"]
     stop_matrix = report["stop_round_matrix"]
+    baselines = report.get("baseline_table", [])
+    paired_single = report.get("paired_single_vs_debate", {})
 
     round_headers = [
         "Round",
@@ -689,6 +751,45 @@ def _render_html(report: Mapping[str, Any]) -> str:
             for name in ("repair", "neutral", "harm", "recovery", "terminal")
         ]
     ]
+
+    baseline_rows = []
+    for baseline in baselines:
+        baseline_rows.append(
+            [
+                str(baseline["display_name"]),
+                _fmt(baseline.get("n_tasks"), 0),
+                _fmt(baseline.get("accuracy")),
+                _fmt(baseline.get("mean_total_tokens"), 0),
+                _fmt(baseline.get("mean_wall_clock_ms"), 0),
+                _fmt(baseline.get("mean_api_latency_ms"), 0),
+                _fmt(baseline.get("mean_cost_usd"), 6),
+                _fmt(baseline.get("mean_logical_calls"), 0),
+            ]
+        )
+
+    paired_rows = []
+    for name, label in (
+        ("fixed_1", "Single-Agent vs Fixed-1"),
+        ("fixed_5", "Single-Agent vs Fixed-5"),
+        ("roundvalue", "Single-Agent vs RoundValue"),
+        ("oracle", "Single-Agent vs Oracle"),
+    ):
+        counts = paired_single.get(name)
+        if not isinstance(counts, Mapping) or not counts.get("defined"):
+            paired_rows.append([label, "not defined", "", "", "", "", ""])
+            continue
+        paired_rows.append(
+            [
+                label,
+                str(counts.get("both_correct")),
+                str(counts.get("single_correct_debate_wrong")),
+                str(counts.get("single_wrong_debate_correct")),
+                str(counts.get("both_wrong")),
+                str(counts.get("n_paired")),
+                _fmt(counts.get("single_accuracy")),
+                _fmt(counts.get("debate_accuracy")),
+            ]
+        )
 
     policy_rows = []
     for policy in policies:
@@ -766,6 +867,34 @@ def _render_html(report: Mapping[str, Any]) -> str:
           ", ".join(f"{key}={value}" for key, value in sorted(report["split_counts"].items())),
       ]],
   )}
+  <h2>Baseline comparison</h2>
+  {_table_html(
+      [
+          "Condition",
+          "Tasks",
+          "Accuracy",
+          "Tokens",
+          "Wall-clock (ms)",
+          "API time (ms)",
+          "Cost (USD)",
+          "Logical calls",
+      ],
+      baseline_rows,
+  )}
+  <h2>Single-Agent vs Debate (paired task outcomes)</h2>
+  {_table_html(
+      [
+          "Comparison",
+          "Both correct",
+          "Single correct, debate wrong",
+          "Single wrong, debate correct",
+          "Both wrong",
+          "Paired",
+          "Single accuracy",
+          "Debate accuracy",
+      ],
+      paired_rows,
+  )}
   <h2>Per-round and cumulative resources</h2>
   {_table_html(round_headers, round_rows)}
   <h2>Repair / Neutral / Harm / Recovery</h2>
@@ -819,6 +948,10 @@ def build_analysis(
         default=1,
     )
     scores_by_record = {id(record): _scores_by_round(record) for record in usable_records}
+    single_rows_by_task = {
+        str(row.get("task_id")): row
+        for row in single_observation_rows(records)
+    }
     transitions: Counter[str] = Counter()
     task_rows: list[dict[str, Any]] = []
     for record in usable_records:
@@ -842,24 +975,38 @@ def build_analysis(
                 checkpoint_list,
                 transition_list,
                 max_rounds,
+                single_rows_by_task.get(str(record.get("task", {}).get("task_id")), {}),
             )
         )
 
-    failed_rows = [
-        {
-            "task_id": record.get("task", {}).get("task_id"),
-            "split": record.get("split"),
-            "domain": record.get("task", {}).get("domain"),
-            "trajectory_status": record.get("trajectory", {}).get("status"),
-            "completed_rounds": 0,
-            "final_quality": None,
-            "failure_reason": record.get("trajectory", {}).get("failure_reason"),
-            "scoring_error": record.get("scoring_error"),
-            "transitions": None,
-        }
-        for record in records
-        if not _checkpoints(record)
-    ]
+    failed_rows = []
+    for record in records:
+        if _checkpoints(record):
+            continue
+        single_row = single_rows_by_task.get(
+            str(record.get("task", {}).get("task_id")), {}
+        )
+        failed_rows.append(
+            {
+                "task_id": record.get("task", {}).get("task_id"),
+                "split": record.get("split"),
+                "domain": record.get("task", {}).get("domain"),
+                "trajectory_status": record.get("trajectory", {}).get("status"),
+                "completed_rounds": 0,
+                "final_quality": None,
+                "failure_reason": record.get("trajectory", {}).get(
+                    "failure_reason"
+                ),
+                "scoring_error": record.get("scoring_error"),
+                "transitions": None,
+                "single_observation_status": single_row.get(
+                    "observation_status"
+                ),
+                "single_quality": single_row.get("quality"),
+                "single_failure_reason": single_row.get("failure_reason"),
+                "single_scoring_error": single_row.get("scoring_error"),
+            }
+        )
     task_rows.extend(failed_rows)
 
     per_round, cumulative = _per_round_tables(usable_records, max_rounds)
@@ -873,6 +1020,11 @@ def build_analysis(
             ] = int(count)
 
     split_counts: Counter[str] = Counter(str(record.get("split")) for record in records)
+    single_summary = summarize_single_baseline(records)
+    policy_charts = _build_policy_chart_data(replay)
+    policy_charts["single_agent_point"] = _single_agent_chart_point(
+        single_summary
+    )
     report: dict[str, Any] = {
         "schema_version": "1.0",
         "run_id": manifest["run_id"],
@@ -892,10 +1044,13 @@ def build_analysis(
             name: int(transitions[name])
             for name in ("repair", "neutral", "harm", "recovery", "terminal", "unknown")
         },
+        "single_agent": build_single_baseline(manifest, records),
+        "baseline_table": baseline_table(single_summary, replay),
+        "paired_single_vs_debate": paired_single_vs_debate(records, replay),
         "policy_table": policy_table,
         "stop_round_matrix": stop_round_matrix,
         "pairwise_vs_fixed_1": replay.get("pairwise_vs_fixed_1"),
-        "policy_charts": _build_policy_chart_data(replay),
+        "policy_charts": policy_charts,
         "quality_token_points": token_points,
         "quality_latency_points": latency_points,
         "task_rows": task_rows,
@@ -990,12 +1145,16 @@ def _render_png_charts(
         for point in chart_data.get("policy_points", [])
         if isinstance(point, Mapping) and point.get("policy")
     ]
+    single_point = chart_data.get("single_agent_point")
+    if isinstance(single_point, Mapping) and single_point.get("defined"):
+        points.append({"policy": "single_agent", **dict(single_point)})
     points_by_name = {str(point["policy"]): point for point in points}
 
     fixed_color = "#6b7280"
     adaptive_color = "#9ca3af"
     oracle_edge = "#4b5563"
     accent_color = "#d97706"
+    single_color = "#2563eb"
     round_colors = {
         1: "#0072B2",
         2: "#E69F00",
@@ -1047,6 +1206,32 @@ def _render_png_charts(
                 zorder=2,
                 alpha=0.75,
             )
+
+        single = points_by_name.get("single_agent")
+        if single is not None:
+            x = resource_value(single, key)
+            y = _number(single.get("accuracy"))
+            if x is not None and y is not None:
+                ax.scatter(
+                    [x],
+                    [y],
+                    s=110,
+                    marker="D",
+                    facecolor=single_color,
+                    edgecolor=single_color,
+                    linewidths=0.8,
+                    zorder=4,
+                )
+                ax.annotate(
+                    "Single-Agent",
+                    (x, y),
+                    textcoords="offset points",
+                    xytext=(13, 12),
+                    color=single_color,
+                    fontsize=11,
+                    fontweight="bold",
+                    zorder=5,
+                )
 
         for name, marker in (("task_only", "s"),):
             point = points_by_name.get(name)
@@ -1162,6 +1347,16 @@ def _render_png_charts(
             )
 
         handles = [
+            Line2D(
+                [0],
+                [0],
+                marker="D",
+                color="none",
+                markersize=8,
+                markerfacecolor=single_color,
+                markeredgecolor=single_color,
+                label="Single-Agent",
+            ),
             Line2D(
                 [0],
                 [0],
@@ -1507,6 +1702,41 @@ def _render_conclusion(analysis: Mapping[str, Any]) -> str:
         f"{transitions.get('repair', 0)}, neutral={transitions.get('neutral', 0)}, "
         f"harm={transitions.get('harm', 0)}, recovery={transitions.get('recovery', 0)}"
     )
+    single = analysis.get("single_agent") or {}
+    single_accuracy = (single.get("accuracy") or {}).get("accuracy")
+    if single.get("defined"):
+        resources = single.get("resources") or {}
+        total_tokens = (resources.get("total_tokens") or {}).get("mean")
+        logical_calls = (resources.get("logical_calls") or {}).get("mean")
+        lines.append(
+            "Single-Agent baseline: accuracy="
+            f"{_fmt(single_accuracy)}, tasks={single.get('tasks_complete')}, "
+            f"tokens={_fmt(total_tokens, 0)}, "
+            f"wall_clock_ms={_fmt((resources.get('wall_clock_ms') or {}).get('mean'), 0)}, "
+            f"logical_calls={_fmt(logical_calls, 0)}"
+        )
+    else:
+        lines.append("Single-Agent baseline: not defined for this historical run")
+    for name, label in (
+        ("fixed_1", "Fixed-1"),
+        ("fixed_5", "Fixed-5"),
+        ("roundvalue", "RoundValue"),
+        ("oracle", "Oracle"),
+    ):
+        counts = (analysis.get("paired_single_vs_debate") or {}).get(name) or {}
+        if not counts.get("defined"):
+            lines.append(f"Single-Agent vs {label}: not defined")
+            continue
+        lines.append(
+            f"Single-Agent vs {label}: both_correct="
+            f"{counts.get('both_correct')}, "
+            f"single_correct_debate_wrong="
+            f"{counts.get('single_correct_debate_wrong')}, "
+            f"single_wrong_debate_correct="
+            f"{counts.get('single_wrong_debate_correct')}, "
+            f"both_wrong={counts.get('both_wrong')}, n_paired="
+            f"{counts.get('n_paired')}"
+        )
     roundvalue = next(
         (
             policy
@@ -1561,6 +1791,27 @@ def _write_task_csv(path: Path, rows: Sequence[Mapping[str, Any]], max_rounds: i
         "transitions",
         "failure_reason",
         "scoring_error",
+        "single_observation_status",
+        "single_predicted_answer",
+        "single_quality",
+        "single_is_correct",
+        "single_input_tokens",
+        "single_output_tokens",
+        "single_total_tokens",
+        "single_wall_clock_ms",
+        "single_api_latency_ms",
+        "single_cost_usd",
+        "single_logical_calls",
+        "single_api_attempts",
+        "single_transport_retries",
+        "single_format_repairs",
+        "single_fallback",
+        "single_fallback_type",
+        "single_finish_reason",
+        "single_truncated",
+        "single_truncated_attempts",
+        "single_failure_reason",
+        "single_scoring_error",
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
@@ -1571,6 +1822,12 @@ def _write_task_csv(path: Path, rows: Sequence[Mapping[str, Any]], max_rounds: i
             if flattened.get("scoring_error"):
                 flattened["scoring_error"] = json.dumps(
                     flattened["scoring_error"], ensure_ascii=False, sort_keys=True
+                )
+            if flattened.get("single_scoring_error"):
+                flattened["single_scoring_error"] = json.dumps(
+                    flattened["single_scoring_error"],
+                    ensure_ascii=False,
+                    sort_keys=True,
                 )
             writer.writerow(flattened)
 

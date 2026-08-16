@@ -27,12 +27,6 @@ from benchmark_io import (  # noqa: E402
     freeze_splits,
     load_benchmark,
 )
-from comparison import (  # noqa: E402
-    ComparisonError,
-    append_comparison_sections,
-    build_comparison,
-    write_comparison,
-)
 from config_loader import config_snapshot  # noqa: E402
 from contracts import file_hash, json_hash, utc_now  # noqa: E402
 from debate_runner import FixedDebateRunner  # noqa: E402
@@ -40,8 +34,13 @@ from labels import build_labels  # noqa: E402
 from policy import fit_policy_models, replay_policies  # noqa: E402
 from provider import build_provider  # noqa: E402
 from report import summarize_collection  # noqa: E402
-from scorer import score_single_record, score_trajectory  # noqa: E402
-from single_analysis import build_single_analysis, summarize_single_collection  # noqa: E402
+from scorer import score_single_observation, score_trajectory  # noqa: E402
+from single_analysis import (  # noqa: E402
+    baseline_table,
+    build_single_baseline,
+    paired_single_vs_debate,
+    summarize_single_baseline,
+)
 from single_runner import SingleAgentRunner  # noqa: E402
 from storage import (  # noqa: E402
     _source_snapshot,
@@ -139,7 +138,6 @@ def _create_run(
         run_id=args.run_id,
         dataset_name=dataset_name,
         domain=domain,
-        topology_id=str(experiment["topology_id"]),
         requested_model=str(experiment["model"]["model_name"]),
     )
     state["manifest"] = manifest
@@ -158,10 +156,6 @@ def _create_run(
             "max_output_tokens": experiment["model"]["max_output_tokens"],
             "reasoning": experiment["model"]["reasoning"],
         },
-        selected_topology_id=experiment["topology_id"],
-        topology_runner=experiment["topology"]["runner"],
-        topology_definition=experiment["topology"],
-        topology_hash=json_hash(experiment["topology"]),
     )
     state["manifest"] = manifest
     return manifest
@@ -184,10 +178,8 @@ def _write_benchmark_snapshot(
 
 
 def _score_record(record: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """Score the saved prediction(s) of one benchmark task record."""
+    """Score the saved Debate checkpoints of one benchmark task record."""
 
-    if record.get("topology") == "single":
-        return score_single_record(record)
     return score_trajectory(record)
 
 
@@ -195,17 +187,19 @@ def _task_record(
     task: Mapping[str, Any],
     split: str,
     trajectory: Mapping[str, Any],
+    single_agent: Mapping[str, Any],
     *,
     score: bool = True,
-    topology: str = "debate",
 ) -> dict[str, Any]:
+    """Build one task record holding the Debate and Single-Agent siblings."""
+
     record: dict[str, Any] = {
         "schema_version": "1.0",
         "created_at": utc_now(),
-        "topology": topology,
         "task": dict(task),
         "split": split,
         "trajectory": dict(trajectory),
+        "single_agent": dict(single_agent),
         "scoring": {
             "mode": "offline_deterministic",
         },
@@ -232,6 +226,25 @@ def _task_record(
             "type": type(error).__name__,
             "message": _safe_message(error),
         }
+    try:
+        single_scores = score_single_observation(record)
+        if single_agent.get("status") == "complete" and any(
+            isinstance(score.get("quality"), bool)
+            or not isinstance(score.get("quality"), int | float)
+            or not math.isfinite(float(score["quality"]))
+            for score in single_scores
+        ):
+            raise ValueError(
+                "offline scorer did not produce numeric quality for the "
+                "Single-Agent prediction"
+            )
+        record["single_agent_scores"] = single_scores
+    except Exception as error:
+        record["single_agent_scores"] = []
+        record["single_agent_scoring_error"] = {
+            "type": type(error).__name__,
+            "message": _safe_message(error),
+        }
     return record
 
 
@@ -247,57 +260,47 @@ def _summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     return summarize_collection(records, **keyword)
 
 
-def _collection_summary(
-    records: list[dict[str, Any]], topology_id: str
-) -> dict[str, Any]:
-    """Pick the aggregate that matches the selected topology."""
+def _collection_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate the Debate collection plus its Single-Agent baseline."""
 
-    if topology_id == "single":
-        return summarize_single_collection(records)
-    return _summary(records)
+    summary = _summary(records)
+    summary["single_agent"] = summarize_single_baseline(records)
+    return summary
 
 
 def _collect_task(
-    runner: FixedDebateRunner | SingleAgentRunner,
+    runner: FixedDebateRunner,
+    single_runner: SingleAgentRunner,
     *,
     task: Mapping[str, Any],
     split: str,
     run_id: str,
     max_rounds: int,
     score: bool = True,
-    topology: str = "debate",
 ) -> dict[str, Any]:
-    if topology == "single":
-        trajectory = runner.run_task(task=dict(task), run_id=run_id)
-    else:
-        trajectory = runner.run_trajectory(
-            task=dict(task), run_id=run_id, max_rounds=max_rounds
-        )
+    """Collect the Debate trajectory and the independent Single-Agent sibling."""
+
+    trajectory = runner.run_trajectory(
+        task=dict(task), run_id=run_id, max_rounds=max_rounds
+    )
+    single_agent = single_runner.run_observation(task=dict(task), run_id=run_id)
     return _task_record(
         task,
         split,
         trajectory,
+        single_agent,
         score=score,
-        topology=topology,
     )
 
 
 def _build_runner(experiment: Mapping[str, Any], provider: Any) -> Any:
-    """Instantiate only the runner named by the selected topology."""
+    """Instantiate the frozen Debate runner for the one approved topology."""
 
-    runner_name = experiment["topology"]["runner"]
-    if runner_name == "single_solver":
-        return SingleAgentRunner(dict(experiment), provider)
-    if runner_name == "two_stage_pac_writer":
-        return FixedDebateRunner(dict(experiment), provider)
-    raise ValueError(f"unsupported topology runner: {runner_name!r}")
-
-
-def _manifest_topology_id(manifest: Mapping[str, Any]) -> str:
-    """Historical manifests lack the selector and are treated as Debate runs."""
-
-    topology_id = manifest.get("selected_topology_id")
-    return "debate" if topology_id is None else str(topology_id)
+    if experiment["topology"]["runner"] != "two_stage_pac_writer":
+        raise ValueError(
+            f"unsupported topology runner: {experiment['topology']['runner']!r}"
+        )
+    return FixedDebateRunner(dict(experiment), provider)
 
 
 def _write_frozen_splits(
@@ -313,22 +316,32 @@ def _write_frozen_splits(
     )
 
 
-def _record_is_complete(record: Mapping[str, Any]) -> bool:
-    """Return true only for a fully collected, scored trajectory.
+def _scored_component_complete(
+    record: Mapping[str, Any],
+    *,
+    component: str,
+) -> bool:
+    """Return true only for one fully collected, scored task component.
 
-    A failed provider call, malformed Writer JSON, or missing scorer output
-    all make a record eligible for recollection during a resume.
+    A failed provider call, malformed output JSON, or missing scorer output
+    makes that component eligible for recollection during a resume.
     """
 
-    trajectory = record.get("trajectory")
-    if not isinstance(trajectory, Mapping) or trajectory.get("status") != "complete":
+    payload = record.get(component)
+    if not isinstance(payload, Mapping) or payload.get("status") != "complete":
         return False
-    if record.get("scoring_error"):
+    if component == "trajectory":
+        scores_key = "scores"
+        scoring_error_key = "scoring_error"
+    else:
+        scores_key = "single_agent_scores"
+        scoring_error_key = "single_agent_scoring_error"
+    if record.get(scoring_error_key):
         return False
-    scores = record.get("scores")
-    if "scores" not in record:
-        # A raw trajectory collected without scoring is complete when its
-        # trajectory is complete; the analysis stage derives scores offline.
+    scores = record.get(scores_key)
+    if scores_key not in record:
+        # A raw component collected without scoring is complete when its
+        # payload is complete; the analysis stage derives scores offline.
         return True
     if not isinstance(scores, list) or not scores:
         return False
@@ -341,6 +354,35 @@ def _record_is_complete(record: Mapping[str, Any]) -> bool:
         ):
             return False
     return True
+
+
+def _attach_scores(record: dict[str, Any]) -> dict[str, Any]:
+    """Recompute Debate and Single-Agent scores after a component resume."""
+
+    for key in (
+        "scores",
+        "scoring_error",
+        "single_agent_scores",
+        "single_agent_scoring_error",
+    ):
+        record.pop(key, None)
+    try:
+        record["scores"] = _score_record(record)
+    except Exception as error:
+        record["scores"] = []
+        record["scoring_error"] = {
+            "type": type(error).__name__,
+            "message": _safe_message(error),
+        }
+    try:
+        record["single_agent_scores"] = score_single_observation(record)
+    except Exception as error:
+        record["single_agent_scores"] = []
+        record["single_agent_scoring_error"] = {
+            "type": type(error).__name__,
+            "message": _safe_message(error),
+        }
+    return record
 
 
 def _open_resumable_run(
@@ -408,14 +450,6 @@ def _verify_smoke_gate(
             f"{experiment['model_id']!r}; rerun step1_smoke.py with the same "
             "--model-id"
         )
-    smoke_topology = _manifest_topology_id(smoke_manifest)
-    if smoke_topology != experiment["topology_id"]:
-        raise ValueError(
-            f"smoke run {smoke_run_id} used topology "
-            f"{smoke_topology!r}, but this run selects "
-            f"{experiment['topology_id']!r}; rerun step1_smoke.py with the same "
-            "--topology"
-        )
     task_count = smoke_manifest.get("task_count")
     complete_count = smoke_manifest.get("complete_task_count")
     failed_ids = smoke_manifest.get("failed_task_ids") or []
@@ -470,15 +504,15 @@ def _run_smoke(
     provider = build_provider(dict(experiment))
     try:
         runner = _build_runner(experiment, provider)
-        topology_id = str(experiment["topology_id"])
+        single_runner = SingleAgentRunner(dict(experiment), provider)
         records = [
             _collect_task(
                 runner,
+                single_runner,
                 task=task,
                 split="smoke",
                 run_id=str(manifest["run_id"]),
                 max_rounds=1,
-                topology=topology_id,
             )
             for task in selected_tasks
         ]
@@ -486,26 +520,24 @@ def _run_smoke(
         provider.close()
     for record in records:
         write_task_record(manifest, record)
-    summary = _collection_summary(records, str(experiment["topology_id"]))
+    summary = _collection_summary(records)
     write_result(manifest, "collection_summary", summary)
     smoke_status: dict[str, Any] = {
         "schema_version": "1.0",
         "mode": "smoke",
         "domain": domain,
-        "topology": str(experiment["topology_id"]),
-        "topology_hash": json_hash(experiment["topology"]),
         "task_ids": [task["task_id"] for task in selected_tasks],
         "skipped_other_domain_task_ids": skipped_other_domain_task_ids,
-        "expected_logical_calls": (
-            1 if experiment["topology_id"] == "single" else 7
-        )
-        * len(selected_tasks),
+        "debate": {
+            "max_rounds": 1,
+            "expected_logical_calls": 7 * len(selected_tasks),
+        },
+        "single_agent": {
+            "expected_logical_calls": 1 * len(selected_tasks),
+        },
+        "expected_logical_calls": 8 * len(selected_tasks),
         "requires_quality_one": True,
     }
-    if experiment["topology_id"] == "debate":
-        smoke_status["max_rounds"] = 1
-    else:
-        smoke_status["logical_calls_per_task"] = 1
     write_result(
         manifest,
         "smoke_status",
@@ -516,6 +548,10 @@ def _run_smoke(
         and not record.get("scoring_error")
         and len(record.get("scores", [])) == 1
         and record["scores"][0].get("quality") == 1
+        and record["single_agent"].get("status") == "complete"
+        and not record.get("single_agent_scoring_error")
+        and len(record.get("single_agent_scores", [])) == 1
+        and record["single_agent_scores"][0].get("quality") == 1
         for record in records
     )
     status = "smoke_complete" if succeeded else "smoke_failed"
@@ -526,6 +562,10 @@ def _run_smoke(
         or record.get("scoring_error")
         or len(record.get("scores", [])) != 1
         or (record.get("scores") or [{}])[0].get("quality") != 1
+        or record["single_agent"].get("status") != "complete"
+        or record.get("single_agent_scoring_error")
+        or len(record.get("single_agent_scores", [])) != 1
+        or (record.get("single_agent_scores") or [{}])[0].get("quality") != 1
     ]
     updated = update_run_status(
         manifest,
@@ -609,12 +649,6 @@ def _run_collect(
                 f"resuming with a different model ({experiment['model_id']!r}) is "
                 "not allowed"
             )
-        if _manifest_topology_id(manifest) != experiment["topology_id"]:
-            raise ValueError(
-                f"run {args.run_id} used topology "
-                f"{_manifest_topology_id(manifest)!r}; resuming with a different "
-                f"topology ({experiment['topology_id']!r}) is not allowed"
-            )
         state["manifest"] = manifest
         _validate_resume_consistency(manifest, split_by_task)
         existing_records = read_task_records(manifest)
@@ -628,53 +662,96 @@ def _run_collect(
         _write_benchmark_snapshot(manifest, benchmark_path, benchmark_document)
         _write_frozen_splits(manifest, split_by_task)
         existing_records = []
-    complete_by_task = {
+    existing_by_task = {
         str(record.get("task", {}).get("task_id")): record
         for record in existing_records
-        if _record_is_complete(record)
     }
     provider = build_provider(dict(experiment))
     records: list[dict[str, Any]] = []
     resumed_task_ids: list[str] = []
+    recollected_component_task_ids: list[str] = []
     try:
         runner = _build_runner(experiment, provider)
-        topology_id = str(experiment["topology_id"])
+        single_runner = SingleAgentRunner(dict(experiment), provider)
         max_rounds = int(experiment["topology"]["max_rounds"])
         for task in tasks:
             split = split_by_task[task["task_id"]]
-            prior = complete_by_task.get(str(task["task_id"]))
-            if prior is not None:
-                records.append(prior)
-                resumed_task_ids.append(str(task["task_id"]))
-                continue
-            record = _collect_task(
-                runner,
-                task=task,
-                split=split,
-                run_id=str(manifest["run_id"]),
-                max_rounds=max_rounds,
-                score=score,
-                topology=topology_id,
+            task_id = str(task["task_id"])
+            prior = existing_by_task.get(task_id)
+            debate_complete = prior is not None and _scored_component_complete(
+                prior, component="trajectory"
             )
+            single_complete = prior is not None and _scored_component_complete(
+                prior, component="single_agent"
+            )
+            if debate_complete and single_complete:
+                records.append(prior)
+                resumed_task_ids.append(task_id)
+                continue
+            if prior is None:
+                record = _collect_task(
+                    runner,
+                    single_runner,
+                    task=task,
+                    split=split,
+                    run_id=str(manifest["run_id"]),
+                    max_rounds=max_rounds,
+                    score=score,
+                )
+            else:
+                record = dict(prior)
+                if not debate_complete:
+                    record["trajectory"] = runner.run_trajectory(
+                        task=dict(task),
+                        run_id=str(manifest["run_id"]),
+                        max_rounds=max_rounds,
+                    )
+                if not single_complete:
+                    record["single_agent"] = single_runner.run_observation(
+                        task=dict(task),
+                        run_id=str(manifest["run_id"]),
+                    )
+                if score:
+                    _attach_scores(record)
+                else:
+                    for key in (
+                        "scores",
+                        "scoring_error",
+                        "single_agent_scores",
+                        "single_agent_scoring_error",
+                    ):
+                        record.pop(key, None)
+                recollected_component_task_ids.append(task_id)
             records.append(record)
             write_task_record(manifest, record)
     finally:
         provider.close()
-    summary = _collection_summary(records, str(experiment["topology_id"]))
+    summary = _collection_summary(records)
     write_result(manifest, "collection_summary", summary)
     failed = [
         record
         for record in records
-        if record["trajectory"].get("status") != "complete"
-        or record.get("scoring_error")
+        if not _scored_component_complete(record, component="trajectory")
+        or not _scored_component_complete(record, component="single_agent")
     ]
     failure_details = [
         {
             "task_id": str(record.get("task", {}).get("task_id")),
             "split": record.get("split"),
-            "trajectory_status": record.get("trajectory", {}).get("status"),
-            "failure_reason": record.get("trajectory", {}).get("failure_reason"),
-            "scoring_error": record.get("scoring_error"),
+            "debate": {
+                "trajectory_status": record.get("trajectory", {}).get("status"),
+                "failure_reason": record.get("trajectory", {}).get(
+                    "failure_reason"
+                ),
+                "scoring_error": record.get("scoring_error"),
+            },
+            "single_agent": {
+                "observation_status": record.get("single_agent", {}).get("status"),
+                "failure_reason": record.get("single_agent", {}).get(
+                    "failure_reason"
+                ),
+                "scoring_error": record.get("single_agent_scoring_error"),
+            },
         }
         for record in failed
     ]
@@ -693,6 +770,7 @@ def _run_collect(
         complete_task_count=len(records) - len(failed),
         failed_task_ids=[record["task"].get("task_id") for record in failed],
         resumed_task_ids=resumed_task_ids,
+        recollected_component_task_ids=recollected_component_task_ids,
         resumed=bool(resuming_manifest),
     )
     state["manifest"] = updated
@@ -839,8 +917,6 @@ def _run_analyze(
             "analysis requires a run collected by step2_run "
             f"(mode={manifest.get('mode')!r})"
         )
-    if _manifest_topology_id(manifest) == "single":
-        return _run_analyze_single(args, state, manifest)
     del experiment  # Debate analysis is fully offline and uses frozen run inputs.
     records = read_task_records(manifest)
     if not records:
@@ -889,6 +965,17 @@ def _run_analyze(
                     f"task {task_id} has an unscored or invalid checkpoint"
                 )
         scored["scores"] = scores
+        try:
+            single_scores = score_single_observation(scored)
+        except (TypeError, ValueError) as error:
+            # Historical debate-only runs have no Single-Agent observation;
+            # their baseline stays explicitly "not defined" downstream.
+            single_scores = []
+            scored["single_agent_scoring_error"] = {
+                "type": type(error).__name__,
+                "message": _safe_message(error),
+            }
+        scored["single_agent_scores"] = single_scores
         labels = build_labels(
             scored, lambda_cost=lambda_cost, mu_latency=mu_latency
         )
@@ -965,6 +1052,13 @@ def _run_analyze(
                 str(record["task"]["task_id"]): [dict(score) for score in record["scores"]]
                 for record in scored_records
             },
+            "single_agent_scores_by_task": {
+                str(record["task"]["task_id"]): [
+                    dict(score) for score in record["single_agent_scores"]
+                ]
+                for record in scored_records
+                if record.get("single_agent_scores")
+            },
         },
     )
     write_result(
@@ -1003,6 +1097,8 @@ def _run_analyze(
             "evaluation_split": "test",
             "n_records": replay["n_records"],
             "policy_metrics": replay["policy_metrics"],
+            "single_agent": analysis["single_agent"],
+            "paired_single_vs_debate": analysis["paired_single_vs_debate"],
         },
     )
     write_analysis(dict(manifest), analysis)
@@ -1028,115 +1124,6 @@ def _run_analyze(
     return 0
 
 
-def _run_analyze_single(
-    args: argparse.Namespace,
-    state: dict[str, Any],
-    manifest: dict[str, Any],
-) -> int:
-    """Offline analysis for one single-topology run.
-
-    Only deterministic scoring and aggregate metrics are derived here.  No
-    Delta-Q/V/G, RoundValue fit, stopping threshold, continuation decisions,
-    Repair/Harm/Recovery transitions, or trajectory Oracle are constructed.
-    """
-
-    del args
-    records = read_task_records(manifest)
-    if not records:
-        raise ValueError("run has no saved task records")
-    frozen = read_json(Path(manifest["trajectory_dir"]) / "frozen_splits.json")
-    expected_splits = frozen.get("splits")
-    if not isinstance(expected_splits, Mapping):
-        raise ValueError("run has no frozen split assignment")
-    collected_ids = {
-        str(record.get("task", {}).get("task_id")) for record in records
-    }
-    missing = sorted(set(expected_splits) - collected_ids)
-    extra = sorted(collected_ids - set(expected_splits))
-    if missing or extra:
-        raise ValueError(
-            "trajectory coverage mismatch: "
-            f"missing={missing}, extra={extra}; resume with step2_run.py"
-        )
-    incomplete = [
-        str(record.get("task", {}).get("task_id"))
-        for record in records
-        if record.get("trajectory", {}).get("status") != "complete"
-        or record.get("scoring_error")
-    ]
-    if incomplete:
-        raise ValueError(
-            f"incomplete trajectories: {incomplete}; resume with step2_run.py"
-        )
-    scored_records: list[dict[str, Any]] = []
-    for record in records:
-        task_id = str(record.get("task", {}).get("task_id"))
-        scored = dict(record)
-        scores = score_single_record(scored)
-        for score in scores:
-            quality = score.get("quality")
-            if (
-                isinstance(quality, bool)
-                or not isinstance(quality, int | float)
-                or not math.isfinite(float(quality))
-            ):
-                raise ValueError(f"task {task_id} has an unscored or invalid prediction")
-        scored["scores"] = scores
-        scored_records.append(scored)
-
-    analysis = build_single_analysis(dict(manifest), scored_records)
-    write_result(
-        manifest,
-        "scores",
-        {
-            "schema_version": "1.0",
-            "run_id": manifest["run_id"],
-            "topology": "single",
-            "scorer_note": "deterministic offline scores derived from saved trajectories",
-            "scores_by_task": {
-                str(record["task"]["task_id"]): [dict(score) for score in record["scores"]]
-                for record in scored_records
-            },
-        },
-    )
-    write_result(
-        manifest,
-        "evaluation_summary",
-        {
-            "schema_version": "1.0",
-            "run_id": manifest["run_id"],
-            "topology": "single",
-            "tasks_total": analysis["tasks_total"],
-            "tasks_complete": analysis["tasks_complete"],
-            "tasks_failed": analysis["tasks_failed"],
-            "accuracy": analysis["accuracy"],
-            "accuracy_by_split": analysis["accuracy_by_split"],
-            "resources": analysis["resources"],
-            "calls": analysis["calls"],
-            "finish_reason_distribution": analysis["finish_reason_distribution"],
-            "truncated": analysis["truncated"],
-        },
-    )
-    write_result(manifest, "analysis", analysis)
-    updated = update_run_status(
-        manifest,
-        "analyze_complete",
-        analyzed_task_count=len(scored_records),
-    )
-    state["manifest"] = updated
-    write_result(updated, "reproducibility_index", reproducibility_index(updated))
-    _emit(
-        {
-            "status": "analyze_complete",
-            "mode": "analyze",
-            "run_id": updated["run_id"],
-            "analyzed_task_count": len(scored_records),
-            "result_dir": updated["result_dir"],
-        }
-    )
-    return 0
-
-
 def _run_visualize(
     args: argparse.Namespace,
     experiment: Mapping[str, Any],
@@ -1146,40 +1133,7 @@ def _run_visualize(
 
     del experiment  # Visualization reads results only, never trajectories.
     manifest = _require_existing_run(args, state)
-    comparison_path = None
-    if args.compare_with:
-        try:
-            comparison = build_comparison(PROJECT_ROOT, args.run_id, args.compare_with)
-        except ComparisonError as error:
-            raise ValueError(str(error)) from error
-        comparison_path = write_comparison(manifest, comparison, args.compare_with)
-    if _manifest_topology_id(manifest) == "single":
-        from single_analysis import render_single_analysis
-
-        analysis_path = Path(manifest["result_dir"]) / "analysis.json"
-        if not analysis_path.is_file():
-            # Smoke runs never enter the analyze stage.  Deriving the same
-            # deterministic single analysis here keeps visualization fully
-            # offline and reconstructible from the saved trajectories.
-            records = read_task_records(manifest)
-            scored_records = []
-            for record in records:
-                scored = dict(record)
-                try:
-                    scored["scores"] = score_single_record(scored)
-                except (TypeError, ValueError) as error:
-                    scored["scores"] = []
-                    scored["scoring_error"] = {
-                        "type": type(error).__name__,
-                        "message": _safe_message(error),
-                    }
-                scored_records.append(scored)
-            write_result(manifest, "analysis", build_single_analysis(manifest, scored_records))
-        paths = render_single_analysis(dict(manifest))
-    else:
-        paths = render_analysis(dict(manifest))
-        if comparison_path is not None:
-            append_comparison_sections(dict(manifest))
+    paths = render_analysis(dict(manifest))
     updated = update_run_status(manifest, "visualize_complete")
     state["manifest"] = updated
     _emit(
@@ -1192,7 +1146,6 @@ def _run_visualize(
             "task_csv": paths["csv"],
             "summary": paths["summary"],
             "png_charts": paths.get("charts", []),
-            "comparison": str(comparison_path) if comparison_path is not None else None,
         }
     )
     return 0

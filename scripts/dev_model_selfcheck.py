@@ -333,7 +333,6 @@ def _check_manifest() -> None:
             config_snapshot={},
             dataset_name="smoke",
             domain="mmlu_pro",
-            topology_id="debate",
             requested_model="gpt-5-nano",
         )
         updated = update_run_status(
@@ -356,19 +355,18 @@ def _check_manifest() -> None:
         )
         check(
             re.fullmatch(
-                r"\d{12}_smoke_debate_gpt-5-nano_[0-9a-f]{8}",
+                r"\d{12}_gpt-5-nano_smoke_[0-9a-f]{8}",
                 updated["run_id"],
             )
             and updated["run_name"] == updated["run_id"]
             and updated["run_name_components"]
             == {
                 "timestamp": updated["run_id"].split("_")[0],
-                "dataset": "smoke",
-                "topology": "debate",
                 "model": "gpt-5-nano",
+                "dataset": "smoke",
                 "hex": updated["run_id"].split("_")[-1],
             },
-            "auto-named runs expose timestamp/dataset/topology/model/hex components",
+            "auto-named runs expose timestamp/model/dataset/hex components",
         )
 
 

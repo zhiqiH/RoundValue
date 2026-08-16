@@ -1,13 +1,16 @@
-"""Offline self-check for the single topology, GPT-4o-mini, and comparison.
+"""Offline self-check for the automatic Single-Agent baseline.
 
 This script never contacts a model provider.  A scripted fake provider
-verifies the one-call independent solver contract, GPT-4o-mini wire
-parameters, the offline single analysis, and the fully offline
-single-vs-debate comparison (including its compatibility refusals).
+verifies that the baseline is not a topology, that one independent solver
+observation is collected per task alongside the Debate trajectory, that the
+two conditions are causally isolated, that scoring uses only ``answer``, and
+that the offline Single-Agent aggregates and paired Single-vs-Debate counts
+are computed over the same frozen tasks.
 """
 
 from __future__ import annotations
 
+import inspect
 import json
 import os
 import re
@@ -21,22 +24,21 @@ SRC_DIRECTORY = PROJECT_ROOT / "src"
 if str(SRC_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SRC_DIRECTORY))
 
-from comparison import (  # noqa: E402
-    ComparisonError,
-    build_comparison,
-    run_topology_id,
-    write_comparison,
-)
 from config_loader import load_experiment_config, select_topology  # noqa: E402
-from contracts import ConfigurationError, ModelRequest, ModelResponse  # noqa: E402
+from contracts import ModelRequest, ModelResponse  # noqa: E402
+from debate_runner import FixedDebateRunner  # noqa: E402
 from provider import build_provider  # noqa: E402
-from scorer import score_single_record  # noqa: E402
+from scorer import score_single_observation  # noqa: E402
 from single_analysis import (  # noqa: E402
-    build_single_analysis,
-    summarize_single_collection,
+    baseline_table,
+    build_single_baseline,
+    paired_single_vs_debate,
+    summarize_single_baseline,
 )
 from single_runner import SingleAgentRunner  # noqa: E402
-from storage import create_run, update_run_status, write_json  # noqa: E402
+from storage import create_run  # noqa: E402
+
+import pipeline as tb  # noqa: E402
 
 
 def check(condition: bool, label: str) -> None:
@@ -126,10 +128,10 @@ def _task() -> dict[str, Any]:
     }
 
 
-def _valid_output() -> str:
+def _valid_output(answer: str = "C") -> str:
     return json.dumps(
         {
-            "answer": "C",
+            "answer": answer,
             "reasoning_summary": (
                 "2 + 2 = 4, and 4 is option C; the other options are different numbers."
             ),
@@ -141,62 +143,59 @@ def _valid_output() -> str:
 def _check_config() -> None:
     document = json.loads((PROJECT_ROOT / "configs" / "topology.json").read_text())
     check(
-        set(document["topologies"]) == {"debate", "single"},
-        "topology.json contains exactly debate and single",
+        set(document["topologies"]) == {"debate"},
+        "topology.json contains only the frozen debate topology",
     )
     check(
         document["default_topology_id"] == "debate",
         "the default topology remains debate",
     )
     default_id, default_topology = select_topology(document)
-    single_id, single_topology = select_topology(document, "single")
-    check(default_id == "debate" and single_id == "single", "both topologies resolve by name")
     check(
-        default_topology == document["topologies"]["debate"],
-        "the debate definition is returned unchanged",
+        default_id == "debate" and default_topology == document["topologies"]["debate"],
+        "the frozen debate definition resolves unchanged",
     )
+    experiment = load_experiment_config(PROJECT_ROOT)
     check(
-        single_topology["runner"] == "single_solver"
-        and len(single_topology["nodes"]) == 1
-        and single_topology["packets"] == []
-        and single_topology["edges"] == [],
-        "single topology is one solver node with no packets or edges",
-    )
-    experiment = load_experiment_config(PROJECT_ROOT, topology_id="single")
-    check(
-        experiment["topology_id"] == "single"
+        experiment["topology_id"] == "debate"
         and experiment["model_id"] == "deepseek_flash",
-        "single selection keeps the DeepSeek default model",
+        "the one experiment selects the frozen debate and the DeepSeek default",
     )
-    default_experiment = load_experiment_config(PROJECT_ROOT)
     check(
-        default_experiment["topology_id"] == "debate"
-        and default_experiment["topology"] == default_topology,
-        "omitting --topology still selects the approved debate topology",
+        "topology_id" not in inspect.signature(load_experiment_config).parameters,
+        "load_experiment_config exposes no topology selector",
     )
-    try:
-        select_topology(document, "not_a_topology")
-    except ConfigurationError as error:
-        check("single" in str(error), "unknown topology fails with configured choices")
-    else:
-        raise AssertionError("unknown topology was silently accepted")
+    role_ids = {role["id"] for role in experiment["agents"]["roles"]}
+    check(
+        role_ids == {"planner", "analyst", "critic", "writer", "single_solver"},
+        "single_solver exists only as a role, not as a topology",
+    )
 
 
 def _check_runner() -> None:
-    experiment = load_experiment_config(PROJECT_ROOT, topology_id="single")
+    experiment = load_experiment_config(PROJECT_ROOT)
     provider = FakeProvider(by_node={"single_solver": ("stop", _valid_output())})
     runner = SingleAgentRunner(dict(experiment), provider)
-    trajectory = runner.run_task(task=_task(), run_id="dev-single-run")
-    check(trajectory["status"] == "complete", "single task trajectory completes")
-    check(trajectory["topology"] == "single", "trajectory records the single topology")
-    check("rounds" not in trajectory, "single trajectory fabricates no rounds")
+    observation = runner.run_observation(task=_task(), run_id="dev-single-run")
+    check(observation["status"] == "complete", "single observation completes")
     check(
-        trajectory["prediction"]["answer"] == "C"
-        and trajectory["prediction"]["reasoning_summary"],
-        "single prediction stores answer and reasoning_summary separately",
+        observation["kind"] == "single_agent_baseline"
+        and "observation_id" in observation,
+        "observation records the single_agent_baseline kind",
     )
     check(
-        trajectory["prediction"]["cumulative"]["logical_calls"] == 1,
+        "rounds" not in observation
+        and "checkpoints" not in observation
+        and "topology" not in observation,
+        "the baseline fabricates no rounds, checkpoints, or topology",
+    )
+    check(
+        observation["prediction"]["answer"] == "C"
+        and observation["prediction"]["reasoning_summary"],
+        "prediction stores answer and reasoning_summary separately",
+    )
+    check(
+        observation["prediction"]["cumulative"]["logical_calls"] == 1,
         "one task accounts for exactly one logical solver call",
     )
     check(
@@ -217,21 +216,22 @@ def _check_runner() -> None:
         "transcript",
         "reference_answer",
         "answer_index",
+        "round_index",
     ):
         check(
             forbidden not in serialized,
             f"single solver input never contains {forbidden}",
         )
     check("options" not in node_input["task"], "public task hides raw answer options")
-    check("debate" not in provider.requests[0].messages[0]["content"].casefold()
-          and "baseline" not in provider.requests[0].messages[0]["content"].casefold(),
-          "single solver prompt is neutral and never mentions debate or baseline")
-
-    gpt_experiment = load_experiment_config(
-        PROJECT_ROOT, model_id="gpt4o_mini", topology_id="single"
+    check(
+        "debate" not in provider.requests[0].messages[0]["content"].casefold()
+        and "baseline" not in provider.requests[0].messages[0]["content"].casefold(),
+        "single solver prompt is neutral and never mentions debate or baseline",
     )
+
+    gpt_experiment = load_experiment_config(PROJECT_ROOT, model_id="gpt4o_mini")
     gpt_provider = FakeProvider(by_node={"single_solver": ("stop", _valid_output())})
-    gpt_trajectory = SingleAgentRunner(dict(gpt_experiment), gpt_provider).run_task(
+    gpt_observation = SingleAgentRunner(dict(gpt_experiment), gpt_provider).run_observation(
         task=_task(), run_id="dev-gpt4o-mini"
     )
     request = gpt_provider.requests[0]
@@ -244,8 +244,8 @@ def _check_runner() -> None:
         "GPT-4o-mini request uses the fixed snapshot, temperature 0, wide ceiling, no reasoning",
     )
     check(
-        gpt_trajectory["configured_model"]["reasoning_enabled"] is False,
-        "GPT-4o-mini trajectory records reasoning.enabled=false",
+        gpt_observation["configured_model"]["reasoning_enabled"] is False,
+        "GPT-4o-mini observation records reasoning.enabled=false",
     )
     previous_env = dict(os.environ)
     os.environ["OPENAI_API_KEY"] = "test-openai-key"
@@ -269,29 +269,29 @@ def _check_runner() -> None:
 
 
 def _check_repair_and_truncation() -> None:
-    experiment = load_experiment_config(PROJECT_ROOT, topology_id="single")
+    experiment = load_experiment_config(PROJECT_ROOT)
 
     provider = FakeProvider([("stop", "not json"), ("stop", _valid_output())])
-    trajectory = SingleAgentRunner(dict(experiment), provider).run_task(
+    observation = SingleAgentRunner(dict(experiment), provider).run_observation(
         task=_task(), run_id="dev-repair"
     )
-    check(trajectory["status"] == "complete", "invalid JSON repaired to completion")
-    check(trajectory["solver"]["format_repairs"] == 1, "one format repair recorded")
+    check(observation["status"] == "complete", "invalid JSON repaired to completion")
+    check(observation["solver"]["format_repairs"] == 1, "one format repair recorded")
     check(
-        trajectory["prediction"]["cumulative"]["logical_calls"] == 1
-        and trajectory["prediction"]["cumulative"]["api_attempts"] == 2,
+        observation["prediction"]["cumulative"]["logical_calls"] == 1
+        and observation["prediction"]["cumulative"]["api_attempts"] == 2,
         "format repair is an extra recorded attempt, not another logical call",
     )
 
     provider = FakeProvider([("length", '{"answer": "C"'), ("stop", _valid_output())])
-    trajectory = SingleAgentRunner(dict(experiment), provider).run_task(
+    observation = SingleAgentRunner(dict(experiment), provider).run_observation(
         task=_task(), run_id="dev-truncation"
     )
-    check(trajectory["status"] == "complete", "truncated JSON repaired to completion")
+    check(observation["status"] == "complete", "truncated JSON repaired to completion")
     check(
-        trajectory["solver"]["truncation_encountered"]
-        and trajectory["solver"]["truncated_attempts"] == 1
-        and trajectory["prediction"]["truncated"],
+        observation["solver"]["truncation_encountered"]
+        and observation["solver"]["truncated_attempts"] == 1
+        and observation["prediction"]["truncated"],
         "truncation is surfaced on the solver record and the prediction",
     )
     check(
@@ -300,31 +300,31 @@ def _check_repair_and_truncation() -> None:
     )
 
     provider = FakeProvider([("stop", "bad"), ("stop", "still bad"), ("stop", '"C"')])
-    trajectory = SingleAgentRunner(dict(experiment), provider).run_task(
+    observation = SingleAgentRunner(dict(experiment), provider).run_observation(
         task=_task(), run_id="dev-fallback"
     )
-    check(trajectory["status"] == "complete", "answer-only fallback completes the record")
+    check(observation["status"] == "complete", "answer-only fallback completes the record")
     check(
-        trajectory["solver"]["fallback"]["type"] == "answer_only"
-        and trajectory["prediction"]["answer"] == "C"
+        observation["solver"]["fallback"]["type"] == "answer_only"
+        and observation["prediction"]["answer"] == "C"
         and "[answer-only fallback"
-        in trajectory["prediction"]["reasoning_summary"],
+        in observation["prediction"]["reasoning_summary"],
         "fallback keeps the real answer and marks the omitted reasoning_summary",
     )
-    check(trajectory["solver"]["format_repairs"] == 2, "bounded repair budget respected")
+    check(observation["solver"]["format_repairs"] == 2, "bounded repair budget respected")
 
     provider = FakeProvider([("stop", "bad"), ("length", '{"answer": "C"'), ("stop", "")])
-    trajectory = SingleAgentRunner(dict(experiment), provider).run_task(
+    observation = SingleAgentRunner(dict(experiment), provider).run_observation(
         task=_task(), run_id="dev-empty-fallback"
     )
     check(
-        trajectory["status"] == "failed"
-        and trajectory["solver"]["status"] == "format_error",
+        observation["status"] == "failed"
+        and observation["solver"]["status"] == "format_error",
         "empty fallback fails honestly instead of fabricating an answer",
     )
     check(
-        trajectory["solver"]["truncation_encountered"],
-        "truncation remains visible even on a failed trajectory",
+        observation["solver"]["truncation_encountered"],
+        "truncation remains visible even on a failed observation",
     )
 
 
@@ -332,10 +332,9 @@ def _check_scoring() -> None:
     record = {
         "task": _task(),
         "split": "test",
-        "topology": "single",
-        "trajectory": {
+        "single_agent": {
             "status": "complete",
-            "trajectory_id": "dev-score",
+            "observation_id": "dev-observation",
             "prediction": {
                 "answer": "A",
                 "reasoning_summary": "The canonical answer is C, option C is correct.",
@@ -344,397 +343,364 @@ def _check_scoring() -> None:
             },
         },
     }
-    scores = score_single_record(record)
+    scores = score_single_observation(record)
     check(
         len(scores) == 1
         and scores[0]["quality"] == 0.0
-        and "round_index" not in scores[0],
+        and "round_index" not in scores[0]
+        and scores[0]["observation_id"] == "dev-observation",
         "single scoring uses only the answer and fabricates no round",
     )
-    record["trajectory"]["prediction"]["answer"] = "C"
-    scores = score_single_record(record)
+    record["single_agent"]["prediction"]["answer"] = "C"
+    scores = score_single_observation(record)
     check(scores[0]["quality"] == 1.0, "canonical single answer scores 1")
 
 
-def _check_analysis() -> None:
-    records: list[dict[str, Any]] = []
-    for index, (task_id, split, quality, missing_tokens) in enumerate(
-        (
-            ("dev::analysis::1", "train", 1.0, False),
-            ("dev::analysis::2", "train", 0.0, False),
-            ("dev::analysis::3", "test", 1.0, True),
-            ("dev::analysis::4", "test", 0.0, False),
-        )
-    ):
-        task = _task()
-        task["task_id"] = task_id
-        cumulative: dict[str, Any] = {
-            "output_tokens": 20,
-            "wall_clock_ms": 100,
-            "api_latency_ms": 90,
-            "cost_usd": 0.001,
-            "logical_calls": 1,
-            "api_attempts": 1,
-        }
-        if not missing_tokens:
-            cumulative["input_tokens"] = 80
-        records.append(
+def _make_record(
+    task_id: str,
+    split: str,
+    single_quality: float,
+    round_qualities: list[float],
+) -> dict[str, Any]:
+    task = _task()
+    task["task_id"] = task_id
+    checkpoints = []
+    scores = []
+    for round_index, quality in enumerate(round_qualities, start=1):
+        checkpoints.append(
             {
-                "task": task,
-                "split": split,
-                "topology": "single",
-                "trajectory": {
-                    "status": "complete",
-                    "trajectory_id": f"dev-analysis-{index}",
-                    "prediction": {
-                        "answer": "C" if quality else "A",
-                        "reasoning_summary": "reasoning",
-                        "checkpoint_hash": f"hash-{index}",
-                        "finish_reason": "stop",
-                        "truncated": False,
-                        "cumulative": cumulative,
-                    },
-                    "solver": {
-                        "status": "completed",
-                        "format_repairs": 0,
-                        "finish_reason": "stop",
-                    },
+                "round_index": round_index,
+                "answer": "C" if quality else "A",
+                "reasoning_summary": "reasoning",
+                "checkpoint_hash": f"hash-{round_index}",
+                "cumulative": {
+                    "input_tokens": 80 * round_index,
+                    "output_tokens": 20 * round_index,
+                    "wall_clock_ms": 100 * round_index,
+                    "api_latency_ms": 90 * round_index,
+                    "cost_usd": 0.001 * round_index,
+                    "logical_calls": 7 * round_index,
                 },
-                "scores": [
-                    {
-                        "task_id": task_id,
-                        "quality": quality,
-                        "predicted_answer": "C" if quality else "A",
-                    }
-                ],
             }
         )
-    analysis = build_single_analysis({"run_id": "dev-analysis", "model_selection": {}}, records)
-    summary = summarize_single_collection(records)
-    check(analysis["topology"] == "single", "analysis declares the single topology")
-    check(analysis["tasks_total"] == 4 and analysis["tasks_complete"] == 4, "analysis counts tasks")
-    check(analysis["accuracy"]["accuracy"] == 0.5, "overall accuracy aggregates correctness")
+        scores.append(
+            {"task_id": task_id, "round_index": round_index, "quality": float(quality)}
+        )
+    return {
+        "task": task,
+        "split": split,
+        "trajectory": {
+            "status": "complete",
+            "trajectory_id": f"trajectory-{task_id}",
+            "checkpoints": checkpoints,
+        },
+        "scores": scores,
+        "single_agent": {
+            "status": "complete",
+            "observation_id": f"observation-{task_id}",
+            "prediction": {
+                "answer": "C" if single_quality else "A",
+                "reasoning_summary": "reasoning",
+                "checkpoint_hash": f"single-hash-{task_id}",
+                "finish_reason": "stop",
+                "truncated": False,
+                "cumulative": {
+                    "input_tokens": 80,
+                    "output_tokens": 20,
+                    "wall_clock_ms": 100,
+                    "api_latency_ms": 90,
+                    "cost_usd": 0.001,
+                    "logical_calls": 1,
+                },
+            },
+            "solver": {
+                "status": "completed",
+                "format_repairs": 0,
+                "finish_reason": "stop",
+            },
+        },
+        "single_agent_scores": [
+            {
+                "task_id": task_id,
+                "quality": float(single_quality),
+                "predicted_answer": "C" if single_quality else "A",
+            }
+        ],
+    }
+
+
+def _check_analysis() -> None:
+    records = [
+        _make_record("dev::analysis::1", "train", 0.0, [0.0, 1.0, 1.0, 1.0, 1.0]),
+        _make_record("dev::analysis::2", "train", 1.0, [1.0, 0.0, 0.0, 1.0, 1.0]),
+        _make_record("dev::analysis::3", "test", 0.0, [1.0, 1.0, 1.0, 1.0, 1.0]),
+        _make_record("dev::analysis::4", "test", 0.0, [0.0, 0.0, 0.0, 0.0, 0.0]),
+    ]
+    replay = {
+        "policies": {
+            "fixed_1": {
+                "task_results": [
+                    {"task_id": "dev::analysis::1", "quality": 0.0, "available": True},
+                    {"task_id": "dev::analysis::2", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::3", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::4", "quality": 0.0, "available": True},
+                ]
+            },
+            "fixed_5": {
+                "task_results": [
+                    {"task_id": "dev::analysis::1", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::2", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::3", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::4", "quality": 0.0, "available": True},
+                ]
+            },
+            "roundvalue": {
+                "task_results": [
+                    {"task_id": "dev::analysis::1", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::2", "quality": 0.0, "available": True},
+                    {"task_id": "dev::analysis::3", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::4", "quality": 0.0, "available": True},
+                ]
+            },
+            "oracle": {
+                "task_results": [
+                    {"task_id": "dev::analysis::1", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::2", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::3", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::4", "quality": 0.0, "available": True},
+                ]
+            },
+        },
+        "policy_metrics": {
+            "fixed_1": {"accuracy": 0.5, "mean_total_tokens": 100.0, "n_records": 4},
+            "fixed_2": {"accuracy": 0.5, "mean_total_tokens": 200.0, "n_records": 4},
+            "fixed_3": {"accuracy": 0.5, "mean_total_tokens": 300.0, "n_records": 4},
+            "fixed_4": {"accuracy": 0.5, "mean_total_tokens": 400.0, "n_records": 4},
+            "fixed_5": {"accuracy": 0.75, "mean_total_tokens": 500.0, "n_records": 4},
+            "roundvalue": {"accuracy": 0.5, "mean_total_tokens": 250.0, "n_records": 4},
+            "oracle": {"accuracy": 0.75, "mean_total_tokens": 500.0, "n_records": 4},
+        },
+    }
+    summary = summarize_single_baseline(records)
+    analysis = build_single_baseline(
+        {
+            "run_id": "dev-analysis",
+            "selected_model_id": "deepseek_flash",
+            "model_selection": {},
+        },
+        records,
+    )
+    check(summary["defined"] is True, "the baseline is defined when observations exist")
+    check(summary["tasks_total"] == 4 and summary["tasks_complete"] == 4, "baseline counts tasks")
+    check(summary["accuracy"]["accuracy"] == 0.25, "overall single accuracy aggregates correctness")
     check(
-        analysis["accuracy_by_split"]["train"]["accuracy"] == 0.5
-        and analysis["accuracy_by_split"]["test"]["accuracy"] == 0.5,
-        "accuracy is reported by frozen split",
+        summary["accuracy_by_split"]["train"]["accuracy"] == 0.5
+        and summary["accuracy_by_split"]["test"]["accuracy"] == 0.0,
+        "single accuracy is reported by frozen split",
     )
     check(
-        analysis["calls"]["logical_calls"] == 4
-        and analysis["calls"]["format_repairs"] == 0,
+        summary["resources"]["logical_calls"]["total"] == 4,
         "logical calls equal the number of tasks",
     )
     check(
-        analysis["resources"]["input_tokens"]["n_observed"] == 3
-        and analysis["resources"]["input_tokens"]["total"] is None,
-        "unknown token counters stay unknown instead of becoming zero",
-    )
-    check(
-        analysis["finish_reason_distribution"] == {"stop": 4},
+        summary["finish_reason_distribution"] == {"stop": 4},
         "finish-reason distribution is recorded",
     )
     for forbidden in ("labels", "policy", "delta_q", "V", "G", "transitions", "oracle"):
-        check(forbidden not in analysis, f"single analysis never builds {forbidden}")
-    check("accuracy" in summary and "resources" in summary, "single collection summary is complete")
+        check(forbidden not in analysis, f"single baseline never builds {forbidden}")
+
+    paired = paired_single_vs_debate(records, replay)
+    fixed_1 = paired["fixed_1"]
+    check(
+        fixed_1["defined"]
+        and fixed_1["n_paired"] == 4
+        and fixed_1["both_correct"] == 1
+        and fixed_1["single_correct_debate_wrong"] == 0
+        and fixed_1["single_wrong_debate_correct"] == 1
+        and fixed_1["both_wrong"] == 2,
+        "Single-Agent vs Fixed-1 paired counts are exact",
+    )
+    fixed_5 = paired["fixed_5"]
+    check(
+        fixed_5["defined"]
+        and fixed_5["single_wrong_debate_correct"] == 2
+        and fixed_5["both_correct"] == 1
+        and fixed_5["both_wrong"] == 1,
+        "Single-Agent vs Fixed-5 paired counts are exact",
+    )
+    roundvalue = paired["roundvalue"]
+    check(
+        roundvalue["defined"]
+        and roundvalue["single_correct_debate_wrong"] == 1
+        and roundvalue["single_wrong_debate_correct"] == 2,
+        "Single-Agent vs RoundValue paired counts are exact",
+    )
+    check(
+        paired["oracle"]["defined"]
+        and paired["oracle"]["single_wrong_debate_correct"] == 2,
+        "Single-Agent vs Oracle paired counts are exact",
+    )
+    for name, counts in paired.items():
+        check(
+            set(counts)
+            >= {
+                "both_correct",
+                "single_correct_debate_wrong",
+                "single_wrong_debate_correct",
+                "both_wrong",
+            },
+            f"paired {name} exposes the four required outcome counts",
+        )
+        check(
+            "repair" not in counts and "harm" not in counts,
+            f"paired {name} does not reuse Repair/Harm terminology",
+        )
+
+    table = baseline_table(summary, replay)
+    check(
+        [row["display_name"] for row in table]
+        == [
+            "Single-Agent",
+            "Fixed-1",
+            "Fixed-2",
+            "Fixed-3",
+            "Fixed-4",
+            "Fixed-5",
+            "RoundValue",
+            "Oracle",
+        ],
+        "baseline table orders Single-Agent with the Debate baselines",
+    )
+    check(
+        table[0]["defined"] and table[0]["accuracy"] == 0.25,
+        "baseline table carries the Single-Agent accuracy",
+    )
+
+
+def _check_task_record_and_isolation() -> None:
+    experiment = load_experiment_config(PROJECT_ROOT)
+    by_node: dict[str, tuple[str | None, str]] = {}
+    for node_id in (
+        "planner_stage_1",
+        "analyst_stage_1",
+        "critic_stage_1",
+        "planner_stage_2",
+        "analyst_stage_2",
+        "critic_stage_2",
+        "writer",
+    ):
+        role = node_id.split("_")[0]
+        fields = {
+            "planner": {
+                "plan": "p",
+                "assumptions": "a",
+                "verification_steps": "v",
+                "candidate_answer": "A",
+            },
+            "analyst": {
+                "analysis": "a",
+                "candidate_answer": "A",
+                "evidence": "e",
+            },
+            "critic": {
+                "issues": "i",
+                "evidence": "e",
+                "revision_advice": "r",
+                "candidate_answer": "A",
+            },
+            "writer": {
+                "answer": "A",
+                "reasoning_summary": "unique-debate-writer-text",
+            },
+        }[role]
+        by_node[node_id] = ("stop", json.dumps(fields, separators=(",", ":")))
+    by_node["single_solver"] = ("stop", _valid_output("C"))
+    provider = FakeProvider(by_node=by_node)
+    runner = FixedDebateRunner(dict(experiment), provider)
+    single_runner = SingleAgentRunner(dict(experiment), provider)
+    record = tb._collect_task(
+        runner,
+        single_runner,
+        task=_task(),
+        split="test",
+        run_id="dev-collect",
+        max_rounds=1,
+        score=True,
+    )
+    check(
+        "trajectory" in record
+        and "single_agent" in record
+        and record["trajectory"]["status"] == "complete"
+        and record["single_agent"]["status"] == "complete",
+        "one task record holds Debate and Single-Agent siblings",
+    )
+    check(
+        len(record["scores"]) == 1
+        and len(record["single_agent_scores"]) == 1
+        and record["scores"][0]["quality"] == 0.0
+        and record["single_agent_scores"][0]["quality"] == 1.0,
+        "Debate and Single-Agent are scored independently",
+    )
+    single_input = record["single_agent"]["solver"]["input"]
+    single_prediction = record["single_agent"]["prediction"]
+    check(
+        "unique-debate-writer-text" not in json.dumps(single_input)
+        and "reference_answer" not in json.dumps(single_input)
+        and "previous_writer_checkpoint" not in json.dumps(single_input),
+        "Single-Agent input is the sanitized public task only",
+    )
+    debate_nodes = [
+        request
+        for request in provider.requests
+        if request.metadata.get("node_id") != "single_solver"
+    ]
+    check(
+        all(
+            single_prediction["reasoning_summary"] not in json.dumps(request.messages)
+            for request in debate_nodes
+        )
+        and len(debate_nodes) == 7,
+        "Debate nodes never see the Single-Agent output or the solver prompt",
+    )
+    check(
+        tb._scored_component_complete(record, component="trajectory")
+        and tb._scored_component_complete(record, component="single_agent"),
+        "both components satisfy the resume completeness gate",
+    )
 
 
 def _check_manifest() -> None:
-    experiment = load_experiment_config(PROJECT_ROOT, topology_id="single")
+    experiment = load_experiment_config(PROJECT_ROOT)
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
         manifest = create_run(
             root,
-            command=["roundvalue", "smoke", "--topology", "single"],
+            command=["roundvalue", "smoke"],
             config_snapshot={},
-            dataset_name="smoke",
+            dataset_name="SmokeTasks",
             domain="mmlu_pro",
-            topology_id="single",
             requested_model="deepseek-v4-flash",
-        )
-        updated = update_run_status(
-            manifest,
-            "running",
-            mode="smoke",
-            selected_model_id=experiment["model_id"],
-            selected_topology_id="single",
-            topology_runner="single_solver",
-            topology_definition=experiment["topology"],
-            topology_hash=json.dumps({"hash": "x"}),
-        )
-        reloaded = json.loads(
-            (root / "trajectories" / updated["run_id"] / "run.json").read_text()
-        )
-        check(
-            reloaded["selected_topology_id"] == "single"
-            and reloaded["topology_runner"] == "single_solver"
-            and reloaded["topology_definition"] == experiment["topology"],
-            "run manifest records topology selector, definition, and runner",
         )
         check(
             re.fullmatch(
-                r"\d{12}_smoke_single_deepseek-v4-flash_[0-9a-f]{8}",
-                updated["run_id"],
+                r"\d{12}_deepseek-v4-flash_SmokeTasks_[0-9a-f]{8}",
+                manifest["run_id"],
             )
-            and (root / "trajectories" / updated["run_id"]).is_dir()
-            and (root / "results" / updated["run_id"]).is_dir()
-            and updated["run_name_components"]
+            and (root / "trajectories" / manifest["run_id"]).is_dir()
+            and (root / "results" / manifest["run_id"]).is_dir()
+            and manifest["run_name_components"]
             == {
-                "timestamp": updated["run_id"].split("_")[0],
-                "dataset": "smoke",
-                "topology": "single",
+                "timestamp": manifest["run_id"].split("_")[0],
                 "model": "deepseek-v4-flash",
-                "hex": updated["run_id"].split("_")[-1],
+                "dataset": "SmokeTasks",
+                "hex": manifest["run_id"].split("_")[-1],
             },
-            "trajectory and result directories share one canonical run name",
-        )
-
-
-def _write_synthetic_run(
-    root: Path,
-    run_id: str,
-    topology: str,
-    *,
-    benchmark_sha: str,
-    model_selection: dict[str, Any],
-    task_ids: list[str],
-) -> str:
-    trajectory_dir = root / "trajectories" / run_id
-    result_dir = root / "results" / run_id
-    trajectory_dir.mkdir(parents=True)
-    result_dir.mkdir(parents=True)
-    manifest = {
-        "run_id": run_id,
-        "dataset": "comparison-benchmark",
-        "selected_model_id": "model",
-        "model_selection": model_selection,
-        "selected_topology_id": topology,
-        "trajectory_dir": str(trajectory_dir),
-        "result_dir": str(result_dir),
-    }
-    write_json(trajectory_dir / "run.json", manifest)
-    write_json(result_dir / "manifest.json", manifest)
-    write_json(
-        trajectory_dir / "benchmark_snapshot.json",
-        {"source_sha256": benchmark_sha, "content": {"dataset_id": "comparison-benchmark"}},
-    )
-    write_json(
-        trajectory_dir / "frozen_splits.json",
-        {"schema_version": "1.0", "split_seed": 1, "splits": {task_id: "test" for task_id in task_ids}},
-    )
-    task_document = {
-        "task_id": task_ids[0],
-        "domain": "mmlu_pro",
-        "prompt": "prompt",
-        "options": ["2", "4"],
-        "answer_index": 1,
-        "reference_answer": "B",
-    }
-    if topology == "single":
-        write_json(
-            trajectory_dir / "task_aaaaaaaaaaaaaaaa.json",
-            {
-                "task": task_document,
-                "split": "test",
-                "topology": "single",
-                "trajectory": {
-                    "status": "complete",
-                    "trajectory_id": "single-trajectory",
-                    "prediction": {
-                        "answer": "B",
-                        "reasoning_summary": "reasoning",
-                        "checkpoint_hash": "single-hash",
-                        "finish_reason": "stop",
-                        "truncated": False,
-                        "cumulative": {
-                            "input_tokens": 80,
-                            "output_tokens": 20,
-                            "wall_clock_ms": 100,
-                            "api_latency_ms": 90,
-                            "cost_usd": 0.001,
-                            "logical_calls": 1,
-                        },
-                    },
-                },
-                "scores": [
-                    {"task_id": task_ids[0], "quality": 0.0, "predicted_answer": "A"}
-                ],
-            },
-        )
-        write_json(
-            result_dir / "scores.json",
-            {
-                "scores_by_task": {
-                    task_ids[0]: [
-                        {"task_id": task_ids[0], "quality": 0.0, "predicted_answer": "A"}
-                    ]
-                }
-            },
-        )
-    else:
-        checkpoints = []
-        scores = []
-        for round_index in range(1, 6):
-            quality = 0.0 if round_index == 1 else 1.0
-            checkpoints.append(
-                {
-                    "round_index": round_index,
-                    "answer": "A" if quality == 0 else "B",
-                    "reasoning_summary": "reasoning",
-                    "checkpoint_hash": f"debate-hash-{round_index}",
-                    "cumulative": {
-                        "input_tokens": 80 * round_index,
-                        "output_tokens": 20 * round_index,
-                        "wall_clock_ms": 100 * round_index,
-                        "api_latency_ms": 90 * round_index,
-                        "cost_usd": 0.001 * round_index,
-                        "logical_calls": 7 * round_index,
-                    },
-                }
-            )
-            scores.append(
-                {"task_id": task_ids[0], "round_index": round_index, "quality": quality}
-            )
-        write_json(
-            trajectory_dir / "task_aaaaaaaaaaaaaaaa.json",
-            {
-                "task": task_document,
-                "split": "test",
-                "topology": "debate",
-                "trajectory": {
-                    "status": "complete",
-                    "trajectory_id": "debate-trajectory",
-                    "checkpoints": checkpoints,
-                },
-                "scores": scores,
-            },
-        )
-        write_json(
-            result_dir / "scores.json",
-            {"scores_by_task": {task_ids[0]: scores}},
-        )
-        write_json(
-            result_dir / "test_policy_replay.json",
-            {
-                "policy_metrics": {
-                    "roundvalue": {
-                        "accuracy": 0.75,
-                        "mean_total_tokens": 1200.0,
-                        "mean_wall_clock_ms": 300.0,
-                        "mean_api_latency_ms": 280.0,
-                        "mean_cost_usd": 0.003,
-                        "mean_logical_calls": 14.0,
-                        "n_records": 1,
-                    },
-                    "oracle": {
-                        "accuracy": 1.0,
-                        "mean_total_tokens": 2500.0,
-                        "mean_wall_clock_ms": 500.0,
-                        "mean_api_latency_ms": 450.0,
-                        "mean_cost_usd": 0.006,
-                        "mean_logical_calls": 35.0,
-                        "n_records": 1,
-                    },
-                }
-            },
-        )
-    return str(root)
-
-
-def _check_comparison() -> None:
-    with tempfile.TemporaryDirectory() as temporary:
-        root = Path(temporary)
-        benchmark_sha = "a" * 64
-        model_selection = {
-            "provider": "openai",
-            "requested_model": "gpt-4o-mini-2024-07-18",
-            "temperature": 0,
-            "max_output_tokens": 16384,
-            "reasoning": {"enabled": False},
-        }
-        _write_synthetic_run(
-            root, "single-1", "single", benchmark_sha=benchmark_sha,
-            model_selection=model_selection, task_ids=["t1"],
-        )
-        _write_synthetic_run(
-            root, "debate-1", "debate", benchmark_sha=benchmark_sha,
-            model_selection=model_selection, task_ids=["t1"],
-        )
-        comparison = build_comparison(root, "single-1", "debate-1")
-        check(
-            comparison["comparison_type"] == "same_model_topology_comparison",
-            "same-model comparison is labeled as a topology comparison",
-        )
-        check(comparison["single"]["accuracy"] == 0.0, "single accuracy read correctly")
-        check(comparison["debate"]["round_1"]["accuracy"] == 0.0, "debate round-1 accuracy read correctly")
-        check(comparison["debate"]["round_5"]["accuracy"] == 1.0, "debate round-5 accuracy read correctly")
-        check(comparison["debate"]["roundvalue"]["accuracy"] == 0.75, "RoundValue accuracy read when defined")
-        check(comparison["debate"]["oracle"]["accuracy"] == 1.0, "Oracle accuracy read when defined")
-        check(
-            comparison["accuracy_difference_single_minus_debate"]["round_5"] == -1.0,
-            "absolute accuracy difference is computed",
-        )
-        paired_5 = comparison["paired"]["debate_round_5"]
-        check(
-            paired_5["single_wrong_debate_correct"] == 1
-            and paired_5["n_paired"] == 1,
-            "paired single-vs-debate outcome counts are computed",
+            "trajectory and result directories share one topology-free run name",
         )
         check(
-            comparison["compatibility"]["task_set_match"]
-            and comparison["compatibility"]["split_assignment_match"],
-            "compatibility checks pass for a matching pair",
+            "topology" not in manifest["run_name_components"],
+            "topology never appears in run directory components",
         )
-        manifest = {
-            "run_id": "single-1",
-            "result_dir": str(root / "results" / "single-1"),
-        }
-        path = write_comparison(manifest, comparison, "debate-1")
-        check(path.is_file(), "comparison artifact is saved to the visualized run")
-
-        _write_synthetic_run(
-            root, "single-mismatch", "single", benchmark_sha="b" * 64,
-            model_selection=model_selection, task_ids=["t1"],
-        )
-        try:
-            build_comparison(root, "single-mismatch", "debate-1")
-        except ComparisonError as error:
-            check("benchmark file hash differs" in str(error), "mismatched benchmark hash is refused")
-        else:
-            raise AssertionError("mismatched benchmark hash was compared")
-
-        _write_synthetic_run(
-            root, "single-tasks", "single", benchmark_sha=benchmark_sha,
-            model_selection=model_selection, task_ids=["t1"],
-        )
-        tasks_dir = root / "trajectories" / "single-tasks"
-        frozen = json.loads((tasks_dir / "frozen_splits.json").read_text())
-        frozen["splits"] = {"other-task": "test"}
-        write_json(tasks_dir / "frozen_splits.json", frozen)
-        try:
-            build_comparison(root, "single-tasks", "debate-1")
-        except ComparisonError as error:
-            check("frozen split assignments differ" in str(error), "mismatched split assignment is refused")
-        else:
-            raise AssertionError("mismatched split assignment was compared")
-
-        cross_model = {
-            "provider": "deepseek",
-            "requested_model": "deepseek-v4-flash",
-            "temperature": 0.2,
-            "max_output_tokens": 32768,
-            "reasoning": {"enabled": True, "effort": "high"},
-        }
-        _write_synthetic_run(
-            root, "single-cross", "single", benchmark_sha=benchmark_sha,
-            model_selection=cross_model, task_ids=["t1"],
-        )
-        comparison = build_comparison(root, "single-cross", "debate-1")
-        check(
-            comparison["comparison_type"] == "cross_model_topology_comparison",
-            "cross-model comparison is labeled as cross-model + cross-topology",
-        )
-
-    check(run_topology_id({}) == "debate", "historical manifests default to debate")
 
 
 def main() -> int:
@@ -743,9 +709,9 @@ def main() -> int:
     _check_repair_and_truncation()
     _check_scoring()
     _check_analysis()
+    _check_task_record_and_isolation()
     _check_manifest()
-    _check_comparison()
-    print("PASS all single-topology self-checks")
+    print("PASS all single-agent-baseline self-checks")
     return 0
 
 

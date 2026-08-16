@@ -1,15 +1,16 @@
 """Offline self-check for canonical NEW run directory naming.
 
 Verifies the single-source formatter
-``YYYYMMDDHHMM_<dataset>_<topology>_<model>_<hex>``, matching trajectory and
-result directory names, stable manifest components, and continued loading of
-historical runs under the previous naming convention.  No files are renamed
-and no model API is called.
+``YYYYMMDDHHMM_<model>_<dataset>_<hex>``, matching trajectory and result
+directory names, stable manifest components, and continued loading of
+historical runs under the previous naming conventions.  The Debate topology is
+frozen and the Single-Agent baseline is collected inside every run, so
+topology never appears in a directory name.  No files are renamed and no model
+API is called.
 """
 
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 from pathlib import Path
@@ -23,7 +24,6 @@ if str(SRC_DIRECTORY) not in sys.path:
 from storage import (  # noqa: E402
     canonical_dataset_token,
     canonical_model_token,
-    canonical_topology_token,
     compose_run_name,
     create_run,
     open_run,
@@ -42,8 +42,6 @@ def _check_tokens() -> None:
     check(canonical_dataset_token("MMLU-Pro-50") == "MMLUPro50", "MMLU-Pro-50 canonicalizes to MMLUPro50")
     check(canonical_dataset_token("MMLU-Pro-500") == "MMLUPro500", "MMLU-Pro-500 canonicalizes to MMLUPro500")
     check(canonical_dataset_token("SmokeTasks") == "SmokeTasks", "smoke benchmark label stays verbatim")
-    check(canonical_topology_token("debate") == "debate", "debate topology token")
-    check(canonical_topology_token("SINGLE") == "single", "topology token normalizes case")
     check(
         canonical_model_token("gpt-4o-mini-2024-07-18") == "gpt-4o-mini",
         "dated snapshot is omitted from the model label",
@@ -56,38 +54,34 @@ def _check_compose() -> None:
     cases = (
         (
             "MMLU-Pro-50",
-            "debate",
             "deepseek-v4-flash",
             "202608161530",
             "a3f91c2e",
-            "202608161530_MMLUPro50_debate_deepseek-v4-flash_a3f91c2e",
+            "202608161530_deepseek-v4-flash_MMLUPro50_a3f91c2e",
         ),
         (
             "MMLU-Pro-50",
-            "single",
             "gpt-4o-mini-2024-07-18",
             "202608161630",
             "03ef916d",
-            "202608161630_MMLUPro50_single_gpt-4o-mini_03ef916d",
+            "202608161630_gpt-4o-mini_MMLUPro50_03ef916d",
         ),
         (
             "MMLU-Pro-500",
-            "debate",
             "gpt-5-nano",
             "202608161615",
             "c241bb80",
-            "202608161615_MMLUPro500_debate_gpt-5-nano_c241bb80",
+            "202608161615_gpt-5-nano_MMLUPro500_c241bb80",
         ),
     )
-    for dataset, topology, model, timestamp, suffix, expected in cases:
+    for dataset, model, timestamp, suffix, expected in cases:
         composed = compose_run_name(
             dataset_name=dataset,
-            topology_id=topology,
             requested_model=model,
             timestamp=timestamp,
             hex_suffix=suffix,
         )
-        check(composed == expected, f"canonical run name for {topology}/{model}")
+        check(composed == expected, f"canonical run name for {model}/{dataset}")
 
 
 def _check_created_run() -> None:
@@ -99,33 +93,30 @@ def _check_created_run() -> None:
             config_snapshot={},
             dataset_name="MMLU-Pro-50",
             domain="mmlu_pro",
-            topology_id="single",
             requested_model="gpt-4o-mini-2024-07-18",
         )
         run_id = manifest["run_id"]
         parts = run_id.split("_")
         check(
-            len(parts) == 5
+            len(parts) == 4
             and len(parts[0]) == 12
             and parts[0].isdigit()
-            and parts[1] == "MMLUPro50"
-            and parts[2] == "single"
-            and parts[3] == "gpt-4o-mini"
-            and len(parts[4]) == 8
-            and all(character in "0123456789abcdef" for character in parts[4]),
-            "auto-generated name has the five required components",
+            and parts[1] == "gpt-4o-mini"
+            and parts[2] == "MMLUPro50"
+            and len(parts[3]) == 8
+            and all(character in "0123456789abcdef" for character in parts[3]),
+            "auto-generated name has timestamp/model/dataset/hex components",
         )
         check(
             manifest["run_name"] == run_id
             and manifest["run_name_components"]
             == {
                 "timestamp": parts[0],
-                "dataset": parts[1],
-                "topology": parts[2],
-                "model": parts[3],
-                "hex": parts[4],
+                "model": parts[1],
+                "dataset": parts[2],
+                "hex": parts[3],
             },
-            "manifest records run name and its components",
+            "manifest records run name and its components without topology",
         )
         check(
             (root / "trajectories" / run_id).is_dir()
@@ -145,27 +136,31 @@ def _check_created_run() -> None:
 def _check_historical_loadable() -> None:
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
-        historical_id = "202608161016_MMLUPro50_79a9e682"
-        trajectory_dir = root / "trajectories" / historical_id
-        result_dir = root / "results" / historical_id
-        trajectory_dir.mkdir(parents=True)
-        result_dir.mkdir(parents=True)
-        manifest: dict[str, Any] = {
-            "run_id": historical_id,
-            "dataset": "MMLU-Pro-50",
-            "domain": "mmlu_pro",
-            "status": "analyze_complete",
-            "trajectory_dir": str(trajectory_dir),
-            "result_dir": str(result_dir),
-        }
-        write_json(trajectory_dir / "run.json", manifest)
-        write_json(result_dir / "manifest.json", manifest)
-        reopened = open_run(root, historical_id)
-        check(
-            reopened["run_id"] == historical_id
-            and reopened["dataset"] == "MMLU-Pro-50",
-            "historical two-underscore run names remain loadable",
+        historical_ids = (
+            "202608161016_MMLUPro50_79a9e682",
+            "202608161542_MMLUPro50_debate_deepseek-v4-flash_78bd119a",
         )
+        for historical_id in historical_ids:
+            trajectory_dir = root / "trajectories" / historical_id
+            result_dir = root / "results" / historical_id
+            trajectory_dir.mkdir(parents=True)
+            result_dir.mkdir(parents=True)
+            manifest: dict[str, Any] = {
+                "run_id": historical_id,
+                "dataset": "MMLU-Pro-50",
+                "domain": "mmlu_pro",
+                "status": "analyze_complete",
+                "trajectory_dir": str(trajectory_dir),
+                "result_dir": str(result_dir),
+            }
+            write_json(trajectory_dir / "run.json", manifest)
+            write_json(result_dir / "manifest.json", manifest)
+            reopened = open_run(root, historical_id)
+            check(
+                reopened["run_id"] == historical_id
+                and reopened["dataset"] == "MMLU-Pro-50",
+                f"historical run name {historical_id} remains loadable",
+            )
 
         explicit = create_run(
             root,

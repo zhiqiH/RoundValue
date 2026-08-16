@@ -1,15 +1,17 @@
-"""One-call independent single-agent solver topology.
+"""One-call independent Single-Agent baseline observation.
 
-This module implements only the ``single`` topology: one dedicated solver
-node makes exactly one logical model call per benchmark task (bounded
-format-repair/network attempts are recorded separately), receives only the
-sanitized public task, and returns ``answer`` + ``reasoning_summary`` with the
-same scoring and repair principles as the Debate Writer checkpoint.
+This module is deliberately not a topology.  It implements one dedicated
+``single_solver`` node that makes exactly one intended logical model call per
+benchmark task (bounded format-repair/network attempts are recorded
+separately), receives only the sanitized public task, and returns ``answer``
++ ``reasoning_summary`` with the same scoring and repair principles as the
+Debate Writer checkpoint.
 
-It deliberately shares no execution path with the frozen Debate runner so the
-approved two-stage P/A/C-to-Writer semantics cannot be affected by it.  It
-never sees a previous checkpoint, a Debate packet, role outputs, a transcript,
-or any gold/reference information.
+The observation is a sibling of the Debate trajectory inside one task record:
+it never sees a previous Writer checkpoint, a Debate packet, role outputs, a
+transcript, or any gold/reference information, and the Debate trajectory never
+sees its output.  The two conditions share the same selected run-level model
+and the same original task but remain causally independent.
 """
 
 from __future__ import annotations
@@ -39,14 +41,11 @@ SOLVER_NODE_ID = "single_solver"
 
 
 class SingleAgentRunner:
-    """Run one independent solver call per benchmark task."""
+    """Run one independent solver call per benchmark task as a baseline."""
 
     def __init__(self, experiment: dict[str, Any], provider: ProviderAdapter):
         self.experiment = experiment
         self.provider = provider
-        self.topology = experiment["topology"]
-        if self.topology.get("runner") != "single_solver":
-            raise ProtocolError("SingleAgentRunner requires the single_solver topology")
         self.model = experiment["model"]
         self.provider_name = experiment["provider_name"]
         self.reasoning_enabled = bool(self.model["reasoning"]["enabled"])
@@ -415,19 +414,23 @@ class SingleAgentRunner:
         record.update({"status": "completed", "output": parsed})
         return record
 
-    def run_task(
+    def run_observation(
         self, *, task: dict[str, Any], run_id: str
     ) -> dict[str, Any]:
-        """Collect one raw single-solver trajectory for one benchmark task."""
+        """Collect one raw independent Single-Agent observation for one task."""
 
-        trajectory_id = json_hash({"run_id": run_id, "task_id": task["task_id"]})[:24]
+        observation_id = json_hash(
+            {
+                "kind": "single_agent_baseline",
+                "run_id": run_id,
+                "task_id": task["task_id"],
+            }
+        )[:24]
         started_monotonic = time.monotonic()
-        trajectory: dict[str, Any] = {
+        observation: dict[str, Any] = {
             "schema_version": "1.0",
-            "topology": "single",
-            "topology_runner": "single_solver",
-            "topology_hash": json_hash(self.topology),
-            "trajectory_id": trajectory_id,
+            "kind": "single_agent_baseline",
+            "observation_id": observation_id,
             "task_id": task["task_id"],
             "domain": task["domain"],
             "status": "running",
@@ -444,10 +447,10 @@ class SingleAgentRunner:
         }
         solver = self._run_solver(task)
         wall_clock_ms = max(0, round((time.monotonic() - started_monotonic) * 1000))
-        trajectory["solver"] = solver
-        trajectory["wall_clock_ms"] = wall_clock_ms
+        observation["solver"] = solver
+        observation["wall_clock_ms"] = wall_clock_ms
         if solver["status"] != "completed":
-            trajectory.update(
+            observation.update(
                 {
                     "status": "failed",
                     "ended_at": utc_now(),
@@ -457,7 +460,7 @@ class SingleAgentRunner:
                     ),
                 }
             )
-            return trajectory
+            return observation
         cumulative = node_cumulative([solver], self.model, wall_clock_ms=wall_clock_ms)
         prediction = {
             "answer": solver["output"]["answer"],
@@ -478,7 +481,7 @@ class SingleAgentRunner:
                 "solver_output": prediction["solver_output"],
             }
         )
-        trajectory["prediction"] = prediction
-        trajectory["status"] = "complete"
-        trajectory["ended_at"] = utc_now()
-        return trajectory
+        observation["prediction"] = prediction
+        observation["status"] = "complete"
+        observation["ended_at"] = utc_now()
+        return observation

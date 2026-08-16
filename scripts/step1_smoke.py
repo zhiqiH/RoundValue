@@ -1,8 +1,9 @@
 """Step 1: small-scale real-API smoke acceptance run.
 
-Runs the selected topology (debate or single) with the real model provider
-against the independent repository acceptance tasks.  Every task must complete
-and score exactly 1, otherwise this script exits nonzero and step2 must not start.
+Runs the selected model profile against the independent repository acceptance
+tasks, collecting one Debate round plus the automatic Single-Agent baseline for
+every task.  Both components must complete and score exactly 1, otherwise this
+script exits nonzero and step2 must not start.
 
 Smoke trajectories are stored under their own ``smoke`` split and never enter
 the formal paper results.
@@ -39,14 +40,6 @@ def main(argv: list[str] | None = None) -> int:
             "OpenAI profile."
         ),
     )
-    parser.add_argument(
-        "--topology",
-        default=None,
-        help=(
-            "Run-level topology from configs/topology.json. Defaults to debate; "
-            "pass single for the one-call independent solver."
-        ),
-    )
     parser.add_argument("--run-id", help="Optional explicit new smoke run ID.")
     args = parser.parse_args(argv)
     args.mode = "smoke"
@@ -54,7 +47,6 @@ def main(argv: list[str] | None = None) -> int:
         experiment = load_experiment_config(
             tb.PROJECT_ROOT,
             model_id=args.model_id,
-            topology_id=args.topology,
         )
     except ConfigurationError as error:
         parser.error(str(error))

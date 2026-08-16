@@ -725,12 +725,13 @@ def score_trajectory(
 def score_single_record(
     task_record: Mapping[str, Any],
 ) -> list[dict[str, Any]]:
-    """Score the one prediction of a ``single`` topology task record.
+    """Score the one prediction of a historical ``single``-topology record.
 
-    A single trajectory has exactly one prediction and no rounds, so the score
-    deliberately carries no ``round_index`` and only the prediction ``answer``
-    field is scored.  ``reasoning_summary`` can never rescue an incorrect
-    option.
+    Kept only as a compatibility reader for runs saved before the Single-Agent
+    baseline was integrated.  A single trajectory has exactly one prediction
+    and no rounds, so the score deliberately carries no ``round_index`` and
+    only the prediction ``answer`` field is scored.  ``reasoning_summary`` can
+    never rescue an incorrect option.
     """
 
     if not isinstance(task_record, Mapping):
@@ -759,6 +760,45 @@ def score_single_record(
     return [score]
 
 
+def score_single_observation(
+    task_record: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    """Score the Single-Agent baseline observation inside a Debate task record.
+
+    The observation is stored under the sibling ``single_agent`` key and has
+    exactly one prediction.  Only the prediction ``answer`` field is scored;
+    ``reasoning_summary`` can never rescue an incorrect option and no debate
+    round index is fabricated.
+    """
+
+    if not isinstance(task_record, Mapping):
+        raise TypeError("task_record must be a JSON object")
+    task_candidate = task_record.get("task", task_record.get("task_spec"))
+    task = _mapping(task_candidate)
+    if task is None:
+        raise ValueError("single-agent task record requires a task object")
+    observation = _mapping(task_record.get("single_agent"))
+    if observation is None:
+        raise ValueError("task record requires a single_agent observation")
+    prediction = _mapping(observation.get("prediction"))
+    if prediction is None:
+        raise ValueError("single_agent observation requires a prediction object")
+    score = score_task(
+        task,
+        {"answer": prediction.get("answer")},
+    )
+    observation_id = observation.get("observation_id")
+    if observation_id is not None:
+        score["observation_id"] = str(observation_id)
+    if prediction.get("checkpoint_hash", prediction.get("prediction_hash")) is not None:
+        score["prediction_hash"] = str(
+            prediction.get("checkpoint_hash", prediction.get("prediction_hash"))
+        )
+    if task_record.get("split") is not None:
+        score["split"] = str(task_record["split"])
+    return [score]
+
+
 # Names kept intentionally explicit for scripts and external analysis notebooks.
 score_task_answer = score_task
 score_task_record = score_trajectory
@@ -775,6 +815,7 @@ __all__ = [
     "score_task",
     "score_task_answer",
     "score_task_record",
+    "score_single_observation",
     "score_single_record",
     "score_trajectory",
 ]

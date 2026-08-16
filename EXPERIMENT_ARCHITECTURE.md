@@ -53,19 +53,19 @@ scripts/step3_visualize.py
 pyproject.toml                    运行依赖管理 + roundvalue 控制台命令注册
 src/                              扁平模块 + pipeline 共享编排 + benchmark 构建/验证工具
 src/roundvalue_cli.py             roundvalue 子命令 → 三个 step 入口的等价转发
-trajectories/YYYYMMDDHHMM_<数据集>_<拓扑>_<模型>_<hex>/  任务级完整调用与 checkpoint 记录
-results/YYYYMMDDHHMM_<数据集>_<拓扑>_<模型>_<hex>/       聚合指标、置信区间、策略报告与 manifest
+trajectories/YYYYMMDDHHMM_<模型>_<数据集>_<hex>/  任务级 Debate 调用、checkpoint 与单智能体观测
+results/YYYYMMDDHHMM_<模型>_<数据集>_<hex>/       聚合指标、置信区间、策略报告与 manifest
 .secret/model_key.json            本地密钥，永不提交
 ```
 
 三份配置同时校验。`agents.json` 固定四个 Debate 角色提示词和字段，并新增独立的
-`single_solver` 角色；`topology.json` 注册两个具名拓扑：冻结的 `debate`（缺省）与
-`single`；`model_config.json` 定义 `deepseek_flash`（默认）、`gpt5_nano` 与 `gpt4o_mini`
-三个 profile。模型与拓扑是彼此独立的 run-level 选择，通过
-`roundvalue smoke|run --model-id <id> --topology debate|single` 指定，一个 run 内全部节点
-使用同一模型（不实现 heterogeneous role-model assignment）；省略 `--topology` 时行为与
-既有命令完全一致，仍运行已批准的 Debate 拓扑。任何 config/源码变更都会通过哈希与 smoke
-gate 强制重跑验收。DeepSeek 默认使用 `deepseek-v4-flash`、`temperature: 0.2`、
+`single_solver` 角色（它是基线角色，不是拓扑）；`topology.json` 只描述冻结的 `debate`
+拓扑，不再有其它可选拓扑；`model_config.json` 定义 `deepseek_flash`（默认）、
+`gpt5_nano` 与 `gpt4o_mini` 三个 profile。run-level 只选择模型
+（`roundvalue smoke|run --model-id <id>`），一个 run 内全部节点与单智能体基线使用同一
+模型（不实现 heterogeneous role-model assignment）；拓扑恒为已批准的 Debate 流程，单
+智能体基线由每个实验自动收集。任何 config/源码变更都会通过哈希与 smoke gate 强制重跑
+验收。DeepSeek 默认使用 `deepseek-v4-flash`、`temperature: 0.2`、
 `max_output_tokens: 32768`，适配器发送 `thinking: {"type":"enabled"}` 与
 `reasoning_effort: "high"`；`gpt5_nano` 使用官方 `gpt-5-nano`（默认 snapshot
 `gpt-5-nano-2025-08-07`）、Chat Completions、`reasoning_effort: "medium"`、
@@ -86,9 +86,9 @@ collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照
 
 ## 5. 实验链路
 
-1. `step1_smoke.py`：运行独立仓库验收题、真实 API、每题完整一轮；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题失败即停止，Smoke 数据不进论文结果。
-2. `step2_run.py`：用 `--benchmark` 选择单个数据集文件，校验 smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多五轮原始轨迹；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
-3. `step3_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 报告、5 张 PNG 图表与简短结论。
+1. `step1_smoke.py`：运行独立仓库验收题、真实 API、每题 Debate 一轮加一次单智能体基线；验证密钥、配置、DAG、Writer JSON、评分、预期分数与落盘。任一题任一组件失败即停止，Smoke 数据不进论文结果。
+2. `step2_run.py`：用 `--benchmark` 选择单个数据集文件，校验 smoke 通过后，只在该数据集内按原始 `task_id` 冻结 Train/Validation/Test，收集每题至多五轮 Debate 轨迹加一次单智能体基线；全部完成后在同一命令内继续完全离线评分、构建 ΔQ/V/G、Train 拟合、Validation 选阈值、Test 评估、单智能体聚合与配对计数，`results/` 的产物仍只能由 trajectories 重建，收集不完整则跳过分析。
+3. `step3_visualize.py`：只读 `results/` 渲染 CSV、HTML/SVG 报告、5 张 PNG 图表与简短结论；单智能体基线显示在与 Debate 基线相同的表与图中。
 
 `roundvalue smoke|run|visualize` 是这三个入口的等价转发命令，参数、门禁与退出码
 完全一致，不构成第五个实验步骤；`python scripts/step*_*.py` 形式保持不变。
@@ -104,32 +104,31 @@ collect 时整个文件（含 provenance）都会进入 run 的 benchmark 快照
 
 比较 Fixed-1/2/3/4/5、task-only、RoundValue 和 trajectory Oracle。默认 `λ_cost=μ_latency=0`，因此值函数 `G` 是纯质量收益、阈值选择只在质量相同时以更少 token 决胜；质量—成本与质量—延迟 Pareto、任务级配对置信区间、Oracle regret 与 Repair/Neutral/Harm/Recovery 作为独立坐标报告。Oracle 覆盖全部五个 checkpoint，只测量可达上界与后悔值，绝不可部署。
 
-## 7. `single` 拓扑（新增实验条件）
+## 7. 自动单智能体基线（不是拓扑）
 
-`single` 是每道基准任务一次逻辑模型调用的独立求解器，与 `debate` 并列、可通过同一
-`--topology` 参数选择。它只有 `single_solver` 一个节点，没有 Planner/Analyst/Critic、
-Stage 1/2、debate packet、历史 transcript、上一轮 checkpoint、未来信息或参考答案；模型只
-看到与独立求解者合法可见信息一致的净化公开任务，用中性提示词返回
-`{answer, reasoning_summary}`。只有 `answer` 评分，`reasoning_summary` 不能救回错误选项，
-也不暴露隐藏 chain-of-thought；格式校验、有界修复与 answer-only 回退沿用项目既有原则，
-所有尝试都被记录并计入资源，逻辑调用数仍保持每任务一次。
+每次正式实验对每道基准任务自动收集一次独立的单智能体基线：`single_solver` 一个节点、
+没有 Planner/Analyst/Critic、Stage 1/2、debate packet、历史 transcript、上一轮
+checkpoint、未来信息或参考答案。它使用与 Debate 相同的 run-level 模型，只看到净化公开
+任务，用中性提示词返回 `{answer, reasoning_summary}`。只有 `answer` 评分，
+`reasoning_summary` 不能救回错误选项，也不暴露隐藏 chain-of-thought；格式校验、有界
+修复与 answer-only 回退沿用项目既有原则，所有尝试都被记录并计入资源，逻辑调用数保持
+每任务一次（50 题正常为 50 次，明确记录的修复/重试另计）。基线是任务记录中 Debate
+轨迹的平行兄弟观测，绝不用 `round = 0` 表示、不进 checkpoint 历史、不构造 previous
+Writer 状态；它与 Debate 因果独立：单智能体答案不初始化 Debate，Debate 输出不回喂给
+单智能体，任一方的失败都如实记录且不互相顶替。
 
-`single` 的分析刻意不构造任何多轮概念：不构建 `ΔQ/V/G`、不拟合 RoundValue、不选停止
-阈值、不做 continuation 决策、不定义 Repair/Harm/Recovery 转移、不构造 trajectory
-Oracle、也不把唯一预测伪装成 Debate Round 1。它只报告总体/分 split 准确率、输入/输出/总
-token、wall-clock 与 API 延迟、成本、重试、fallback 数、finish-reason 分布、逻辑调用数与
-任务级预测/正确性。50 题的 `single` run 正常情况下正好 50 次逻辑调用（明确记录的修复/
-重试另计）。single 优于、等于或劣于 debate 都是合法结论，不做任何偏向 debate 的调优或
+基线的分析刻意不构造任何多轮概念：不构建 `ΔQ/V/G`、不拟合 RoundValue、不选停止阈值、
+不做 continuation 决策、不定义 Repair/Harm/Recovery 转移、不构造 trajectory Oracle。
+它只报告总体/分 split 准确率、输入/输出/总 token、wall-clock 与 API 延迟、成本、重试、
+fallback 数、finish-reason 分布、逻辑调用数与任务级预测/正确性。主表与主图把
+Single-Agent 与 Fixed-1/2/3/4/5、RoundValue、Oracle 放在一起。
+
+## 8. 集成的单智能体配对诊断
+
+因为 Single-Agent 与 Debate 来自同一次 run（同模型、同基准哈希、同冻结任务与 split），
+离线分析直接生成配对任务计数，不需要单独的比较命令或单独 run：Single-Agent vs
+Fixed-1、Fixed-5、RoundValue（已定义时）、Oracle（已定义时）各计算
+`both_correct`、`single_correct_debate_wrong`、`single_wrong_debate_correct`、
+`both_wrong`。这些计数不使用 Repair/Harm 命名，以免与既有跨轮转移语义混淆。
+Single-Agent 优于、等于或劣于 Debate 都是合法结论，实现不做任何偏向 Debate 的调优或
 放水，也不实现 self-consistency / majority-vote 等额外条件。
-
-## 8. 纯离线 single-vs-debate 比较
-
-`roundvalue visualize --run-id <RUN_ID> --compare-with <RUN_ID>` 读取已保存的 manifest、
-基准快照、冻结 split、原始轨迹与派生分数，绝不调用模型 API。比较前强制校验相同数据集、
-相同基准文件哈希、相同冻结 task ID 集合与相同 split 分配，任一不匹配即拒绝；同 provider
-且同请求模型时标记 same-model topology comparison，模型/reasoning 配置不同时标记
-cross-model + cross-topology，不把准确率差异冒充纯拓扑因果。输出包含 Single、
-Debate Fixed-1..5、RoundValue（已定义时）与 Oracle（已定义时）的准确率、token、延迟、
-成本与逻辑调用数，以及 Single vs Debate Round 1 / Round 5 的配对计数
-（`both_correct`、`single_correct_debate_wrong`、`single_wrong_debate_correct`、
-`both_wrong`）。这些计数不使用 Repair/Harm 命名，以免与既有跨轮转移语义混淆。

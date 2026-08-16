@@ -21,6 +21,7 @@ DEBATE_ROLE_IDS = {"planner", "analyst", "critic", "writer"}
 SINGLE_ROLE_ID = "single_solver"
 ALL_ROLE_IDS = DEBATE_ROLE_IDS | {SINGLE_ROLE_ID}
 CHECKPOINT_ANSWER_ROLE_IDS = {"writer", SINGLE_ROLE_ID}
+FROZEN_TOPOLOGY_ID = "debate"
 EXPECTED_NODES = {
     "planner_stage_1": ("planner", 1, "stage_1"),
     "analyst_stage_1": ("analyst", 1, "stage_1"),
@@ -314,39 +315,8 @@ def _validate_debate_topology(topology: dict[str, Any], topology_id: str) -> Non
         raise ConfigurationError("Debate deterministic packet source order must remain fixed")
 
 
-def _validate_single_topology(topology: dict[str, Any], topology_id: str) -> None:
-    """Validate the one-call independent solver topology definition."""
-
-    if topology.get("runner") != "single_solver":
-        raise ConfigurationError(f"topology {topology_id} must use runner single_solver")
-    if topology.get("max_rounds") != 1:
-        raise ConfigurationError(f"topology {topology_id}.max_rounds must be exactly 1")
-    nodes = require_list(topology.get("nodes"), f"topology {topology_id}.nodes")
-    if len(nodes) != 1:
-        raise ConfigurationError("single topology must contain exactly one solver node")
-    node = require_object(nodes[0], "single topology node")
-    if (
-        node.get("id") != SINGLE_ROLE_ID
-        or node.get("role") != SINGLE_ROLE_ID
-        or node.get("stage") != 1
-        or node.get("parallel_group") is not None
-    ):
-        raise ConfigurationError(
-            "single topology must contain the node single_solver "
-            "(role single_solver, stage 1, no parallel group)"
-        )
-    packets = require_list(topology.get("packets"), f"topology {topology_id}.packets")
-    if packets:
-        raise ConfigurationError("single topology must not define debate packets")
-    edges = require_list(topology.get("edges"), f"topology {topology_id}.edges")
-    if edges:
-        raise ConfigurationError("single topology must not define debate edges")
-
-
-def select_topology(
-    document: dict[str, Any], topology_id: str | None = None
-) -> tuple[str, dict[str, Any]]:
-    """Resolve one named topology entry, defaulting to the frozen Debate flow."""
+def select_topology(document: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """Resolve the one frozen Debate topology; there is no other topology."""
 
     if document.get("schema_version") != "1.0":
         raise ConfigurationError("topology.json schema_version must be '1.0'")
@@ -354,38 +324,28 @@ def select_topology(
     default_id = require_string(
         document.get("default_topology_id"), "topology.json default_topology_id"
     )
-    selected_id = default_id if topology_id is None else topology_id
-    if not isinstance(selected_id, str) or not selected_id.strip():
-        raise ConfigurationError("topology id must be a non-empty string")
-    if selected_id not in topologies:
-        available = ", ".join(sorted(topologies))
+    if set(topologies) != {FROZEN_TOPOLOGY_ID}:
         raise ConfigurationError(
-            f"unknown topology id: {selected_id!r}; configured topologies are: {available}"
+            "topology.json must describe only the frozen debate topology"
         )
-    selected = require_object(topologies[selected_id], f"topology {selected_id}")
-    runner = require_string(selected.get("runner"), f"topology {selected_id}.runner")
-    if runner == "two_stage_pac_writer":
-        _validate_debate_topology(selected, selected_id)
-    elif runner == "single_solver":
-        _validate_single_topology(selected, selected_id)
-    else:
-        raise ConfigurationError(
-            f"topology {selected_id} uses unsupported runner {runner!r}; add a runner and validator first"
-        )
-    return selected_id, selected
+    if default_id != FROZEN_TOPOLOGY_ID:
+        raise ConfigurationError("topology.json default_topology_id must be 'debate'")
+    selected = require_object(
+        topologies[FROZEN_TOPOLOGY_ID], f"topology {FROZEN_TOPOLOGY_ID}"
+    )
+    _validate_debate_topology(selected, FROZEN_TOPOLOGY_ID)
+    return FROZEN_TOPOLOGY_ID, selected
 
 
 def load_experiment_config(
     project_root: Path,
     model_id: str | None = None,
-    topology_id: str | None = None,
 ) -> dict[str, Any]:
     """Return the validated configuration resolved for one run-level model.
 
     ``model_id=None`` keeps the frozen ``default_model_id`` so existing runs
-    stay DeepSeek-backed.  ``topology_id=None`` keeps the frozen
-    ``default_topology_id`` so existing commands stay on the approved Debate
-    flow.  Model and topology are independent run-level dimensions.
+    stay DeepSeek-backed.  The approved delayed-checkpoint Debate topology is
+    the only topology in the project and is never selectable from the CLI.
     """
 
     root = project_root.resolve()
@@ -395,7 +355,7 @@ def load_experiment_config(
     topology_document = load_json(config_dir / "topology.json")
     _validate_agents(agents)
     _validate_model_config(model_config)
-    selected_topology_id, topology = select_topology(topology_document, topology_id)
+    selected_topology_id, topology = select_topology(topology_document)
     selected_id = model_config["default_model_id"] if model_id is None else model_id
     models = model_config["models"]
     if selected_id not in models:

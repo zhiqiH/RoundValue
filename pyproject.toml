@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "roundvalue"
 version = "0.1.0"
-description = "Reproducible debate/single-topology experiment pipeline."
+description = "Reproducible multi-agent Debate pipeline with an automatic Single-Agent baseline."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

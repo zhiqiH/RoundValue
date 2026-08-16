@@ -37,15 +37,6 @@
         ["critic_stage_2", "writer_packet"],
         ["writer_packet", "writer"]
       ]
-    },
-    "single": {
-      "runner": "single_solver",
-      "max_rounds": 1,
-      "nodes": [
-        {"id": "single_solver", "role": "single_solver", "stage": 1, "parallel_group": null}
-      ],
-      "packets": [],
-      "edges": []
     }
   }
 }

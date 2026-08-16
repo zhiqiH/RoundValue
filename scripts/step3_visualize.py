@@ -1,16 +1,13 @@
 """Step 3: render saved analysis results into readable artifacts.
 
-Reads ``results/<run_id>/`` (analysis.json written by step2_run; derived
-offline for single smoke runs) and writes ``task_level_results.csv``, a
-self-contained ``report.html``, and a short ``summary_conclusion.txt``.  For
-debate runs this includes the per-round accuracy, token, wall-clock latency,
-Repair/Neutral/Harm/Recovery, stop-round, and policy-comparison tables plus
-SVG charts and the five policy-level PNG charts; single runs get the
-single-topology accuracy/resources/calls/finish-reason report.
-
-``--compare-with <RUN_ID>`` performs a fully offline single-vs-debate
-comparison (no model API call) and saves it under
-``results/<run_id>/comparisons/``.
+Reads ``results/<run_id>/`` (analysis.json written by step2_run) and writes
+``task_level_results.csv``, a self-contained ``report.html``, and a short
+``summary_conclusion.txt``.  The report includes the per-round accuracy,
+token, wall-clock latency, Repair/Neutral/Harm/Recovery, stop-round, and
+policy-comparison tables, the Single-Agent baseline comparison table, and the
+paired Single-vs-Debate task outcome counts, plus SVG charts and the five
+policy-level PNG charts.  Single-Agent is displayed on the same figures as the
+Debate baselines, so no separate comparison command or run is required.
 
 Visualization cannot affect scoring or policy.
 """
@@ -32,14 +29,6 @@ import pipeline as tb  # noqa: E402
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-id", required=True, help="Run analyzed by step2_run.")
-    parser.add_argument(
-        "--compare-with",
-        help=(
-            "Run ID of a second analyzed run to compare offline. Exactly one of "
-            "the two runs must be a single run and the other a debate run. No "
-            "model API is called."
-        ),
-    )
     args = parser.parse_args(argv)
     args.mode = "visualize"
     state: dict = {"manifest": None}
