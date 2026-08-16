@@ -156,6 +156,10 @@ def check(condition: bool, label: str) -> None:
 
 def main() -> int:
     experiment = load_experiment_config(PROJECT_ROOT)
+    # Pin the thinking-mode expectations explicitly so a user can flip the
+    # configured reasoning mode without breaking these runner self-checks.
+    thinking_experiment = copy.deepcopy(experiment)
+    thinking_experiment["model"]["reasoning"] = {"enabled": True, "effort": "high"}
 
     valid = json.dumps(ROLE_OUTPUTS["writer"], separators=(",", ":"))
     truncated = '{"answer": "C"'
@@ -182,12 +186,13 @@ def main() -> int:
     check("TruncatedOutput" in provider.requests[1].messages[2]["content"], "length repair message is specific")
 
     record, provider = _node_result(
-        experiment, [("length", truncated), ("length", truncated), ("stop", valid)]
+        thinking_experiment,
+        [("length", truncated), ("length", truncated), ("stop", valid)],
     )
     check(record["status"] == "completed", "repeated truncation recovered by shrinking budget")
     check(record["format_repairs"] == 2, "two shrinking repairs recorded")
-    budget_runner = FixedDebateRunner(dict(experiment), None)
-    model_max = int(experiment["model"]["max_output_tokens"])
+    budget_runner = FixedDebateRunner(dict(thinking_experiment), None)
+    model_max = int(thinking_experiment["model"]["max_output_tokens"])
     check(
         [request.max_output_tokens for request in provider.requests]
         == [model_max, model_max, model_max],
@@ -314,7 +319,7 @@ def main() -> int:
             json.dumps(ROLE_OUTPUTS[role], separators=(",", ":")),
         )
     provider = FakeProvider([], by_node=full_by_node)
-    runner = FixedDebateRunner(dict(experiment), provider)
+    runner = FixedDebateRunner(dict(thinking_experiment), provider)
     round_record = runner.run_round(
         task=_task(),
         round_index=1,
@@ -329,7 +334,7 @@ def main() -> int:
         and checkpoint["writer_output"]["reasoning_summary"],
         "writer checkpoint stores answer separately from reasoning_summary",
     )
-    model_max = int(experiment["model"]["max_output_tokens"])
+    model_max = int(thinking_experiment["model"]["max_output_tokens"])
     check(
         all(request.max_output_tokens == model_max for request in provider.requests),
         "thinking-mode node requests reserve the model cap for hidden reasoning",

@@ -209,24 +209,14 @@ def _validate_model_config(config: dict[str, Any]) -> None:
         if not isinstance(reasoning_enabled, bool):
             raise ConfigurationError(f"model {configured_id}.reasoning.enabled must be a boolean")
         reasoning_effort = reasoning.get("effort")
-        if reasoning_enabled:
-            if reasoning_effort not in (
-                "none",
-                "minimal",
-                "low",
-                "medium",
-                "high",
-                "xhigh",
-                "max",
-            ):
-                raise ConfigurationError(
-                    f"model {configured_id}.reasoning.effort must be "
-                    "none/minimal/low/medium/high/xhigh/max while reasoning is enabled"
-                )
-        elif reasoning_effort is not None:
+        if reasoning_effort is not None and not isinstance(reasoning_effort, str):
             raise ConfigurationError(
-                f"model {configured_id} must not set reasoning.effort while reasoning is disabled"
+                f"model {configured_id}.reasoning.effort must be a string or omitted"
             )
+        # ``reasoning.enabled`` and ``reasoning.effort`` are user-facing knobs.
+        # Effort is sent on the wire only while reasoning is enabled, and it may
+        # remain present (but inert) while reasoning is disabled, so flipping
+        # the mode never requires editing a second field.
         max_tokens = model.get("max_output_tokens")
         if isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or max_tokens <= 0:
             raise ConfigurationError(f"model {configured_id}.max_output_tokens must be positive")

@@ -10,6 +10,7 @@ are computed over the same frozen tasks.
 
 from __future__ import annotations
 
+import copy
 import inspect
 import json
 import os
@@ -174,8 +175,12 @@ def _check_config() -> None:
 
 def _check_runner() -> None:
     experiment = load_experiment_config(PROJECT_ROOT)
+    # Pin the thinking-mode expectations explicitly so a user can flip the
+    # configured reasoning mode without breaking this baseline self-check.
+    thinking_experiment = copy.deepcopy(experiment)
+    thinking_experiment["model"]["reasoning"] = {"enabled": True, "effort": "high"}
     provider = FakeProvider(by_node={"single_solver": ("stop", _valid_output())})
-    runner = SingleAgentRunner(dict(experiment), provider)
+    runner = SingleAgentRunner(dict(thinking_experiment), provider)
     observation = runner.run_observation(task=_task(), run_id="dev-single-run")
     check(observation["status"] == "complete", "single observation completes")
     check(

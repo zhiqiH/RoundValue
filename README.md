@@ -77,6 +77,9 @@ P2 / A2 / C2（并行，三者均读取完整 D1 与上一轮 Writer checkpoint�
 run-level 只选择模型：`roundvalue smoke|run --model-id <id>`（缺省 `deepseek_flash`），
 一个 run 内所有节点使用同一模型，不实现 heterogeneous role-model assignment。拓扑
 始终是已批准的 Debate 流程，没有 `--topology` 参数；单智能体基线由每个实验自动收集。
+`model_config.json` 中每个 profile 的 `reasoning.enabled`、`reasoning.effort` 与
+`temperature` 都可手动修改：`effort` 只在 `reasoning.enabled=true` 时发送，关闭推理
+时保留或省略该字段都不报错（保留的值仅记录、不发送）；`temperature` 可取 0–2 内任意值。
 
 默认 profile 是 `deepseek_flash`，请求模型 `deepseek-v4-flash`，`temperature` 为 `0.2`（DeepSeek 思考模式下该参数会被静默忽略）、`max_output_tokens` 为 `32768`。DeepSeek 适配器显式开启思考模式（发送 `thinking: {"type": "enabled"}` 与 `reasoning_effort: "high"`），并把返回的 `reasoning_content` 长度与 `reasoning_tokens` 记入轨迹；推理内容不进入辩论消息，只出现在响应记录中。
 
