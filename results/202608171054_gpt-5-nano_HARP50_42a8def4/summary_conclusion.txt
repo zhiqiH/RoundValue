@@ -1,0 +1,15 @@
+RoundValue summary for run 202608171054_gpt-5-nano_HARP50_42a8def4
+tasks: 50 total, 50 complete, 0 failed
+round 1: accuracy=0.960, tasks=50, tokens=27461, wall_clock_ms=64538, logical_calls=7
+round 2: accuracy=0.960, tasks=50, tokens=28101, wall_clock_ms=66082, logical_calls=7
+round 3: accuracy=0.960, tasks=50, tokens=27361, wall_clock_ms=59877, logical_calls=7
+round 4: accuracy=0.960, tasks=50, tokens=27269, wall_clock_ms=62210, logical_calls=7
+round 5: accuracy=0.960, tasks=50, tokens=27641, wall_clock_ms=63010, logical_calls=7
+transitions: repair=0, neutral=200, harm=0, recovery=0
+Single-Agent baseline: accuracy=0.900, tasks=50, tokens=3211, wall_clock_ms=16657, logical_calls=1
+Single-Agent vs Fixed-1: both_correct=45, single_correct_debate_wrong=0, single_wrong_debate_correct=3, both_wrong=2, n_paired=50
+Single-Agent vs Fixed-5: both_correct=45, single_correct_debate_wrong=0, single_wrong_debate_correct=3, both_wrong=2, n_paired=50
+Single-Agent vs RoundValue: both_correct=9, single_correct_debate_wrong=0, single_wrong_debate_correct=1, both_wrong=0, n_paired=10
+Single-Agent vs Oracle: both_correct=9, single_correct_debate_wrong=0, single_wrong_debate_correct=1, both_wrong=0, n_paired=10
+RoundValue policy: accuracy=1.000, tokens=36531, wall_clock_ms=87551, stop_round=1.00
+RoundValue vs fixed-1 paired accuracy difference: mean=0.000, 95% CI=[0.000, 0.000], n_paired=10

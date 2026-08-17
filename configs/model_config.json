@@ -10,7 +10,7 @@
         "file": ".secret/model_key.json",
         "field": "deepseek.api_key"
       },
-      "timeout_seconds": 120,
+      "timeout_seconds": 300,
       "max_attempts": 3,
       "retry_backoff_seconds": 1.0,
       "supports_thinking_toggle": true,
@@ -24,7 +24,7 @@
         "file": ".secret/model_key.json",
         "field": "openai.api_key"
       },
-      "timeout_seconds": 120,
+      "timeout_seconds": 300,
       "max_attempts": 3,
       "retry_backoff_seconds": 1.0,
       "supports_thinking_toggle": false,
@@ -62,7 +62,7 @@
         "enabled": true,
         "effort": "medium"
       },
-      "max_output_tokens":8192,
+      "max_output_tokens": 32768,
       "request_defaults": {
         "response_format": {
           "type": "json_object"
@@ -83,7 +83,7 @@
       "reasoning": {
         "enabled": false
       },
-      "max_output_tokens": 16384,
+      "max_output_tokens": 32768,
       "request_defaults": {
         "response_format": {
           "type": "json_object"
