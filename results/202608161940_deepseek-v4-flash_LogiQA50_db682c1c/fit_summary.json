@@ -1,0 +1,14 @@
+{
+  "label_parameters": {
+    "lambda_cost": 0.0,
+    "mu_latency": 0.0
+  },
+  "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+  "schema_version": "1.0",
+  "thresholds": {
+    "roundvalue": 0.15,
+    "task_only": 0.05
+  },
+  "training_records": 30,
+  "validation_records": 10
+}

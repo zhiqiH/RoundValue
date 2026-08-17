@@ -1,0 +1,1414 @@
+{
+  "content": {
+    "benchmark_id": "HARP-50-RoundValue-v1",
+    "dataset_id": "HARP-50",
+    "domain": "harp",
+    "generator": "roundvalue-harp-v1",
+    "provenance": {
+      "dataset_id": "HARP-50",
+      "domain": "harp",
+      "generator": "roundvalue-harp-v1",
+      "parent": {
+        "dataset_id": "HARP-500",
+        "file": "benchmark/harp/HARP-500.json",
+        "sha256": "ccb41948fc698f2842652202a50577f4aec21e44a792fbe3ee146e6d13357637"
+      },
+      "raw_source_record_sha256": {
+        "harp_mcq": "30509b846676efc1f84073a93e28a029405ecfbd9280bc5b227f6a8eb4efb33c"
+      },
+      "schema_version": "1.0",
+      "selection": {
+        "method": "largest-remainder level x subject counts within each parent split; stable hash ordering within each stratum",
+        "seed": "roundvalue-harp50-selection-v1",
+        "stratum_counts": {
+          "test::1:counting_and_probability": 1,
+          "test::1:prealgebra": 1,
+          "test::2:algebra": 1,
+          "test::2:counting_and_probability": 1,
+          "test::2:geometry": 1,
+          "test::2:number_theory": 1,
+          "test::2:prealgebra": 1,
+          "test::3:algebra": 1,
+          "test::3:geometry": 1,
+          "test::4:geometry": 1,
+          "train::1:counting_and_probability": 1,
+          "train::1:geometry": 1,
+          "train::1:number_theory": 1,
+          "train::1:prealgebra": 3,
+          "train::2:algebra": 3,
+          "train::2:counting_and_probability": 2,
+          "train::2:geometry": 3,
+          "train::2:number_theory": 1,
+          "train::2:prealgebra": 3,
+          "train::3:algebra": 3,
+          "train::3:counting_and_probability": 2,
+          "train::3:geometry": 2,
+          "train::3:number_theory": 1,
+          "train::3:prealgebra": 1,
+          "train::3:precalculus": 1,
+          "train::4:algebra": 1,
+          "train::4:geometry": 1,
+          "validation::1:counting_and_probability": 1,
+          "validation::1:prealgebra": 1,
+          "validation::2:algebra": 1,
+          "validation::2:counting_and_probability": 1,
+          "validation::2:geometry": 1,
+          "validation::2:prealgebra": 1,
+          "validation::3:algebra": 1,
+          "validation::3:counting_and_probability": 1,
+          "validation::3:geometry": 1,
+          "validation::4:geometry": 1
+        },
+        "total": 50
+      },
+      "sources": {
+        "harp_mcq": {
+          "asset": "HARP_mcq.jsonl.zip",
+          "asset_sha256": "bf1456623321561a1be328042f635046cb408fdbdc5dc1b8d8090053f9ea6824",
+          "inner_path": "HARP_mcq.jsonl",
+          "license": "MIT",
+          "paper": "arXiv:2412.08819",
+          "project": "aadityasingh/HARP",
+          "raw_url": "https://raw.githubusercontent.com/aadityasingh/HARP/dac2734ff6443bcaf3bbdcb10f13cf21ae9729c2/HARP_mcq.jsonl.zip",
+          "revision": "dac2734ff6443bcaf3bbdcb10f13cf21ae9729c2",
+          "upstream": "https://github.com/aadityasingh/HARP"
+        }
+      },
+      "split": {
+        "counts": {
+          "test": 10,
+          "train": 30,
+          "validation": 10
+        },
+        "method": "parent HARP-500 split retained verbatim"
+      },
+      "test_task_ids": [
+        "harp::1980::AHSME::13",
+        "harp::1984::AHSME::8",
+        "harp::1990::AJHSME::19",
+        "harp::1997::AHSME::6",
+        "harp::1998::AHSME::28",
+        "harp::2004::AMC_10A::1",
+        "harp::2011::AMC_12A::3",
+        "harp::2014::AMC_10A::17",
+        "harp::2016::AMC_10B::6",
+        "harp::2019::AMC_12B::15"
+      ]
+    },
+    "purpose": "A deterministic, level x subject stratified 50-task subset of HARP-500, split 30/10/10, for fast validation runs before full collection.",
+    "schema_version": "1.0",
+    "split_protocol": {
+      "counts": {
+        "test": 10,
+        "train": 30,
+        "validation": 10
+      },
+      "seed": "roundvalue-harp50-selection-v1",
+      "stratification": "level x subject stratified selection within each HARP-500 split"
+    },
+    "tasks": [
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$48$",
+          "$37\\frac{1}{2}$",
+          "$75$",
+          "$58\\frac{1}{2}$",
+          "$\\text{none of these}$"
+        ],
+        "prompt": "In the figure, it is given that angle $C = 90^{\\circ}$, $\\overline{AD} = \\overline{DB}$, $DE \\perp AB$, $\\overline{AB} = 20$, and $\\overline{AC} = 12$. The area of quadrilateral $ADEC$ is: [asy] unitsize(7); defaultpen(linewidth(.8pt)+fontsize(10pt)); pair A,B,C,D,E; A=(0,0); B=(20,0); C=(36/5,48/5); D=(10,0); E=(10,75/10); draw(A--B--C--cycle); draw(D--E); label(\"$A$\",A,SW); label(\"$B$\",B,SE); label(\"$C$\",C,N); label(\"$D$\",D,S); label(\"$E$\",E,NE); draw(rightanglemark(B,D,E,30)); [/asy]\n\nChoices:\n(A) $48$\n(B) $37\\frac{1}{2}$\n(C) $75$\n(D) $58\\frac{1}{2}$\n(E) $\\text{none of these}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 24,
+          "source_task_id": "harp::1952::AHSME::24",
+          "source_year": "1952",
+          "subject": "geometry"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "harp::1952::AHSME::24"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$b=\\frac{a-c}{2}$",
+          "$a=\\frac{b+c}{2}$",
+          "$b=\\frac{a+c}{2}$",
+          "$a=\\frac{b-c}{2}$",
+          "$\\text{none of these}$"
+        ],
+        "prompt": "In this diagram $AB$ and $AC$ are the equal sides of an isosceles $\\triangle ABC$, in which is inscribed equilateral $\\triangle DEF$. Designate $\\angle BFD$ by $a$, $\\angle ADE$ by $b$, and $\\angle FEC$ by $c$. Then: [asy] size(150); defaultpen(linewidth(0.8)+fontsize(10)); pair A=(5,12),B=origin,C=(10,0),D=(5/3,4),E=(10-5*.45,12*.45),F=(6,0); draw(A--B--C--cycle^^D--E--F--cycle); draw(anglemark(E,D,A,1,45)^^anglemark(F,E,C,1,45)^^anglemark(D,F,B,1,45)); label(\"$b$\",(D.x+.2,D.y+.25),dir(30)); label(\"$c$\",(E.x,E.y-.4),S); label(\"$a$\",(F.x-.4,F.y+.1),dir(150)); label(\"$A$\",A,N); label(\"$B$\",B,S); label(\"$C$\",C,S); label(\"$D$\",D,dir(150)); label(\"$E$\",E,dir(60)); label(\"$F$\",F,S);[/asy]\n\nChoices:\n(A) $b=\\frac{a-c}{2}$\n(B) $a=\\frac{b+c}{2}$\n(C) $b=\\frac{a+c}{2}$\n(D) $a=\\frac{b-c}{2}$\n(E) $\\text{none of these}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 4,
+          "multiple_choice_only": true,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 38,
+          "source_task_id": "harp::1960::AHSME::38",
+          "source_year": "1960",
+          "subject": "geometry"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "harp::1960::AHSME::38"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$2$",
+          "$4$",
+          "$-2$",
+          "$\\text{undetermined}$",
+          "$0$"
+        ],
+        "prompt": "The first three terms of an arithmetic progression are $x - 1, x + 1, 2x + 3$, in the order shown. The value of $x$ is:\n\nChoices:\n(A) $2$\n(B) $4$\n(C) $-2$\n(D) $\\text{undetermined}$\n(E) $0$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 3,
+          "source_task_id": "harp::1962::AHSME::3",
+          "source_year": "1962",
+          "subject": "algebra"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "harp::1962::AHSME::3"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$\\text{all real values of} x \\text{ except } x=1$",
+          "$\\text{all real values of} x \\text{ except } x=0$",
+          "$\\text{no real values of} x$",
+          "$\\text{all real values of} x$",
+          "$\\text{no real values of} x \\text{ except } x=0$"
+        ],
+        "prompt": "If all the logarithms are real numbers, the equality $\\log(x+3)+\\log(x-1)=\\log(x^2-2x-3)$ is satisfied for:\n\nChoices:\n(A) $\\text{all real values of} x \\text{ except } x=1$\n(B) $\\text{all real values of} x \\text{ except } x=0$\n(C) $\\text{no real values of} x$\n(D) $\\text{all real values of} x$\n(E) $\\text{no real values of} x \\text{ except } x=0$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 23,
+          "source_task_id": "harp::1968::AHSME::23",
+          "source_year": "1968",
+          "subject": "algebra"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::1968::AHSME::23"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$\\text{dependent upon the cost}$",
+          "$23x:17$",
+          "$23:17$",
+          "$17y:23$",
+          "$\\text{none of these.}$"
+        ],
+        "prompt": "If an item is sold for $x$ dollars, there is a loss of $15\\%$ based on the cost. If, however, the same item is sold for $y$ dollars, there is a profit of $15\\%$ based on the cost. The ratio of $y:x$ is:\n\nChoices:\n(A) $\\text{dependent upon the cost}$\n(B) $23x:17$\n(C) $23:17$\n(D) $17y:23$\n(E) $\\text{none of these.}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 2,
+          "source_task_id": "harp::1969::AHSME::2",
+          "source_year": "1969",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::1969::AHSME::2"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$33$",
+          "$45$",
+          "$24$",
+          "$57$",
+          "$54$"
+        ],
+        "prompt": "A box contains chips, each of which is red, white, or blue. The number of blue chips is at least half the number of white chips, and at most one third the number of red chips. The number which are white or blue is at least $55$. The minimum number of red chips is\n\nChoices:\n(A) $33$\n(B) $45$\n(C) $24$\n(D) $57$\n(E) $54$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 27,
+          "source_task_id": "harp::1971::AHSME::27",
+          "source_year": "1971",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "harp::1971::AHSME::27"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$PQRS\\text{ is a parallelogram if an only if }ABCD\\text{ is a rhombus}$",
+          "$PQRS\\text{ is a parallelogram if an only if }ABCD\\text{ is a parallelogram}$",
+          "$PQRS\\text{ is a parallelogram}$",
+          "$PQRS\\text{ is a parallelogram if an only if }ABCD\\text{ is a rectangle}$",
+          "$\\text{none of the above are true}$"
+        ],
+        "prompt": "Let $E$ be the point of intersection of the diagonals of convex quadrilateral $ABCD$, and let $P,Q,R$, and $S$ be the centers of the circles circumscribing triangles $ABE, BCE, CDE$, and $ADE$, respectively. Then\n\nChoices:\n(A) $PQRS\\text{ is a parallelogram if an only if }ABCD\\text{ is a rhombus}$\n(B) $PQRS\\text{ is a parallelogram if an only if }ABCD\\text{ is a parallelogram}$\n(C) $PQRS\\text{ is a parallelogram}$\n(D) $PQRS\\text{ is a parallelogram if an only if }ABCD\\text{ is a rectangle}$\n(E) $\\text{none of the above are true}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": true,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 19,
+          "source_task_id": "harp::1977::AHSME::19",
+          "source_year": "1977",
+          "subject": "geometry"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::1977::AHSME::19"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$\\frac{2pq}{p+q}$",
+          "$\\frac{2(p^2+pq+q^2)}{3(p+q)}$",
+          "$\\frac{p^2+q^2}{p+q}$",
+          "$\\frac{p+q+2pq}{p+q+2}$",
+          "$\\frac{p+q}{2}$"
+        ],
+        "prompt": "Two identical jars are filled with alcohol solutions, the ratio of the volume of alcohol to the volume of water being $p : 1$ in one jar and $q : 1$ in the other jar. If the entire contents of the two jars are mixed together, the ratio of the volume of alcohol to the volume of water in the mixture is\n\nChoices:\n(A) $\\frac{2pq}{p+q}$\n(B) $\\frac{2(p^2+pq+q^2)}{3(p+q)}$\n(C) $\\frac{p^2+q^2}{p+q}$\n(D) $\\frac{p+q+2pq}{p+q+2}$\n(E) $\\frac{p+q}{2}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 15,
+          "source_task_id": "harp::1979::AHSME::15",
+          "source_year": "1979",
+          "subject": "algebra"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "harp::1979::AHSME::15"
+      },
+      {
+        "answer_index": 0,
+        "domain": "harp",
+        "options": [
+          "$\\frac{5}{4}$",
+          "$1$",
+          "$\\frac{1}{5}$",
+          "$\\frac{4}{5}$",
+          "$\\frac{6}{5}$"
+        ],
+        "prompt": "If the ratio of $2x-y$ to $x+y$ is $\\frac{2}{3}$, what is the ratio of $x$ to $y$?\n\nChoices:\n(A) $\\frac{5}{4}$\n(B) $1$\n(C) $\\frac{1}{5}$\n(D) $\\frac{4}{5}$\n(E) $\\frac{6}{5}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 3,
+          "source_task_id": "harp::1980::AHSME::3",
+          "source_year": "1980",
+          "subject": "algebra"
+        },
+        "reference_answer": "A",
+        "split": "train",
+        "task_id": "harp::1980::AHSME::3"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$\\frac{1}{3}(\\sqrt{3}+\\sqrt{5}-\\sqrt{2})$",
+          "$\\sqrt{2}+\\sqrt{3}-\\sqrt{5}$",
+          "$\\frac{1}{2}(\\sqrt{2}+\\sqrt{5}-\\sqrt{3})$",
+          "$\\sqrt{2}+\\sqrt{3}+\\sqrt{6}-5$",
+          "$4-\\sqrt{2}-\\sqrt{3}$"
+        ],
+        "prompt": "$\\frac{2\\sqrt{6}}{\\sqrt{2}+\\sqrt{3}+\\sqrt{5}}$ equals\n\nChoices:\n(A) $\\frac{1}{3}(\\sqrt{3}+\\sqrt{5}-\\sqrt{2})$\n(B) $\\sqrt{2}+\\sqrt{3}-\\sqrt{5}$\n(C) $\\frac{1}{2}(\\sqrt{2}+\\sqrt{5}-\\sqrt{3})$\n(D) $\\sqrt{2}+\\sqrt{3}+\\sqrt{6}-5$\n(E) $4-\\sqrt{2}-\\sqrt{3}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 13,
+          "source_task_id": "harp::1984::AHSME::13",
+          "source_year": "1984",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "harp::1984::AHSME::13"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$\\frac{1}{4}\\tan{60^\\circ}$",
+          "$\\tan{15^\\circ}$",
+          "$\\tan{10^\\circ}+\\tan{20^\\circ}$",
+          "$\\frac{1}{2}(\\tan{10^\\circ}+\\tan{20^\\circ})$",
+          "$\\tan{30^\\circ}$"
+        ],
+        "prompt": "$\\frac{\\sin{10^\\circ}+\\sin{20^\\circ}}{\\cos{10^\\circ}+\\cos{20^\\circ}}$ equals\n\nChoices:\n(A) $\\frac{1}{4}\\tan{60^\\circ}$\n(B) $\\tan{15^\\circ}$\n(C) $\\tan{10^\\circ}+\\tan{20^\\circ}$\n(D) $\\frac{1}{2}(\\tan{10^\\circ}+\\tan{20^\\circ})$\n(E) $\\tan{30^\\circ}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 23,
+          "source_task_id": "harp::1984::AHSME::23",
+          "source_year": "1984",
+          "subject": "precalculus"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "harp::1984::AHSME::23"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$32$",
+          "$40$",
+          "$50$",
+          "$30$",
+          "$45$"
+        ],
+        "prompt": "King Middle School has $1200$ students. Each student takes $5$ classes a day. Each teacher teaches $4$ classes. Each class has $30$ students and $1$ teacher. How many teachers are there at King Middle School?\n\nChoices:\n(A) $32$\n(B) $40$\n(C) $50$\n(D) $30$\n(E) $45$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AJHSME",
+          "source_dataset": "HARP",
+          "source_number": 23,
+          "source_task_id": "harp::1985::AJHSME::23",
+          "source_year": "1985",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::1985::AJHSME::23"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$8$",
+          "$0$",
+          "$4$",
+          "$1$",
+          "$2$"
+        ],
+        "prompt": "Let $p(x) = x^{2} + bx + c$, where $b$ and $c$ are integers. If $p(x)$ is a factor of both $x^{4} + 6x^{2} + 25$ and $3x^{4} + 4x^{2} + 28x + 5$, what is $p(1)$?\n\nChoices:\n(A) $8$\n(B) $0$\n(C) $4$\n(D) $1$\n(E) $2$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 24,
+          "source_task_id": "harp::1986::AHSME::24",
+          "source_year": "1986",
+          "subject": "algebra"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::1986::AHSME::24"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$8$",
+          "$250$",
+          "$4$",
+          "$5$",
+          "$9$"
+        ],
+        "prompt": "A calculator has a squaring key $\\boxed{x^2}$ which replaces the current number displayed with its square. For example, if the display is $\\boxed{000003}$ and the $\\boxed{x^2}$ key is depressed, then the display becomes $\\boxed{000009}$. If the display reads $\\boxed{000002}$, how many times must you depress the $\\boxed{x^2}$ key to produce a displayed number greater than $500$?\n\nChoices:\n(A) $8$\n(B) $250$\n(C) $4$\n(D) $5$\n(E) $9$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AJHSME",
+          "source_dataset": "HARP",
+          "source_number": 19,
+          "source_task_id": "harp::1987::AJHSME::19",
+          "source_year": "1987",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::1987::AJHSME::19"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$333,333,333,333$",
+          "$233,333,333,333$",
+          "$322,222,222,223$",
+          "$222,222,222,222$",
+          "$222,222,222,223$"
+        ],
+        "prompt": "$1,000,000,000,000-777,777,777,777=$\n\nChoices:\n(A) $333,333,333,333$\n(B) $233,333,333,333$\n(C) $322,222,222,223$\n(D) $222,222,222,222$\n(E) $222,222,222,223$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AJHSME",
+          "source_dataset": "HARP",
+          "source_number": 1,
+          "source_task_id": "harp::1991::AJHSME::1",
+          "source_year": "1991",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "harp::1991::AJHSME::1"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$6\\times 3$",
+          "$4\\times 5$",
+          "$3\\times 4$",
+          "$3\\times 5$",
+          "$4\\times 4$"
+        ],
+        "prompt": "A \"domino\" is made up of two small squares: [asy] unitsize(12); fill((0,0)--(1,0)--(1,1)--(0,1)--cycle,black); draw((1,1)--(2,1)--(2,0)--(1,0)); [/asy] Which of the \"checkerboards\" illustrated below CANNOT be covered exactly and completely by a whole number of non-overlapping dominoes? [asy] unitsize(12); fill((0,0)--(1,0)--(1,1)--(0,1)--cycle,black); fill((1,1)--(1,2)--(2,2)--(2,1)--cycle,black); fill((2,0)--(3,0)--(3,1)--(2,1)--cycle,black); fill((3,1)--(4,1)--(4,2)--(3,2)--cycle,black); fill((0,2)--(1,2)--(1,3)--(0,3)--cycle,black); fill((2,2)--(2,3)--(3,3)--(3,2)--cycle,black); draw((0,0)--(0,3)--(4,3)--(4,0)--cycle); draw((6,0)--(11,0)--(11,3)--(6,3)--cycle); fill((6,0)--(7,0)--(7,1)--(6,1)--cycle,black); fill((8,0)--(9,0)--(9,1)--(8,1)--cycle,black); fill((10,0)--(11,0)--(11,1)--(10,1)--cycle,black); fill((7,1)--(7,2)--(8,2)--(8,1)--cycle,black); fill((9,1)--(9,2)--(10,2)--(10,1)--cycle,black); fill((6,2)--(6,3)--(7,3)--(7,2)--cycle,black); fill((8,2)--(8,3)--(9,3)--(9,2)--cycle,black); fill((10,2)--(10,3)--(11,3)--(11,2)--cycle,black); draw((13,-1)--(13,3)--(17,3)--(17,-1)--cycle); fill((13,3)--(14,3)--(14,2)--(13,2)--cycle,black); fill((15,3)--(16,3)--(16,2)--(15,2)--cycle,black); fill((14,2)--(15,2)--(15,1)--(14,1)--cycle,black); fill((16,2)--(17,2)--(17,1)--(16,1)--cycle,black); fill((13,1)--(14,1)--(14,0)--(13,0)--cycle,black); fill((15,1)--(16,1)--(16,0)--(15,0)--cycle,black); fill((14,0)--(15,0)--(15,-1)--(14,-1)--cycle,black); fill((16,0)--(17,0)--(17,-1)--(16,-1)--cycle,black); draw((19,3)--(24,3)--(24,-1)--(19,-1)--cycle,black); fill((19,3)--(20,3)--(20,2)--(19,2)--cycle,black); fill((21,3)--(22,3)--(22,2)--(21,2)--cycle,black); fill((23,3)--(24,3)--(24,2)--(23,2)--cycle,black); fill((20,2)--(21,2)--(21,1)--(20,1)--cycle,black); fill((22,2)--(23,2)--(23,1)--(22,1)--cycle,black); fill((19,1)--(20,1)--(20,0)--(19,0)--cycle,black); fill((21,1)--(22,1)--(22,0)--(21,0)--cycle,black); fill((23,1)--(24,1)--(24,0)--(23,0)--cycle,black); fill((20,0)--(21,0)--(21,-1)--(20,-1)--cycle,black); fill((22,0)--(23,0)--(23,-1)--(22,-1)--cycle,black); draw((26,3)--(29,3)--(29,-3)--(26,-3)--cycle); fill((26,3)--(27,3)--(27,2)--(26,2)--cycle,black); fill((28,3)--(29,3)--(29,2)--(28,2)--cycle,black); fill((27,2)--(28,2)--(28,1)--(27,1)--cycle,black); fill((26,1)--(27,1)--(27,0)--(26,0)--cycle,black); fill((28,1)--(29,1)--(29,0)--(28,0)--cycle,black); fill((27,0)--(28,0)--(28,-1)--(27,-1)--cycle,black); fill((26,-1)--(27,-1)--(27,-2)--(26,-2)--cycle,black); fill((28,-1)--(29,-1)--(29,-2)--(28,-2)--cycle,black); fill((27,-2)--(28,-2)--(28,-3)--(27,-3)--cycle,black); [/asy]\n\nChoices:\n(A) $6\\times 3$\n(B) $4\\times 5$\n(C) $3\\times 4$\n(D) $3\\times 5$\n(E) $4\\times 4$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AJHSME",
+          "source_dataset": "HARP",
+          "source_number": 5,
+          "source_task_id": "harp::1991::AJHSME::5",
+          "source_year": "1991",
+          "subject": "geometry"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "harp::1991::AJHSME::5"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$8$",
+          "$12$",
+          "$24$",
+          "$6$",
+          "$16$"
+        ],
+        "prompt": "Let $\\boxed{N}$ mean the number of whole number divisors of $N$. For example, $\\boxed{3}=2$ because 3 has two divisors, 1 and 3. Find the value of \\[\\boxed{\\boxed{11}\\times\\boxed{20}}.\\]\n\nChoices:\n(A) $8$\n(B) $12$\n(C) $24$\n(D) $6$\n(E) $16$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AJHSME",
+          "source_dataset": "HARP",
+          "source_number": 11,
+          "source_task_id": "harp::1997::AJHSME::11",
+          "source_year": "1997",
+          "subject": "number_theory"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "harp::1997::AJHSME::11"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$14$",
+          "$13$",
+          "$17$",
+          "$15$",
+          "$16$"
+        ],
+        "prompt": "Letters $A,B,C,$ and $D$ represent four different digits selected from $0,1,2,\\ldots ,9.$ If $(A+B)/(C+D)$ is an integer that is as large as possible, what is the value of $A+B$?\n\nChoices:\n(A) $14$\n(B) $13$\n(C) $17$\n(D) $15$\n(E) $16$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 2,
+          "source_task_id": "harp::1998::AHSME::2",
+          "source_year": "1998",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::1998::AHSME::2"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$24\\%$",
+          "$12\\%$",
+          "$18\\%$",
+          "$9\\%$",
+          "$4.5\\%$"
+        ],
+        "prompt": "A solid box is $15$ cm by $10$ cm by $8$ cm. A new solid is formed by removing a cube $3$ cm on a side from each corner of this box. What percent of the original volume is removed?\n\nChoices:\n(A) $24\\%$\n(B) $12\\%$\n(C) $18\\%$\n(D) $9\\%$\n(E) $4.5\\%$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 3,
+          "source_task_id": "harp::2003::AMC_12A::3",
+          "source_year": "2003",
+          "subject": "geometry"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::2003::AMC_12A::3"
+      },
+      {
+        "answer_index": 0,
+        "domain": "harp",
+        "options": [
+          "$\\textdollar 0$",
+          "$\\textdollar 0.53$",
+          "$\\textdollar 1.06$",
+          "$-\\textdollar 0.53$",
+          "$-\\textdollar 1.06$"
+        ],
+        "prompt": "The sales tax rate in Rubenenkoville is 6%. During a sale at the Bergville Coat Closet, the price of a coat is discounted 20% from its $90.00 price. Two clerks, Jack and Jill, calculate the bill independently. Jack rings up $90.00 and adds 6% sales tax, then subtracts 20% from this total. Jill rings up $90.00, subtracts 20% of the price, then adds 6% of the discounted price for sales tax. What is Jack's total minus Jill's total?\n\nChoices:\n(A) $\\textdollar 0$\n(B) $\\textdollar 0.53$\n(C) $\\textdollar 1.06$\n(D) $-\\textdollar 0.53$\n(E) $-\\textdollar 1.06$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_8",
+          "source_dataset": "HARP",
+          "source_number": 11,
+          "source_task_id": "harp::2005::AMC_8::11",
+          "source_year": "2005",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "A",
+        "split": "train",
+        "task_id": "harp::2005::AMC_8::11"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$411$",
+          "$174$",
+          "$129$",
+          "$137$",
+          "$233$"
+        ],
+        "prompt": "Francesca uses $100$ grams of lemon juice, $100$ grams of sugar, and $400$ grams of water to make lemonade. There are $25$ calories in $100$ grams of lemon juice and $386$ calories in $100$ grams of sugar. Water contains no calories. How many calories are in $200$ grams of her lemonade?\n\nChoices:\n(A) $411$\n(B) $174$\n(C) $129$\n(D) $137$\n(E) $233$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_10B",
+          "source_dataset": "HARP",
+          "source_number": 9,
+          "source_task_id": "harp::2006::AMC_10B::9",
+          "source_year": "2006",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "D",
+        "split": "train",
+        "task_id": "harp::2006::AMC_10B::9"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$10$",
+          "$30$",
+          "$90$",
+          "$210$",
+          "$5$"
+        ],
+        "prompt": "Two farmers agree that pigs are worth $300$ dollars and that goats are worth $210$ dollars. When one farmer owes the other money, he pays the debt in pigs or goats, with \"change\" received in the form of goats or pigs as necessary. (For example, a $390$ dollar debt could be paid with two pigs, with one goat received in change.) What is the amount of the smallest positive debt that can be resolved in this way?\n\nChoices:\n(A) $10$\n(B) $30$\n(C) $90$\n(D) $210$\n(E) $5$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 14,
+          "source_task_id": "harp::2006::AMC_12A::14",
+          "source_year": "2006",
+          "subject": "number_theory"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "harp::2006::AMC_12A::14"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$\\frac29$",
+          "$\\frac{\\sqrt{2}}{4}$",
+          "$\\frac15$",
+          "$\\frac16$",
+          "$\\frac13$"
+        ],
+        "prompt": "Three unit squares and two line segments connecting two pairs of vertices are shown. What is the area of $\\triangle ABC$? [asy] unitsize(2cm); defaultpen(linewidth(.8pt)+fontsize(10pt)); dotfactor=4; pair A=(0,0), B=(1,0); pair C=(0.8,-0.4); draw(A--(2,0)); draw((0,-1)--(2,-1)); draw((0,-2)--(1,-2)); draw(A--(0,-2)); draw(B--(1,-2)); draw((2,0)--(2,-1)); draw(A--(2,-1)); draw(B--(0,-2)); pair[] ps={A,B,C}; dot(ps); label(\"$A$\",A,N); label(\"$B$\",B,N); label(\"$C$\",C,W); [/asy]\n\nChoices:\n(A) $\\frac29$\n(B) $\\frac{\\sqrt{2}}{4}$\n(C) $\\frac15$\n(D) $\\frac16$\n(E) $\\frac13$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_10A",
+          "source_dataset": "HARP",
+          "source_number": 15,
+          "source_task_id": "harp::2012::AMC_10A::15",
+          "source_year": "2012",
+          "subject": "geometry"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::2012::AMC_10A::15"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$\\text{Tuesday}$",
+          "$\\text{Friday}$",
+          "$\\text{Saturday}$",
+          "$\\text{Sunday}$",
+          "$\\text{Monday}$"
+        ],
+        "prompt": "The War of $1812$ started with a declaration of war on Thursday, June $18$, $1812$. The peace treaty to end the war was signed $919$ days later, on December $24$, $1814$. On what day of the week was the treaty signed?\n\nChoices:\n(A) $\\text{Tuesday}$\n(B) $\\text{Friday}$\n(C) $\\text{Saturday}$\n(D) $\\text{Sunday}$\n(E) $\\text{Monday}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12B",
+          "source_dataset": "HARP",
+          "source_number": 5,
+          "source_task_id": "harp::2016::AMC_12B::5",
+          "source_year": "2016",
+          "subject": "number_theory"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::2016::AMC_12B::5"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$96$",
+          "$56$",
+          "$64$",
+          "$13$",
+          "$32$"
+        ],
+        "prompt": "Josh writes the numbers $1,2,3,\\dots,99,100$. He marks out $1$, skips the next number $(2)$, marks out $3$, and continues skipping and marking out the next number to the end of the list. Then he goes back to the start of his list, marks out the first remaining number $(2)$, skips the next number $(4)$, marks out $6$, skips $8$, marks out $10$, and so on to the end. Josh continues in this manner until only one number remains. What is that number?\n\nChoices:\n(A) $96$\n(B) $56$\n(C) $64$\n(D) $13$\n(E) $32$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12B",
+          "source_dataset": "HARP",
+          "source_number": 7,
+          "source_task_id": "harp::2016::AMC_12B::7",
+          "source_year": "2016",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::2016::AMC_12B::7"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$6$",
+          "$5\\sqrt{2}$",
+          "$6\\sqrt{2}$",
+          "$4\\sqrt{2}$",
+          "$8$"
+        ],
+        "prompt": "The circle having $(0,0)$ and $(8,6)$ as the endpoints of a diameter intersects the $x$-axis at a second point. What is the $x$-coordinate of this point?\n\nChoices:\n(A) $6$\n(B) $5\\sqrt{2}$\n(C) $6\\sqrt{2}$\n(D) $4\\sqrt{2}$\n(E) $8$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12B",
+          "source_dataset": "HARP",
+          "source_number": 6,
+          "source_task_id": "harp::2017::AMC_12B::6",
+          "source_year": "2017",
+          "subject": "algebra"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "harp::2017::AMC_12B::6"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$216$",
+          "$256$",
+          "$432$",
+          "$144$",
+          "$384$"
+        ],
+        "prompt": "How many ways are there to paint each of the integers $2, 3, \\cdots , 9$ either red, green, or blue so that each number has a different color from each of its proper divisors?\n\nChoices:\n(A) $216$\n(B) $256$\n(C) $432$\n(D) $144$\n(E) $384$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 13,
+          "source_task_id": "harp::2019::AMC_12A::13",
+          "source_year": "2019",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "C",
+        "split": "train",
+        "task_id": "harp::2019::AMC_12A::13"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$1331$",
+          "$245$",
+          "$593$",
+          "$1332$",
+          "$929$"
+        ],
+        "prompt": "The number $a=\\frac{p}{q}$, where $p$ and $q$ are relatively prime positive integers, has the property that the sum of all real numbers $x$ satisfying \\[\\lfloor x \\rfloor \\cdot \\{x\\} = a \\cdot x^2\\] is $420$, where $\\lfloor x \\rfloor$ denotes the greatest integer less than or equal to $x$ and $\\{x\\}=x- \\lfloor x \\rfloor$ denotes the fractional part of $x$. What is $p+q$?\n\nChoices:\n(A) $1331$\n(B) $245$\n(C) $593$\n(D) $1332$\n(E) $929$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 4,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 25,
+          "source_task_id": "harp::2020::AMC_12A::25",
+          "source_year": "2020",
+          "subject": "algebra"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "harp::2020::AMC_12A::25"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$2000$",
+          "$2050$",
+          "$600$",
+          "$650$",
+          "$1950$"
+        ],
+        "prompt": "Portia's high school has $3$ times as many students as Lara's high school. The two high schools have a total of $2600$ students. How many students does Portia's high school have?\n\nChoices:\n(A) $2000$\n(B) $2050$\n(C) $600$\n(D) $650$\n(E) $1950$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_10A",
+          "source_dataset": "HARP",
+          "source_number": 2,
+          "source_task_id": "harp::2021::AMC_10A::2",
+          "source_year": "2021",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "E",
+        "split": "train",
+        "task_id": "harp::2021::AMC_10A::2"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$100$",
+          "$117$",
+          "$93$",
+          "$125$",
+          "$85$"
+        ],
+        "prompt": "In square $ABCD$, points $P$ and $Q$ lie on $\\overline{AD}$ and $\\overline{AB}$, respectively. Segments $\\overline{BP}$ and $\\overline{CQ}$ intersect at right angles at $R$, with $BR = 6$ and $PR = 7$. What is the area of the square? [asy] size(170); defaultpen(linewidth(0.6)+fontsize(10)); real r = 3.5; pair A = origin, B = (5,0), C = (5,5), D = (0,5), P = (0,r), Q = (5-r,0), R = intersectionpoint(B--P,C--Q); draw(A--B--C--D--A^^B--P^^C--Q^^rightanglemark(P,R,C,7)); dot(\"$A$\",A,S); dot(\"$B$\",B,S); dot(\"$C$\",C,N); dot(\"$D$\",D,N); dot(\"$Q$\",Q,S); dot(\"$P$\",P,W); dot(\"$R$\",R,1.3*S); label(\"$7$\",(P+R)/2,NE); label(\"$6$\",(R+B)/2,NE); [/asy]\n\nChoices:\n(A) $100$\n(B) $117$\n(C) $93$\n(D) $125$\n(E) $85$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_10B",
+          "source_dataset": "HARP",
+          "source_number": 15,
+          "source_task_id": "harp::2021_Fall::AMC_10B::15",
+          "source_year": "2021_Fall",
+          "subject": "geometry"
+        },
+        "reference_answer": "B",
+        "split": "train",
+        "task_id": "harp::2021_Fall::AMC_10B::15"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$y^{2}+8y+1=0$",
+          "$y^{2}+14y-7=0$",
+          "$y^{2}+y-12=0$",
+          "$y^{2}+10y-7=0$",
+          "$\\text{None of these equations}$"
+        ],
+        "prompt": "The values of $y$ which will satisfy the equations $2x^{2}+6x+5y+1=0, 2x+y+3=0$ may be found by solving:\n\nChoices:\n(A) $y^{2}+8y+1=0$\n(B) $y^{2}+14y-7=0$\n(C) $y^{2}+y-12=0$\n(D) $y^{2}+10y-7=0$\n(E) $\\text{None of these equations}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 6,
+          "source_task_id": "harp::1950::AHSME::6",
+          "source_year": "1950",
+          "subject": "algebra"
+        },
+        "reference_answer": "D",
+        "split": "validation",
+        "task_id": "harp::1950::AHSME::6"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$y = 12    \\,\\,$",
+          "$y = \\frac {1}{2}(5 + 12)$",
+          "$y = \\frac {5x}{12} + 6$",
+          "$y =\\frac{144-7x}{12}$",
+          "$y = \\frac {5x}{12} + \\frac {12}{5}$"
+        ],
+        "prompt": "In right triangle $ABC, BC = 5, AC = 12$, and $AM = x; \\overline{MN} \\perp \\overline{AC}, \\overline{NP} \\perp \\overline{BC}$; $N$ is on $AB$. If $y = MN + NP$, one-half the perimeter of rectangle $MCPN$, then: [asy] defaultpen(linewidth(.8pt)); unitsize(2cm); pair A = origin; pair M = (1,0); pair C = (2,0); pair P = (2,0.5); pair B = (2,1); pair Q = (1,0.5); draw(A--B--C--cycle); draw(M--Q--P); label(\"$A$\",A,SW); label(\"$M$\",M,S); label(\"$C$\",C,SE); label(\"$P$\",P,E); label(\"$B$\",B,NE); label(\"$N$\",Q,NW);[/asy]\n\nChoices:\n(A) $y = 12    \\,\\,$\n(B) $y = \\frac {1}{2}(5 + 12)$\n(C) $y = \\frac {5x}{12} + 6$\n(D) $y =\\frac{144-7x}{12}$\n(E) $y = \\frac {5x}{12} + \\frac {12}{5}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": true,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 37,
+          "source_task_id": "harp::1957::AHSME::37",
+          "source_year": "1957",
+          "subject": "geometry"
+        },
+        "reference_answer": "D",
+        "split": "validation",
+        "task_id": "harp::1957::AHSME::37"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$\\text{two equal non-integral roots}$",
+          "$\\text{two equal integral roots}$",
+          "$\\text{no root}$",
+          "$\\text{infinitely many integral roots}$",
+          "$\\text{one integral root}$"
+        ],
+        "prompt": "The equation $x-\\frac{7}{x-3}=3-\\frac{7}{x-3}$ has:\n\nChoices:\n(A) $\\text{two equal non-integral roots}$\n(B) $\\text{two equal integral roots}$\n(C) $\\text{no root}$\n(D) $\\text{infinitely many integral roots}$\n(E) $\\text{one integral root}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 28,
+          "source_task_id": "harp::1960::AHSME::28",
+          "source_year": "1960",
+          "subject": "algebra"
+        },
+        "reference_answer": "C",
+        "split": "validation",
+        "task_id": "harp::1960::AHSME::28"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$25\\sqrt{-1}$",
+          "$25$",
+          "$-25$",
+          "$\\frac{1}{25}$",
+          "$-\\frac{1}{25}$"
+        ],
+        "prompt": "When simplified, $(-\\frac{1}{125})^{-2/3}$ becomes:\n\nChoices:\n(A) $25\\sqrt{-1}$\n(B) $25$\n(C) $-25$\n(D) $\\frac{1}{25}$\n(E) $-\\frac{1}{25}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 1,
+          "source_task_id": "harp::1961::AHSME::1",
+          "source_year": "1961",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "B",
+        "split": "validation",
+        "task_id": "harp::1961::AHSME::1"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$20$",
+          "$16$",
+          "$8$",
+          "$4$",
+          "$12$"
+        ],
+        "prompt": "$\\frac{16+8}{4-2}=$\n\nChoices:\n(A) $20$\n(B) $16$\n(C) $8$\n(D) $4$\n(E) $12$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AJHSME",
+          "source_dataset": "HARP",
+          "source_number": 2,
+          "source_task_id": "harp::1991::AJHSME::2",
+          "source_year": "1991",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "E",
+        "split": "validation",
+        "task_id": "harp::1991::AJHSME::2"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$\\frac{1}{3}$",
+          "$\\frac{1}{2}$",
+          "$\\frac{2-\\sqrt2}{2}$",
+          "$\\frac{5-\\sqrt5}{5}$",
+          "$\\frac{3-\\sqrt3}{3}$"
+        ],
+        "prompt": "Triangle $ABC$ is a right triangle with $\\angle ACB$ as its right angle, $m\\angle ABC = 60^\\circ$ , and $AB = 10$. Let $P$ be randomly chosen inside $ABC$ , and extend $\\overline{BP}$ to meet $\\overline{AC}$ at $D$. What is the probability that $BD > 5\\sqrt2$? [asy] import math; unitsize(4mm); defaultpen(fontsize(8pt)+linewidth(0.7)); dotfactor=4; pair A=(10,0); pair C=(0,0); pair B=(0,10.0/sqrt(3)); pair P=(2,2); pair D=extension(A,C,B,P); draw(A--C--B--cycle); draw(B--D); dot(P); label(\"A\",A,S); label(\"D\",D,S); label(\"C\",C,S); label(\"P\",P,NE); label(\"B\",B,N);[/asy]\n\nChoices:\n(A) $\\frac{1}{3}$\n(B) $\\frac{1}{2}$\n(C) $\\frac{2-\\sqrt2}{2}$\n(D) $\\frac{5-\\sqrt5}{5}$\n(E) $\\frac{3-\\sqrt3}{3}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 4,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 22,
+          "source_task_id": "harp::2002::AMC_12A::22",
+          "source_year": "2002",
+          "subject": "geometry"
+        },
+        "reference_answer": "E",
+        "split": "validation",
+        "task_id": "harp::2002::AMC_12A::22"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$32-2\\pi$",
+          "$28-4\\pi$",
+          "$28-2\\pi$",
+          "$16-2\\pi$",
+          "$16-4\\pi$"
+        ],
+        "prompt": "Two $4 \\times 4$ squares intersect at right angles, bisecting their intersecting sides, as shown. The circle's diameter is the segment between the two points of intersection. What is the area of the shaded region created by removing the circle from the squares? [asy] unitsize(6mm); draw(unitcircle); filldraw((0,1)--(1,2)--(3,0)--(1,-2)--(0,-1)--(-1,-2)--(-3,0)--(-1,2)--cycle,lightgray,black); filldraw(unitcircle,white,black); [/asy]\n\nChoices:\n(A) $32-2\\pi$\n(B) $28-4\\pi$\n(C) $28-2\\pi$\n(D) $16-2\\pi$\n(E) $16-4\\pi$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_8",
+          "source_dataset": "HARP",
+          "source_number": 25,
+          "source_task_id": "harp::2004::AMC_8::25",
+          "source_year": "2004",
+          "subject": "geometry"
+        },
+        "reference_answer": "C",
+        "split": "validation",
+        "task_id": "harp::2004::AMC_8::25"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$\\frac{4}{7}$",
+          "$\\frac{1}{4}$",
+          "$\\frac{2}{7}$",
+          "$\\frac{4}{11}$",
+          "$\\frac{1}{2}$"
+        ],
+        "prompt": "Eight points are spaced around at intervals of one unit around a $2 \\times 2$ square, as shown. Two of the $8$ points are chosen at random. What is the probability that the two points are one unit apart? [asy] size((50)); dot((5,0)); dot((5,5)); dot((0,5)); dot((-5,5)); dot((-5,0)); dot((-5,-5)); dot((0,-5)); dot((5,-5)); [/asy]\n\nChoices:\n(A) $\\frac{4}{7}$\n(B) $\\frac{1}{4}$\n(C) $\\frac{2}{7}$\n(D) $\\frac{4}{11}$\n(E) $\\frac{1}{2}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_8",
+          "source_dataset": "HARP",
+          "source_number": 19,
+          "source_task_id": "harp::2008::AMC_8::19",
+          "source_year": "2008",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "C",
+        "split": "validation",
+        "task_id": "harp::2008::AMC_8::19"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$3250$",
+          "$3120$",
+          "$3750$",
+          "$2880$",
+          "$2520$"
+        ],
+        "prompt": "Each vertex of convex pentagon $ABCDE$ is to be assigned a color. There are $6$ colors to choose from, and the ends of each diagonal must have different colors. How many different colorings are possible?\n\nChoices:\n(A) $3250$\n(B) $3120$\n(C) $3750$\n(D) $2880$\n(E) $2520$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 16,
+          "source_task_id": "harp::2011::AMC_12A::16",
+          "source_year": "2011",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "B",
+        "split": "validation",
+        "task_id": "harp::2011::AMC_12A::16"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$0$",
+          "$13.5$",
+          "$18.5$",
+          "${-}18.5$",
+          "${-}13.5$"
+        ],
+        "prompt": "A school has $100$ students and $5$ teachers. In the first period, each student is taking one class, and each teacher is teaching one class. The enrollments in the classes are $50, 20, 20, 5,$ and $5$. Let $t$ be the average value obtained if a teacher is picked at random and the number of students in their class is noted. Let $s$ be the average value obtained if a student was picked at random and the number of students in their class, including the student, is noted. What is $t-s$?\n\nChoices:\n(A) $0$\n(B) $13.5$\n(C) $18.5$\n(D) ${-}18.5$\n(E) ${-}13.5$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 7,
+          "source_task_id": "harp::2021_Fall::AMC_12A::7",
+          "source_year": "2021_Fall",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "E",
+        "split": "validation",
+        "task_id": "harp::2021_Fall::AMC_12A::7"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$(\\frac 25, \\frac 45 )$",
+          "$( \\frac 23, \\frac 45 )$",
+          "$( \\frac 45, \\frac 25 )$",
+          "$(\\frac 23, \\frac 23 )$",
+          "$(\\frac 23, \\frac 13 )$"
+        ],
+        "prompt": "A bug (of negligible size) starts at the origin on the coordinate plane. First, it moves one unit right to $(1,0)$. Then it makes a $90^\\circ$ counterclockwise and travels $\\frac 12$ a unit to $\\left(1, \\frac 12 \\right)$. If it continues in this fashion, each time making a $90^\\circ$ degree turn counterclockwise and traveling half as far as the previous move, to which of the following points will it come closest?\n\nChoices:\n(A) $(\\frac 25, \\frac 45 )$\n(B) $( \\frac 23, \\frac 45 )$\n(C) $( \\frac 45, \\frac 25 )$\n(D) $(\\frac 23, \\frac 23 )$\n(E) $(\\frac 23, \\frac 13 )$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 13,
+          "source_task_id": "harp::1980::AHSME::13",
+          "source_year": "1980",
+          "subject": "algebra"
+        },
+        "reference_answer": "C",
+        "split": "test",
+        "task_id": "harp::1980::AHSME::13"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$9 \\frac{1}{2}$",
+          "$8+\\sqrt{3}$",
+          "$7+\\frac{2}{3}\\sqrt{3}$",
+          "$8+3\\sqrt{3}$",
+          "$8$"
+        ],
+        "prompt": "Figure $ABCD$ is a trapezoid with $AB||DC$, $AB=5$, $BC=3\\sqrt{2}$, $\\angle BCD=45^\\circ$, and $\\angle CDA=60^\\circ$. The length of $DC$ is\n\nChoices:\n(A) $9 \\frac{1}{2}$\n(B) $8+\\sqrt{3}$\n(C) $7+\\frac{2}{3}\\sqrt{3}$\n(D) $8+3\\sqrt{3}$\n(E) $8$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 8,
+          "source_task_id": "harp::1984::AHSME::8",
+          "source_year": "1984",
+          "subject": "geometry"
+        },
+        "reference_answer": "B",
+        "split": "test",
+        "task_id": "harp::1984::AHSME::8"
+      },
+      {
+        "answer_index": 0,
+        "domain": "harp",
+        "options": [
+          "$40$",
+          "$41$",
+          "$119$",
+          "$30$",
+          "$60$"
+        ],
+        "prompt": "There are $120$ seats in a row. What is the fewest number of seats that must be occupied so the next person to be seated must sit next to someone?\n\nChoices:\n(A) $40$\n(B) $41$\n(C) $119$\n(D) $30$\n(E) $60$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AJHSME",
+          "source_dataset": "HARP",
+          "source_number": 19,
+          "source_task_id": "harp::1990::AJHSME::19",
+          "source_year": "1990",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "A",
+        "split": "test",
+        "task_id": "harp::1990::AJHSME::19"
+      },
+      {
+        "answer_index": 0,
+        "domain": "harp",
+        "options": [
+          "$-0.5$",
+          "$0.5$",
+          "$1$",
+          "$-1$",
+          "$0$"
+        ],
+        "prompt": "Consider the sequence $1,-2,3,-4,5,-6,\\ldots,$ whose $n$th term is $(-1)^{n+1}\\cdot n$. What is the average of the first $200$ terms of the sequence?\n\nChoices:\n(A) $-0.5$\n(B) $0.5$\n(C) $1$\n(D) $-1$\n(E) $0$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 6,
+          "source_task_id": "harp::1997::AHSME::6",
+          "source_year": "1997",
+          "subject": "algebra"
+        },
+        "reference_answer": "A",
+        "split": "test",
+        "task_id": "harp::1997::AHSME::6"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$26$",
+          "$10$",
+          "$22$",
+          "$18$",
+          "$14$"
+        ],
+        "prompt": "In triangle $ABC$, angle $C$ is a right angle and $CB > CA$. Point $D$ is located on $\\overline{BC}$ so that angle $CAD$ is twice angle $DAB$. If $AC/AD = 2/3$, then $CD/BD = m/n$, where $m$ and $n$ are relatively prime positive integers. Find $m+n$.\n\nChoices:\n(A) $26$\n(B) $10$\n(C) $22$\n(D) $18$\n(E) $14$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 4,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AHSME",
+          "source_dataset": "HARP",
+          "source_number": 28,
+          "source_task_id": "harp::1998::AHSME::28",
+          "source_year": "1998",
+          "subject": "geometry"
+        },
+        "reference_answer": "E",
+        "split": "test",
+        "task_id": "harp::1998::AHSME::28"
+      },
+      {
+        "answer_index": 3,
+        "domain": "harp",
+        "options": [
+          "$300$",
+          "$7500$",
+          "$9000$",
+          "$250$",
+          "$1500$"
+        ],
+        "prompt": "You and five friends need to raise $1500$ dollars in donations for a charity, dividing the fundraising equally. How many dollars will each of you need to raise?\n\nChoices:\n(A) $300$\n(B) $7500$\n(C) $9000$\n(D) $250$\n(E) $1500$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 1,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_10A",
+          "source_dataset": "HARP",
+          "source_number": 1,
+          "source_task_id": "harp::2004::AMC_10A::1",
+          "source_year": "2004",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "D",
+        "split": "test",
+        "task_id": "harp::2004::AMC_10A::1"
+      },
+      {
+        "answer_index": 2,
+        "domain": "harp",
+        "options": [
+          "$14$",
+          "$13$",
+          "$15$",
+          "$12$",
+          "$11$"
+        ],
+        "prompt": "A small bottle of shampoo can hold $35$ milliliters of shampoo, whereas a large bottle can hold $500$ milliliters of shampoo. Jasmine wants to buy the minimum number of small bottles necessary to completely fill a large bottle. How many bottles must she buy?\n\nChoices:\n(A) $14$\n(B) $13$\n(C) $15$\n(D) $12$\n(E) $11$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12A",
+          "source_dataset": "HARP",
+          "source_number": 3,
+          "source_task_id": "harp::2011::AMC_12A::3",
+          "source_year": "2011",
+          "subject": "prealgebra"
+        },
+        "reference_answer": "C",
+        "split": "test",
+        "task_id": "harp::2011::AMC_12A::3"
+      },
+      {
+        "answer_index": 1,
+        "domain": "harp",
+        "options": [
+          "$\\dfrac{13}{72}$",
+          "$\\dfrac5{24}$",
+          "$\\dfrac16$",
+          "$\\dfrac29$",
+          "$\\dfrac7{36}$"
+        ],
+        "prompt": "Three fair six-sided dice are rolled. What is the probability that the values shown on two of the dice sum to the value shown on the remaining die?\n\nChoices:\n(A) $\\dfrac{13}{72}$\n(B) $\\dfrac5{24}$\n(C) $\\dfrac16$\n(D) $\\dfrac29$\n(E) $\\dfrac7{36}$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_10A",
+          "source_dataset": "HARP",
+          "source_number": 17,
+          "source_task_id": "harp::2014::AMC_10A::17",
+          "source_year": "2014",
+          "subject": "counting_and_probability"
+        },
+        "reference_answer": "B",
+        "split": "test",
+        "task_id": "harp::2014::AMC_10A::17"
+      },
+      {
+        "answer_index": 4,
+        "domain": "harp",
+        "options": [
+          "$20$",
+          "$5$",
+          "$15$",
+          "$1$",
+          "$4$"
+        ],
+        "prompt": "Laura added two three-digit positive integers. All six digits in these numbers are different. Laura's sum is a three-digit number $S$. What is the smallest possible value for the sum of the digits of $S$?\n\nChoices:\n(A) $20$\n(B) $5$\n(C) $15$\n(D) $1$\n(E) $4$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 2,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_10B",
+          "source_dataset": "HARP",
+          "source_number": 6,
+          "source_task_id": "harp::2016::AMC_10B::6",
+          "source_year": "2016",
+          "subject": "number_theory"
+        },
+        "reference_answer": "E",
+        "split": "test",
+        "task_id": "harp::2016::AMC_10B::6"
+      },
+      {
+        "answer_index": 0,
+        "domain": "harp",
+        "options": [
+          "$17$",
+          "$15$",
+          "$14$",
+          "$13$",
+          "$16$"
+        ],
+        "prompt": "As shown in the figure, line segment $\\overline{AD}$ is trisected by points $B$ and $C$ so that $AB=BC=CD=2.$ Three semicircles of radius $1,$ $\\overarc{AEB},\\overarc{BFC},$ and $\\overarc{CGD},$ have their diameters on $\\overline{AD},$ and are tangent to line $EG$ at $E,F,$ and $G,$ respectively. A circle of radius $2$ has its center on $F.$ The area of the region inside the circle but outside the three semicircles, shaded in the figure, can be expressed in the form \\[\\frac{a}{b}\\cdot\\pi-\\sqrt{c}+d,\\] where $a,b,c,$ and $d$ are positive integers and $a$ and $b$ are relatively prime. What is $a+b+c+d$? [asy] size(6cm); filldraw(circle((0,0),2), grey); filldraw(arc((0,-1),1,0,180) -- cycle, gray(1.0)); filldraw(arc((-2,-1),1,0,180) -- cycle, gray(1.0)); filldraw(arc((2,-1),1,0,180) -- cycle, gray(1.0)); dot((-3,-1)); label(\"$A$\",(-3,-1),S); dot((-2,0)); label(\"$E$\",(-2,0),NW); dot((-1,-1)); label(\"$B$\",(-1,-1),S); dot((0,0)); label(\"$F$\",(0,0),N); dot((1,-1)); label(\"$C$\",(1,-1), S); dot((2,0)); label(\"$G$\", (2,0),NE); dot((3,-1)); label(\"$D$\", (3,-1), S); [/asy]\n\nChoices:\n(A) $17$\n(B) $15$\n(C) $14$\n(D) $13$\n(E) $16$\n\nReturn only the letter of the correct choice (A-E).",
+        "public_metadata": {
+          "level": 3,
+          "multiple_choice_only": false,
+          "option_count": 5,
+          "source_contest": "AMC_12B",
+          "source_dataset": "HARP",
+          "source_number": 15,
+          "source_task_id": "harp::2019::AMC_12B::15",
+          "source_year": "2019",
+          "subject": "geometry"
+        },
+        "reference_answer": "A",
+        "split": "test",
+        "task_id": "harp::2019::AMC_12B::15"
+      }
+    ]
+  },
+  "source_path": "/Users/zhiqi/Documents/RoundValue/benchmark/harp/HARP-50.json",
+  "source_sha256": "e72dc1c93cf7477523ec39fbc478675b0fea8e6a000d09d21a0306ab88fdfc87"
+}

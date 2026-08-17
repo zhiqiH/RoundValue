@@ -1,0 +1,3011 @@
+{
+  "bootstrap": {
+    "samples": 2000,
+    "seed": 20260813
+  },
+  "evaluated_at": "2026-08-17T01:27:36.954538+00:00",
+  "evaluation_split": "test",
+  "label_parameters": {
+    "lambda_cost": 0.0,
+    "mu_latency": 0.0
+  },
+  "max_rounds": 5,
+  "model_status": {
+    "provided": true,
+    "roundvalue_kind": "linear",
+    "task_only_kind": "linear"
+  },
+  "n_records": 10,
+  "pairwise_vs_fixed_1": {
+    "fixed_1": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "fixed_2": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": -0.3,
+        "mean_difference": -0.1,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 26823.1,
+        "ci95_low": 8917.3,
+        "mean_difference": 16415.4,
+        "n_paired": 10
+      }
+    },
+    "fixed_3": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": -0.3,
+        "mean_difference": -0.1,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 40386.7,
+        "ci95_low": 17637.4,
+        "mean_difference": 27327.0,
+        "n_paired": 10
+      }
+    },
+    "fixed_4": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": -0.3,
+        "mean_difference": -0.1,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 52814.0,
+        "ci95_low": 27257.4,
+        "mean_difference": 38400.7,
+        "n_paired": 10
+      }
+    },
+    "fixed_5": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": -0.5,
+        "mean_difference": -0.2,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 84294.3,
+        "ci95_low": 36283.9,
+        "mean_difference": 55306.0,
+        "n_paired": 10
+      }
+    },
+    "oracle": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "roundvalue": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "task_only": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    }
+  },
+  "policies": {
+    "fixed_1": {
+      "metrics": {
+        "accuracy": 0.8,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 16139.3,
+        "mean_cost_usd": 0.0011869312,
+        "mean_input_tokens": 8421.8,
+        "mean_latency_ms": 8462.0,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 1157.1,
+        "mean_quality": 0.8,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 9578.9,
+        "mean_utility": 0.8,
+        "mean_wall_clock_ms": 8462.0,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 21263.0,
+          "available": true,
+          "checkpoint_hash": "f60afbdf62dc3c7fe203f38c3a61e2ce5325ba1559ca6557e4265c4f84f83c62",
+          "cost_usd": 0.0014068712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9205.0,
+          "latency_ms": 11589.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1551.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "fixed_round",
+          "total_tokens": 10756.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 1.0,
+          "wall_clock_ms": 11589.0
+        },
+        {
+          "api_latency_ms": 19581.0,
+          "available": true,
+          "checkpoint_hash": "1a7bf31ac6904fda6364ae9a970f06271d7d227c1dcd207623b0f3e6314e306d",
+          "cost_usd": 0.0015149512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9909.0,
+          "latency_ms": 11019.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1585.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "fixed_round",
+          "total_tokens": 11494.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 1.0,
+          "wall_clock_ms": 11019.0
+        },
+        {
+          "api_latency_ms": 13575.0,
+          "available": true,
+          "checkpoint_hash": "a112750a9cd383dd4169fa132b79f6c39e2bae101df9426d3928dacb1c7e9f68",
+          "cost_usd": 0.0009364712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7281.0,
+          "latency_ms": 6200.0,
+          "logical_calls": 7.0,
+          "output_tokens": 833.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "fixed_round",
+          "total_tokens": 8114.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 6200.0
+        },
+        {
+          "api_latency_ms": 12569.0,
+          "available": true,
+          "checkpoint_hash": "f77081a4a16fa1aadfc9c30a23cbbbb7e072142d1fad752de9d0e01e504a4de6",
+          "cost_usd": 0.0009536912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7560.0,
+          "latency_ms": 5772.0,
+          "logical_calls": 7.0,
+          "output_tokens": 755.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "fixed_round",
+          "total_tokens": 8315.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 5772.0
+        },
+        {
+          "api_latency_ms": 13579.0,
+          "available": true,
+          "checkpoint_hash": "0e865a4f79fbe3a1e5cbcfc676dab2488d047e2dd5ac67c37f8ea10b1b54de51",
+          "cost_usd": 0.0009202312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6967.0,
+          "latency_ms": 6511.0,
+          "logical_calls": 7.0,
+          "output_tokens": 932.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "fixed_round",
+          "total_tokens": 7899.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 6511.0
+        },
+        {
+          "api_latency_ms": 15595.0,
+          "available": true,
+          "checkpoint_hash": "7efefd13f0fdbaf3c96106e30e2352d29b882b206965e33e2d245c5dd78e6969",
+          "cost_usd": 0.0010721312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8030.0,
+          "latency_ms": 7751.0,
+          "logical_calls": 7.0,
+          "output_tokens": 943.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "fixed_round",
+          "total_tokens": 8973.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 7751.0
+        },
+        {
+          "api_latency_ms": 13433.0,
+          "available": true,
+          "checkpoint_hash": "ac5dbf9ecee7b9033687276201fcb971d4f71e8e3365f340ba116013a8de7cf4",
+          "cost_usd": 0.0009506112,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7374.0,
+          "latency_ms": 6054.0,
+          "logical_calls": 7.0,
+          "output_tokens": 837.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "fixed_round",
+          "total_tokens": 8211.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 6054.0
+        },
+        {
+          "api_latency_ms": 26609.0,
+          "available": true,
+          "checkpoint_hash": "017074606ae4bd34a600595b0941758e3adff2a8ed5aa77503066bb6f549a292",
+          "cost_usd": 0.0023473912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 13795.0,
+          "latency_ms": 18115.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2615.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "fixed_round",
+          "total_tokens": 16410.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 18115.0
+        },
+        {
+          "api_latency_ms": 11776.0,
+          "available": true,
+          "checkpoint_hash": "b0d260ade784d08986337cb2dce35483f27fbdc17455c16d371c430a9e241e7f",
+          "cost_usd": 0.0008911112000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7171.0,
+          "latency_ms": 5488.0,
+          "logical_calls": 7.0,
+          "output_tokens": 726.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "fixed_round",
+          "total_tokens": 7897.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 5488.0
+        },
+        {
+          "api_latency_ms": 13413.0,
+          "available": true,
+          "checkpoint_hash": "9f6627f4a960d50890811a6779f92bf408e5f528aafbbd267b0de7c1356c825f",
+          "cost_usd": 0.0008758512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6926.0,
+          "latency_ms": 6121.0,
+          "logical_calls": 7.0,
+          "output_tokens": 794.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "fixed_round",
+          "total_tokens": 7720.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 6121.0
+        }
+      ]
+    },
+    "fixed_2": {
+      "metrics": {
+        "accuracy": 0.7,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 52960.9,
+        "mean_cost_usd": 0.00400428056,
+        "mean_input_tokens": 19824.1,
+        "mean_latency_ms": 35984.3,
+        "mean_logical_calls": 14.0,
+        "mean_oracle_quality_regret": 0.1,
+        "mean_oracle_utility_regret": 0.1,
+        "mean_output_tokens": 6170.2,
+        "mean_quality": 0.7,
+        "mean_stop_round": 2.0,
+        "mean_total_tokens": 25994.3,
+        "mean_utility": 0.7,
+        "mean_wall_clock_ms": 35984.3,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "2": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 41699.0,
+          "available": true,
+          "checkpoint_hash": "97564efc02b34647eac06585ae64f36a7e4fda4c608353efce4dd6ce4918ca09",
+          "cost_usd": 0.0030334752000000004,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 19214.0,
+          "latency_ms": 21434.0,
+          "logical_calls": 14.0,
+          "output_tokens": 2983.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "fixed_round",
+          "total_tokens": 22197.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 0.0,
+          "wall_clock_ms": 21434.0
+        },
+        {
+          "api_latency_ms": 88325.0,
+          "available": true,
+          "checkpoint_hash": "3433dc1e3ba74f2b046d45b371869f0379e00fcea0c215c06215a7c85627dd37",
+          "cost_usd": 0.0092372952,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 49029.0,
+          "latency_ms": 62757.0,
+          "logical_calls": 14.0,
+          "output_tokens": 10232.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "fixed_round",
+          "total_tokens": 59261.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 1.0,
+          "wall_clock_ms": 62757.0
+        },
+        {
+          "api_latency_ms": 29336.0,
+          "available": true,
+          "checkpoint_hash": "e228200e24e4d7db08ceaf91cb4044d8f15245ebda157e7308b2e7789b2b1097",
+          "cost_usd": 0.0021744352000000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 15392.0,
+          "latency_ms": 13472.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1826.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "fixed_round",
+          "total_tokens": 17218.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 13472.0
+        },
+        {
+          "api_latency_ms": 25558.0,
+          "available": true,
+          "checkpoint_hash": "878b4104e624a3eec1419993d2ae4131a4ab952d15fb7016d16007d3daeb13cd",
+          "cost_usd": 0.0021097552000000006,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 15636.0,
+          "latency_ms": 11710.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1473.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "fixed_round",
+          "total_tokens": 17109.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 11710.0
+        },
+        {
+          "api_latency_ms": 28036.0,
+          "available": true,
+          "checkpoint_hash": "e10412dadfcf19e0050b7dbfd898790fdd594a94981d1bd3e07810b209f18c35",
+          "cost_usd": 0.0020429752000000003,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 14345.0,
+          "latency_ms": 12996.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1880.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "fixed_round",
+          "total_tokens": 16225.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 12996.0
+        },
+        {
+          "api_latency_ms": 34949.0,
+          "available": true,
+          "checkpoint_hash": "f258ce500e69518fa8ef807964962bc0eb9819d6172e8b3b0a7a1bcf43ca3a81",
+          "cost_usd": 0.0024705352000000003,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 17047.0,
+          "latency_ms": 15941.0,
+          "logical_calls": 14.0,
+          "output_tokens": 2056.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "fixed_round",
+          "total_tokens": 19103.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 15941.0
+        },
+        {
+          "api_latency_ms": 26407.0,
+          "available": true,
+          "checkpoint_hash": "efc3d220122adbc2dc7c1e8c6895cae99ddbf397bc4b33cccd25f09d6298ddbc",
+          "cost_usd": 0.0021063952000000006,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 15192.0,
+          "latency_ms": 12019.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1683.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "fixed_round",
+          "total_tokens": 16875.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 12019.0
+        },
+        {
+          "api_latency_ms": 203563.0,
+          "available": true,
+          "checkpoint_hash": "23f2c77e7d1c5eabbfa6ee43612986b2c30042b3fdccae1858adc1425f3a66b3",
+          "cost_usd": 0.012872428800000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 22974.0,
+          "latency_ms": 185850.0,
+          "logical_calls": 14.0,
+          "output_tokens": 36493.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "fixed_round",
+          "total_tokens": 59467.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 185850.0
+        },
+        {
+          "api_latency_ms": 24895.0,
+          "available": true,
+          "checkpoint_hash": "5610dfbd97f6ef4dc39f27608b6d38b7b20d679029857d1292adeb029bd67d23",
+          "cost_usd": 0.0020011152,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 14952.0,
+          "latency_ms": 11421.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1427.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "fixed_round",
+          "total_tokens": 16379.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 11421.0
+        },
+        {
+          "api_latency_ms": 26841.0,
+          "available": true,
+          "checkpoint_hash": "b6e640e0f1fb91f2902a899e2122cbf92b026cd20587077a056e07b3b1ae00d1",
+          "cost_usd": 0.0019943952,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 14460.0,
+          "latency_ms": 12243.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1649.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "fixed_round",
+          "total_tokens": 16109.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 12243.0
+        }
+      ]
+    },
+    "fixed_3": {
+      "metrics": {
+        "accuracy": 0.7,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 71087.6,
+        "mean_cost_usd": 0.005540010560000001,
+        "mean_input_tokens": 29423.4,
+        "mean_latency_ms": 44775.6,
+        "mean_logical_calls": 21.0,
+        "mean_oracle_quality_regret": 0.1,
+        "mean_oracle_utility_regret": 0.1,
+        "mean_output_tokens": 7482.5,
+        "mean_quality": 0.7,
+        "mean_stop_round": 3.0,
+        "mean_total_tokens": 36905.9,
+        "mean_utility": 0.7,
+        "mean_wall_clock_ms": 44775.6,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "3": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 57704.0,
+          "available": true,
+          "checkpoint_hash": "a9e9fce488e6fed2d44d74b59e6c8bc3d33c4a2383e3f8739d64b6881c3a135b",
+          "cost_usd": 0.004300139200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 27340.0,
+          "latency_ms": 29471.0,
+          "logical_calls": 21.0,
+          "output_tokens": 4071.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "fixed_round",
+          "total_tokens": 31411.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 1.0,
+          "wall_clock_ms": 29471.0
+        },
+        {
+          "api_latency_ms": 135378.0,
+          "available": true,
+          "checkpoint_hash": "9aa0028276eb2dab46faba5633a1a904a993617faaf9e03b291d4e8fdd969a7e",
+          "cost_usd": 0.0135667392,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 71872.0,
+          "latency_ms": 87078.0,
+          "logical_calls": 21.0,
+          "output_tokens": 14900.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "fixed_round",
+          "total_tokens": 86772.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 0.0,
+          "wall_clock_ms": 87078.0
+        },
+        {
+          "api_latency_ms": 43176.0,
+          "available": true,
+          "checkpoint_hash": "aaeee0d0986f10db9c7b6928642d8d639e3cd49efae0d31e77e92bd1920d5dab",
+          "cost_usd": 0.0033204192000000003,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 23178.0,
+          "latency_ms": 19819.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2653.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "fixed_round",
+          "total_tokens": 25831.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 19819.0
+        },
+        {
+          "api_latency_ms": 38925.0,
+          "available": true,
+          "checkpoint_hash": "04df089c8bd8b4b6073908e629b586b5be1175356cc23719ee1b18bfa0aecbc1",
+          "cost_usd": 0.0032868192000000004,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 23780.0,
+          "latency_ms": 18409.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2232.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "fixed_round",
+          "total_tokens": 26012.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 18409.0
+        },
+        {
+          "api_latency_ms": 42698.0,
+          "available": true,
+          "checkpoint_hash": "4c7f43289b87af70b79f39aab644c1cc3f8802d3ccc491bee20fc23fcdd1b792",
+          "cost_usd": 0.0032490192,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 22070.0,
+          "latency_ms": 19721.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2952.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "fixed_round",
+          "total_tokens": 25022.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 19721.0
+        },
+        {
+          "api_latency_ms": 52717.0,
+          "available": true,
+          "checkpoint_hash": "375428dd2fc4f6e3fbd781ed52d854be77107929f33a004fa67714caf849ecd3",
+          "cost_usd": 0.0038560592000000007,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 26054.0,
+          "latency_ms": 24712.0,
+          "logical_calls": 21.0,
+          "output_tokens": 3128.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "fixed_round",
+          "total_tokens": 29182.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 24712.0
+        },
+        {
+          "api_latency_ms": 38917.0,
+          "available": true,
+          "checkpoint_hash": "d77b0a81e7e06abd0be7633e4948c95fb44ca903340f6d37b89f082bb6aca3ea",
+          "cost_usd": 0.0032148592000000005,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 22878.0,
+          "latency_ms": 17830.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2426.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "fixed_round",
+          "total_tokens": 25304.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 17830.0
+        },
+        {
+          "api_latency_ms": 222969.0,
+          "available": true,
+          "checkpoint_hash": "bc33328c9aa3caa6f6b6e2ef5493c3d5cdc46570fdbf8b07ea2c0f7d7735cdda",
+          "cost_usd": 0.0144196528,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 32426.0,
+          "latency_ms": 194553.0,
+          "logical_calls": 21.0,
+          "output_tokens": 37920.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "fixed_round",
+          "total_tokens": 70346.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 194553.0
+        },
+        {
+          "api_latency_ms": 37490.0,
+          "available": true,
+          "checkpoint_hash": "e94ce0229f85600d7bc0698596719675d189fc8ff23669d379a884a93c49ef33",
+          "cost_usd": 0.0031062192000000004,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 22684.0,
+          "latency_ms": 16751.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2135.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "fixed_round",
+          "total_tokens": 24819.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 16751.0
+        },
+        {
+          "api_latency_ms": 40902.0,
+          "available": true,
+          "checkpoint_hash": "6a5646abb3a8eac2e9856b747be887efb38d02926fd2b9efef68ca8e40bf196a",
+          "cost_usd": 0.0030801792000000007,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 21952.0,
+          "latency_ms": 19412.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2408.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "fixed_round",
+          "total_tokens": 24360.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 19412.0
+        }
+      ]
+    },
+    "fixed_4": {
+      "metrics": {
+        "accuracy": 0.7,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 90591.0,
+        "mean_cost_usd": 0.00710553256,
+        "mean_input_tokens": 39134.1,
+        "mean_latency_ms": 55104.4,
+        "mean_logical_calls": 28.0,
+        "mean_oracle_quality_regret": 0.1,
+        "mean_oracle_utility_regret": 0.1,
+        "mean_output_tokens": 8845.5,
+        "mean_quality": 0.7,
+        "mean_stop_round": 4.0,
+        "mean_total_tokens": 47979.6,
+        "mean_utility": 0.7,
+        "mean_wall_clock_ms": 55104.4,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "4": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 101910.0,
+          "available": true,
+          "checkpoint_hash": "cbee8cb74b638e267f46754d9c76011b98e8e29c02db87741b9b039c51d09673",
+          "cost_usd": 0.0078502032,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 45992.0,
+          "latency_ms": 56297.0,
+          "logical_calls": 28.0,
+          "output_tokens": 8051.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "fixed_round",
+          "total_tokens": 54043.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 1.0,
+          "wall_clock_ms": 56297.0
+        },
+        {
+          "api_latency_ms": 159832.0,
+          "available": true,
+          "checkpoint_hash": "09eafd895d719614dbdea09de6e3979923750ba85afcf4a08d3271e6bde4a092",
+          "cost_usd": 0.015631123200000003,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 84070.0,
+          "latency_ms": 102310.0,
+          "logical_calls": 28.0,
+          "output_tokens": 16801.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "fixed_round",
+          "total_tokens": 100871.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 0.0,
+          "wall_clock_ms": 102310.0
+        },
+        {
+          "api_latency_ms": 57417.0,
+          "available": true,
+          "checkpoint_hash": "aa7ee98caa245d85d8421bceee7a42aab770dff08041db9c8d2e3a12caf41cf6",
+          "cost_usd": 0.004493983200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 31123.0,
+          "latency_ms": 26374.0,
+          "logical_calls": 28.0,
+          "output_tokens": 3499.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "fixed_round",
+          "total_tokens": 34622.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 26374.0
+        },
+        {
+          "api_latency_ms": 54063.0,
+          "available": true,
+          "checkpoint_hash": "83c55f222ab31ac42afe7db075a73607b548c203196ef64477e5f2acb8ddb6b3",
+          "cost_usd": 0.0044476432,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 31622.0,
+          "latency_ms": 26662.0,
+          "logical_calls": 28.0,
+          "output_tokens": 3084.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "fixed_round",
+          "total_tokens": 34706.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 26662.0
+        },
+        {
+          "api_latency_ms": 56819.0,
+          "available": true,
+          "checkpoint_hash": "cb0177c092bf7745cded3a381bd1b55327b1e57488125039f1f168fa6a641767",
+          "cost_usd": 0.0043370432,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 29328.0,
+          "latency_ms": 26171.0,
+          "logical_calls": 28.0,
+          "output_tokens": 3836.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "fixed_round",
+          "total_tokens": 33164.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 26171.0
+        },
+        {
+          "api_latency_ms": 70751.0,
+          "available": true,
+          "checkpoint_hash": "4b4a444cce9ec393161f6d29fc997fcff27f3d56ad06dd6a4343b80af5176141",
+          "cost_usd": 0.0052518032,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 35186.0,
+          "latency_ms": 33760.0,
+          "logical_calls": 28.0,
+          "output_tokens": 4174.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "fixed_round",
+          "total_tokens": 39360.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 33760.0
+        },
+        {
+          "api_latency_ms": 53548.0,
+          "available": true,
+          "checkpoint_hash": "f83ec67583672f3b989593bb9e801167d4568cd3a9a62a86c5ff540368adebae",
+          "cost_usd": 0.004436163200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 30984.0,
+          "latency_ms": 24178.0,
+          "logical_calls": 28.0,
+          "output_tokens": 3362.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "fixed_round",
+          "total_tokens": 34346.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 24178.0
+        },
+        {
+          "api_latency_ms": 243223.0,
+          "available": true,
+          "checkpoint_hash": "cdf79656f926c22799242a21da7f79279a83c3cf97b483619a1c10750f423a64",
+          "cost_usd": 0.0161638568,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 42901.0,
+          "latency_ms": 204895.0,
+          "logical_calls": 28.0,
+          "output_tokens": 39539.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "fixed_round",
+          "total_tokens": 82440.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 204895.0
+        },
+        {
+          "api_latency_ms": 50783.0,
+          "available": true,
+          "checkpoint_hash": "98054f7e738f57380e1c5e2b80546f60e5acfd44804f9b42ae5091590cb26ac9",
+          "cost_usd": 0.004192983200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 30355.0,
+          "latency_ms": 22998.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2808.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "fixed_round",
+          "total_tokens": 33163.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 22998.0
+        },
+        {
+          "api_latency_ms": 57564.0,
+          "available": true,
+          "checkpoint_hash": "eb1ec4bd8b54683e4c4023d7e41f68cbb023fdb8fb12a8bae3e586e812363b49",
+          "cost_usd": 0.004250523200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 29780.0,
+          "latency_ms": 27399.0,
+          "logical_calls": 28.0,
+          "output_tokens": 3301.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "fixed_round",
+          "total_tokens": 33081.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 27399.0
+        }
+      ]
+    },
+    "fixed_5": {
+      "metrics": {
+        "accuracy": 0.6,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 141389.7,
+        "mean_cost_usd": 0.01033507328,
+        "mean_input_tokens": 48208.2,
+        "mean_latency_ms": 81343.1,
+        "mean_logical_calls": 35.0,
+        "mean_oracle_quality_regret": 0.2,
+        "mean_oracle_utility_regret": 0.2,
+        "mean_output_tokens": 16676.7,
+        "mean_quality": 0.6,
+        "mean_stop_round": 5.0,
+        "mean_total_tokens": 64884.9,
+        "mean_utility": 0.6,
+        "mean_wall_clock_ms": 81343.1,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "5": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 144874.0,
+          "available": true,
+          "checkpoint_hash": "977f49a28f9f769ab5fce8a77dfd3d0cc54819b9a7afb0c8191b4663758990e5",
+          "cost_usd": 0.010180340800000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 56500.0,
+          "latency_ms": 87222.0,
+          "logical_calls": 35.0,
+          "output_tokens": 11997.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "fixed_round",
+          "total_tokens": 68497.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 0.0,
+          "wall_clock_ms": 87222.0
+        },
+        {
+          "api_latency_ms": 506205.0,
+          "available": true,
+          "checkpoint_hash": "c634d307e0962cd7a96cee5e9943bad8e0e56f3b13ff8d9444d068eb615eeb15",
+          "cost_usd": 0.035812940800000005,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 99180.0,
+          "latency_ms": 279103.0,
+          "logical_calls": 35.0,
+          "output_tokens": 83770.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "fixed_round",
+          "total_tokens": 182950.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 0.0,
+          "wall_clock_ms": 279103.0
+        },
+        {
+          "api_latency_ms": 72448.0,
+          "available": true,
+          "checkpoint_hash": "fbf1a83521b6277c635b7d1dc4ce211cec28540d0f0723681de7e6d27156adcf",
+          "cost_usd": 0.005681127200000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 39109.0,
+          "latency_ms": 33624.0,
+          "logical_calls": 35.0,
+          "output_tokens": 4373.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "fixed_round",
+          "total_tokens": 43482.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 33624.0
+        },
+        {
+          "api_latency_ms": 69191.0,
+          "available": true,
+          "checkpoint_hash": "e634c269514414fcd1620f23e4e85333af6e3c78fb8a025b58403a74f9777292",
+          "cost_usd": 0.0056692272,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 39904.0,
+          "latency_ms": 33269.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3933.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "fixed_round",
+          "total_tokens": 43837.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 33269.0
+        },
+        {
+          "api_latency_ms": 70849.0,
+          "available": true,
+          "checkpoint_hash": "be6a648aa368c047d0df1af45f70b5438f112c2c3f8f647f75fa9c74de47d47f",
+          "cost_usd": 0.0054341672,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 36639.0,
+          "latency_ms": 32840.0,
+          "logical_calls": 35.0,
+          "output_tokens": 4726.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "fixed_round",
+          "total_tokens": 41365.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 32840.0
+        },
+        {
+          "api_latency_ms": 87939.0,
+          "available": true,
+          "checkpoint_hash": "8efd0a9d0cc8259f4337c630f4eb108c65b74d77e80624486ab356bcaa19fafc",
+          "cost_usd": 0.0066850672,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 44468.0,
+          "latency_ms": 41542.0,
+          "logical_calls": 35.0,
+          "output_tokens": 5279.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "fixed_round",
+          "total_tokens": 49747.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 41542.0
+        },
+        {
+          "api_latency_ms": 66816.0,
+          "available": true,
+          "checkpoint_hash": "8d03c7bfaef9839f3a410726b97362a9c19468d3062ed6ea6de994edd82e882d",
+          "cost_usd": 0.0055803272000000004,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 38801.0,
+          "latency_ms": 30120.0,
+          "logical_calls": 35.0,
+          "output_tokens": 4167.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "fixed_round",
+          "total_tokens": 42968.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 30120.0
+        },
+        {
+          "api_latency_ms": 260612.0,
+          "available": true,
+          "checkpoint_hash": "b8508c0e323505641a7d178c795ab3f2ad4431d2e470bafe668215ea16af43b0",
+          "cost_usd": 0.017623860800000002,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 51924.0,
+          "latency_ms": 212983.0,
+          "logical_calls": 35.0,
+          "output_tokens": 40869.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "fixed_round",
+          "total_tokens": 92793.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 212983.0
+        },
+        {
+          "api_latency_ms": 62572.0,
+          "available": true,
+          "checkpoint_hash": "9743c4f0144e945fee0def84fec6319682604691467db9c63a431d0a37a75bf6",
+          "cost_usd": 0.0053015872,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 38110.0,
+          "latency_ms": 28264.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3517.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "fixed_round",
+          "total_tokens": 41627.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 28264.0
+        },
+        {
+          "api_latency_ms": 72391.0,
+          "available": true,
+          "checkpoint_hash": "307252f607461dce99d507444bc78dd2d3bcb1091cdbc0f0887997b375411111",
+          "cost_usd": 0.0053820872,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 37447.0,
+          "latency_ms": 34464.0,
+          "logical_calls": 35.0,
+          "output_tokens": 4136.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "fixed_round",
+          "total_tokens": 41583.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 34464.0
+        }
+      ]
+    },
+    "oracle": {
+      "metrics": {
+        "accuracy": 0.8,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 16139.3,
+        "mean_cost_usd": 0.0011869312,
+        "mean_input_tokens": 8421.8,
+        "mean_latency_ms": 8462.0,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 1157.1,
+        "mean_quality": 0.8,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 9578.9,
+        "mean_utility": 0.8,
+        "mean_wall_clock_ms": 8462.0,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 21263.0,
+          "available": true,
+          "checkpoint_hash": "f60afbdf62dc3c7fe203f38c3a61e2ce5325ba1559ca6557e4265c4f84f83c62",
+          "cost_usd": 0.0014068712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9205.0,
+          "latency_ms": 11589.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1551.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 10756.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 1.0,
+          "wall_clock_ms": 11589.0
+        },
+        {
+          "api_latency_ms": 19581.0,
+          "available": true,
+          "checkpoint_hash": "1a7bf31ac6904fda6364ae9a970f06271d7d227c1dcd207623b0f3e6314e306d",
+          "cost_usd": 0.0015149512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9909.0,
+          "latency_ms": 11019.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1585.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 11494.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 1.0,
+          "wall_clock_ms": 11019.0
+        },
+        {
+          "api_latency_ms": 13575.0,
+          "available": true,
+          "checkpoint_hash": "a112750a9cd383dd4169fa132b79f6c39e2bae101df9426d3928dacb1c7e9f68",
+          "cost_usd": 0.0009364712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7281.0,
+          "latency_ms": 6200.0,
+          "logical_calls": 7.0,
+          "output_tokens": 833.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 8114.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 6200.0
+        },
+        {
+          "api_latency_ms": 12569.0,
+          "available": true,
+          "checkpoint_hash": "f77081a4a16fa1aadfc9c30a23cbbbb7e072142d1fad752de9d0e01e504a4de6",
+          "cost_usd": 0.0009536912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7560.0,
+          "latency_ms": 5772.0,
+          "logical_calls": 7.0,
+          "output_tokens": 755.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 8315.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 5772.0
+        },
+        {
+          "api_latency_ms": 13579.0,
+          "available": true,
+          "checkpoint_hash": "0e865a4f79fbe3a1e5cbcfc676dab2488d047e2dd5ac67c37f8ea10b1b54de51",
+          "cost_usd": 0.0009202312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6967.0,
+          "latency_ms": 6511.0,
+          "logical_calls": 7.0,
+          "output_tokens": 932.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 7899.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 6511.0
+        },
+        {
+          "api_latency_ms": 15595.0,
+          "available": true,
+          "checkpoint_hash": "7efefd13f0fdbaf3c96106e30e2352d29b882b206965e33e2d245c5dd78e6969",
+          "cost_usd": 0.0010721312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8030.0,
+          "latency_ms": 7751.0,
+          "logical_calls": 7.0,
+          "output_tokens": 943.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 8973.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 7751.0
+        },
+        {
+          "api_latency_ms": 13433.0,
+          "available": true,
+          "checkpoint_hash": "ac5dbf9ecee7b9033687276201fcb971d4f71e8e3365f340ba116013a8de7cf4",
+          "cost_usd": 0.0009506112,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7374.0,
+          "latency_ms": 6054.0,
+          "logical_calls": 7.0,
+          "output_tokens": 837.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 8211.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 6054.0
+        },
+        {
+          "api_latency_ms": 26609.0,
+          "available": true,
+          "checkpoint_hash": "017074606ae4bd34a600595b0941758e3adff2a8ed5aa77503066bb6f549a292",
+          "cost_usd": 0.0023473912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 13795.0,
+          "latency_ms": 18115.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2615.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 16410.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 18115.0
+        },
+        {
+          "api_latency_ms": 11776.0,
+          "available": true,
+          "checkpoint_hash": "b0d260ade784d08986337cb2dce35483f27fbdc17455c16d371c430a9e241e7f",
+          "cost_usd": 0.0008911112000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7171.0,
+          "latency_ms": 5488.0,
+          "logical_calls": 7.0,
+          "output_tokens": 726.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 7897.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 5488.0
+        },
+        {
+          "api_latency_ms": 13413.0,
+          "available": true,
+          "checkpoint_hash": "9f6627f4a960d50890811a6779f92bf408e5f528aafbbd267b0de7c1356c825f",
+          "cost_usd": 0.0008758512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6926.0,
+          "latency_ms": 6121.0,
+          "logical_calls": 7.0,
+          "output_tokens": 794.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 7720.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 6121.0
+        }
+      ]
+    },
+    "roundvalue": {
+      "metrics": {
+        "accuracy": 0.8,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 16139.3,
+        "mean_cost_usd": 0.0011869312,
+        "mean_input_tokens": 8421.8,
+        "mean_latency_ms": 8462.0,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 1157.1,
+        "mean_quality": 0.8,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 9578.9,
+        "mean_utility": 0.8,
+        "mean_wall_clock_ms": 8462.0,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 21263.0,
+          "available": true,
+          "checkpoint_hash": "f60afbdf62dc3c7fe203f38c3a61e2ce5325ba1559ca6557e4265c4f84f83c62",
+          "cost_usd": 0.0014068712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.14916615907958974,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9205.0,
+          "latency_ms": 11589.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1551.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 10756.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 1.0,
+          "wall_clock_ms": 11589.0
+        },
+        {
+          "api_latency_ms": 19581.0,
+          "available": true,
+          "checkpoint_hash": "1a7bf31ac6904fda6364ae9a970f06271d7d227c1dcd207623b0f3e6314e306d",
+          "cost_usd": 0.0015149512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.022876734755924374,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9909.0,
+          "latency_ms": 11019.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1585.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 11494.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 1.0,
+          "wall_clock_ms": 11019.0
+        },
+        {
+          "api_latency_ms": 13575.0,
+          "available": true,
+          "checkpoint_hash": "a112750a9cd383dd4169fa132b79f6c39e2bae101df9426d3928dacb1c7e9f68",
+          "cost_usd": 0.0009364712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.024160747794104723,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7281.0,
+          "latency_ms": 6200.0,
+          "logical_calls": 7.0,
+          "output_tokens": 833.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 8114.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 6200.0
+        },
+        {
+          "api_latency_ms": 12569.0,
+          "available": true,
+          "checkpoint_hash": "f77081a4a16fa1aadfc9c30a23cbbbb7e072142d1fad752de9d0e01e504a4de6",
+          "cost_usd": 0.0009536912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.017858562903458372,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7560.0,
+          "latency_ms": 5772.0,
+          "logical_calls": 7.0,
+          "output_tokens": 755.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 8315.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 5772.0
+        },
+        {
+          "api_latency_ms": 13579.0,
+          "available": true,
+          "checkpoint_hash": "0e865a4f79fbe3a1e5cbcfc676dab2488d047e2dd5ac67c37f8ea10b1b54de51",
+          "cost_usd": 0.0009202312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.07569071617829351,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6967.0,
+          "latency_ms": 6511.0,
+          "logical_calls": 7.0,
+          "output_tokens": 932.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 7899.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 6511.0
+        },
+        {
+          "api_latency_ms": 15595.0,
+          "available": true,
+          "checkpoint_hash": "7efefd13f0fdbaf3c96106e30e2352d29b882b206965e33e2d245c5dd78e6969",
+          "cost_usd": 0.0010721312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.045449838070822916,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8030.0,
+          "latency_ms": 7751.0,
+          "logical_calls": 7.0,
+          "output_tokens": 943.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 8973.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 7751.0
+        },
+        {
+          "api_latency_ms": 13433.0,
+          "available": true,
+          "checkpoint_hash": "ac5dbf9ecee7b9033687276201fcb971d4f71e8e3365f340ba116013a8de7cf4",
+          "cost_usd": 0.0009506112,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.025912164856741873,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7374.0,
+          "latency_ms": 6054.0,
+          "logical_calls": 7.0,
+          "output_tokens": 837.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 8211.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 6054.0
+        },
+        {
+          "api_latency_ms": 26609.0,
+          "available": true,
+          "checkpoint_hash": "017074606ae4bd34a600595b0941758e3adff2a8ed5aa77503066bb6f549a292",
+          "cost_usd": 0.0023473912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.1369361815346982,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 13795.0,
+          "latency_ms": 18115.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2615.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 16410.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 18115.0
+        },
+        {
+          "api_latency_ms": 11776.0,
+          "available": true,
+          "checkpoint_hash": "b0d260ade784d08986337cb2dce35483f27fbdc17455c16d371c430a9e241e7f",
+          "cost_usd": 0.0008911112000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.019833270623625415,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7171.0,
+          "latency_ms": 5488.0,
+          "logical_calls": 7.0,
+          "output_tokens": 726.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 7897.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 5488.0
+        },
+        {
+          "api_latency_ms": 13413.0,
+          "available": true,
+          "checkpoint_hash": "9f6627f4a960d50890811a6779f92bf408e5f528aafbbd267b0de7c1356c825f",
+          "cost_usd": 0.0008758512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.02181244856545439,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6926.0,
+          "latency_ms": 6121.0,
+          "logical_calls": 7.0,
+          "output_tokens": 794.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 7720.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 6121.0
+        }
+      ]
+    },
+    "task_only": {
+      "metrics": {
+        "accuracy": 0.8,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 16139.3,
+        "mean_cost_usd": 0.0011869312,
+        "mean_input_tokens": 8421.8,
+        "mean_latency_ms": 8462.0,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 1157.1,
+        "mean_quality": 0.8,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 9578.9,
+        "mean_utility": 0.8,
+        "mean_wall_clock_ms": 8462.0,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 21263.0,
+          "available": true,
+          "checkpoint_hash": "f60afbdf62dc3c7fe203f38c3a61e2ce5325ba1559ca6557e4265c4f84f83c62",
+          "cost_usd": 0.0014068712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.029746164498968563,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9205.0,
+          "latency_ms": 11589.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1551.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::5319",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 10756.0,
+          "trajectory_id": "aa53e5b4b38fbcfa0d05bce7",
+          "utility": 1.0,
+          "wall_clock_ms": 11589.0
+        },
+        {
+          "api_latency_ms": 19581.0,
+          "available": true,
+          "checkpoint_hash": "1a7bf31ac6904fda6364ae9a970f06271d7d227c1dcd207623b0f3e6314e306d",
+          "cost_usd": 0.0015149512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.02347460174313642,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 9909.0,
+          "latency_ms": 11019.0,
+          "logical_calls": 7.0,
+          "output_tokens": 1585.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::10570",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 11494.0,
+          "trajectory_id": "a46866b0fb8dea4815e89783",
+          "utility": 1.0,
+          "wall_clock_ms": 11019.0
+        },
+        {
+          "api_latency_ms": 13575.0,
+          "available": true,
+          "checkpoint_hash": "a112750a9cd383dd4169fa132b79f6c39e2bae101df9426d3928dacb1c7e9f68",
+          "cost_usd": 0.0009364712000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.02573616528236074,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7281.0,
+          "latency_ms": 6200.0,
+          "logical_calls": 7.0,
+          "output_tokens": 833.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::14388",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 8114.0,
+          "trajectory_id": "b94cf50d707172879bd08495",
+          "utility": 1.0,
+          "wall_clock_ms": 6200.0
+        },
+        {
+          "api_latency_ms": 12569.0,
+          "available": true,
+          "checkpoint_hash": "f77081a4a16fa1aadfc9c30a23cbbbb7e072142d1fad752de9d0e01e504a4de6",
+          "cost_usd": 0.0009536912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.020414839307715288,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7560.0,
+          "latency_ms": 5772.0,
+          "logical_calls": 7.0,
+          "output_tokens": 755.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11420",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 8315.0,
+          "trajectory_id": "59af9b444900c6c860995726",
+          "utility": 1.0,
+          "wall_clock_ms": 5772.0
+        },
+        {
+          "api_latency_ms": 13579.0,
+          "available": true,
+          "checkpoint_hash": "0e865a4f79fbe3a1e5cbcfc676dab2488d047e2dd5ac67c37f8ea10b1b54de51",
+          "cost_usd": 0.0009202312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.033433083209972916,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6967.0,
+          "latency_ms": 6511.0,
+          "logical_calls": 7.0,
+          "output_tokens": 932.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::4297",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 7899.0,
+          "trajectory_id": "904a0f9f6d4148cd9aa8f0e8",
+          "utility": 0.0,
+          "wall_clock_ms": 6511.0
+        },
+        {
+          "api_latency_ms": 15595.0,
+          "available": true,
+          "checkpoint_hash": "7efefd13f0fdbaf3c96106e30e2352d29b882b206965e33e2d245c5dd78e6969",
+          "cost_usd": 0.0010721312,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.017564128964155226,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8030.0,
+          "latency_ms": 7751.0,
+          "logical_calls": 7.0,
+          "output_tokens": 943.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::3478",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 8973.0,
+          "trajectory_id": "e17b975a4e60d6222306892d",
+          "utility": 0.0,
+          "wall_clock_ms": 7751.0
+        },
+        {
+          "api_latency_ms": 13433.0,
+          "available": true,
+          "checkpoint_hash": "ac5dbf9ecee7b9033687276201fcb971d4f71e8e3365f340ba116013a8de7cf4",
+          "cost_usd": 0.0009506112,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.02573616528236074,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7374.0,
+          "latency_ms": 6054.0,
+          "logical_calls": 7.0,
+          "output_tokens": 837.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9039",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 8211.0,
+          "trajectory_id": "34c0cd8004dd29f97147a3fb",
+          "utility": 1.0,
+          "wall_clock_ms": 6054.0
+        },
+        {
+          "api_latency_ms": 26609.0,
+          "available": true,
+          "checkpoint_hash": "017074606ae4bd34a600595b0941758e3adff2a8ed5aa77503066bb6f549a292",
+          "cost_usd": 0.0023473912,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.029708155027721096,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 13795.0,
+          "latency_ms": 18115.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2615.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::9940",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 16410.0,
+          "trajectory_id": "b9b9b964f1d30266f8bffbd9",
+          "utility": 1.0,
+          "wall_clock_ms": 18115.0
+        },
+        {
+          "api_latency_ms": 11776.0,
+          "available": true,
+          "checkpoint_hash": "b0d260ade784d08986337cb2dce35483f27fbdc17455c16d371c430a9e241e7f",
+          "cost_usd": 0.0008911112000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.022961473881295612,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 7171.0,
+          "latency_ms": 5488.0,
+          "logical_calls": 7.0,
+          "output_tokens": 726.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::11550",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 7897.0,
+          "trajectory_id": "05a63f691bdaba4097ac6b6e",
+          "utility": 1.0,
+          "wall_clock_ms": 5488.0
+        },
+        {
+          "api_latency_ms": 13413.0,
+          "available": true,
+          "checkpoint_hash": "9f6627f4a960d50890811a6779f92bf408e5f528aafbbd267b0de7c1356c825f",
+          "cost_usd": 0.0008758512,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.02655336891418129,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6926.0,
+          "latency_ms": 6121.0,
+          "logical_calls": 7.0,
+          "output_tokens": 794.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "logiqa2::test::426",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 7720.0,
+          "trajectory_id": "501ac66149ce29bb10b20c96",
+          "utility": 1.0,
+          "wall_clock_ms": 6121.0
+        }
+      ]
+    }
+  },
+  "policy_metrics": {
+    "fixed_1": {
+      "accuracy": 0.8,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 16139.3,
+      "mean_cost_usd": 0.0011869312,
+      "mean_input_tokens": 8421.8,
+      "mean_latency_ms": 8462.0,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 1157.1,
+      "mean_quality": 0.8,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 9578.9,
+      "mean_utility": 0.8,
+      "mean_wall_clock_ms": 8462.0,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "fixed_2": {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 52960.9,
+      "mean_cost_usd": 0.00400428056,
+      "mean_input_tokens": 19824.1,
+      "mean_latency_ms": 35984.3,
+      "mean_logical_calls": 14.0,
+      "mean_oracle_quality_regret": 0.1,
+      "mean_oracle_utility_regret": 0.1,
+      "mean_output_tokens": 6170.2,
+      "mean_quality": 0.7,
+      "mean_stop_round": 2.0,
+      "mean_total_tokens": 25994.3,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 35984.3,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "2": 10
+      }
+    },
+    "fixed_3": {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 71087.6,
+      "mean_cost_usd": 0.005540010560000001,
+      "mean_input_tokens": 29423.4,
+      "mean_latency_ms": 44775.6,
+      "mean_logical_calls": 21.0,
+      "mean_oracle_quality_regret": 0.1,
+      "mean_oracle_utility_regret": 0.1,
+      "mean_output_tokens": 7482.5,
+      "mean_quality": 0.7,
+      "mean_stop_round": 3.0,
+      "mean_total_tokens": 36905.9,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 44775.6,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "3": 10
+      }
+    },
+    "fixed_4": {
+      "accuracy": 0.7,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 90591.0,
+      "mean_cost_usd": 0.00710553256,
+      "mean_input_tokens": 39134.1,
+      "mean_latency_ms": 55104.4,
+      "mean_logical_calls": 28.0,
+      "mean_oracle_quality_regret": 0.1,
+      "mean_oracle_utility_regret": 0.1,
+      "mean_output_tokens": 8845.5,
+      "mean_quality": 0.7,
+      "mean_stop_round": 4.0,
+      "mean_total_tokens": 47979.6,
+      "mean_utility": 0.7,
+      "mean_wall_clock_ms": 55104.4,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "4": 10
+      }
+    },
+    "fixed_5": {
+      "accuracy": 0.6,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 141389.7,
+      "mean_cost_usd": 0.01033507328,
+      "mean_input_tokens": 48208.2,
+      "mean_latency_ms": 81343.1,
+      "mean_logical_calls": 35.0,
+      "mean_oracle_quality_regret": 0.2,
+      "mean_oracle_utility_regret": 0.2,
+      "mean_output_tokens": 16676.7,
+      "mean_quality": 0.6,
+      "mean_stop_round": 5.0,
+      "mean_total_tokens": 64884.9,
+      "mean_utility": 0.6,
+      "mean_wall_clock_ms": 81343.1,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "5": 10
+      }
+    },
+    "oracle": {
+      "accuracy": 0.8,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 16139.3,
+      "mean_cost_usd": 0.0011869312,
+      "mean_input_tokens": 8421.8,
+      "mean_latency_ms": 8462.0,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 1157.1,
+      "mean_quality": 0.8,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 9578.9,
+      "mean_utility": 0.8,
+      "mean_wall_clock_ms": 8462.0,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "roundvalue": {
+      "accuracy": 0.8,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 16139.3,
+      "mean_cost_usd": 0.0011869312,
+      "mean_input_tokens": 8421.8,
+      "mean_latency_ms": 8462.0,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 1157.1,
+      "mean_quality": 0.8,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 9578.9,
+      "mean_utility": 0.8,
+      "mean_wall_clock_ms": 8462.0,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "task_only": {
+      "accuracy": 0.8,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 16139.3,
+      "mean_cost_usd": 0.0011869312,
+      "mean_input_tokens": 8421.8,
+      "mean_latency_ms": 8462.0,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 1157.1,
+      "mean_quality": 0.8,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 9578.9,
+      "mean_utility": 0.8,
+      "mean_wall_clock_ms": 8462.0,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    }
+  },
+  "policy_version": "roundvalue-replay-v3",
+  "replay_mode": "offline_saved_trajectories_only",
+  "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+  "schema_version": "1.0",
+  "transition_metrics": {
+    "n_checkpoints": 50,
+    "n_decisions": 40,
+    "transition_counts": {
+      "harm": 3,
+      "neutral": 36,
+      "recovery": 1,
+      "repair": 0,
+      "terminal": 10,
+      "unknown": 0
+    },
+    "transition_rates": {
+      "harm": 0.075,
+      "neutral": 0.9,
+      "recovery": 0.025,
+      "repair": 0.0
+    }
+  }
+}

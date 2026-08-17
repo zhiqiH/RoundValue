@@ -35,7 +35,7 @@
     "deepseek_flash": {
       "provider": "deepseek",
       "model_name": "deepseek-v4-flash",
-      "temperature": 0.2,
+      "temperature": 0.3,
       "reasoning": {
         "enabled": false,
         "effort": "high"
