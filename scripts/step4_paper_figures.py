@@ -194,6 +194,20 @@ def _condition_label(record: dict[str, Any]) -> str:
     return f"{record['model_display']} \u00d7 {record['dataset_id']}"
 
 
+HIGHLIGHT_MODEL_ID = "deepseek_flash"
+HIGHLIGHT_BENCHMARK = "HARP"
+HIGHLIGHT_TINT = "#EAF6EC"
+
+
+def _is_highlight_condition(record: dict[str, Any]) -> bool:
+    """True for the DeepSeek-V4-Flash x HARP condition highlighted everywhere."""
+
+    return (
+        str(record.get("model_id") or "") == HIGHLIGHT_MODEL_ID
+        and str(record.get("benchmark") or "") == HIGHLIGHT_BENCHMARK
+    )
+
+
 def _model_color(model_id: str) -> str:
     if model_id in MODEL_COLORS:
         return MODEL_COLORS[model_id]
@@ -1099,52 +1113,145 @@ def _model_handles(records: list[dict[str, Any]]) -> list[Line2D]:
 
 
 def fig01_round_accuracy_dynamics(records: list[dict[str, Any]], out_path: Path) -> None:
-    """Round accuracy dynamics as benchmark small multiples (all tasks)."""
+    """Round accuracy dynamics in two panels (all tasks).
 
-    benchmarks = BENCHMARK_ORDER
-    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.9), sharey=True)
-    fig.subplots_adjust(left=0.14, right=0.99, top=0.84, bottom=0.18, wspace=0.34)
+    Panel (a) shows HARP-50 with one line per model; panel (b) shows
+    DeepSeek-V4-Flash with one line per benchmark.  The condition shared by
+    both panels, DeepSeek-V4-Flash x HARP-50, is drawn with a black halo,
+    thicker line, and star markers so the same condition is easy to track
+    across the two views.
+    """
 
-    for panel_index, (ax, benchmark) in enumerate(zip(axes, benchmarks)):
-        panel_records = sorted(
-            [r for r in records if r["benchmark"] == benchmark], key=_condition_sort_key
-        )
-        if panel_records:
-            for record in panel_records:
-                values = [record[f"R{round_index}"] for round_index in range(1, MAX_ROUNDS + 1)]
-                ax.plot(
-                    range(1, MAX_ROUNDS + 1),
-                    values,
-                    marker="o",
-                    markersize=3.4,
-                    linewidth=1.4,
-                    color=_model_color(record["model_id"]),
-                    zorder=3,
-                )
-            n_tasks = panel_records[0]["n"]
+    highlight_model = "deepseek_flash"
+    highlight_benchmark = "HARP"
+    highlight_note = (
+        "\u2605 = DeepSeek-V4-Flash \u00d7 HARP-50 "
+        "(highlighted in both panels)"
+    )
+
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.1), sharey=True)
+    fig.subplots_adjust(left=0.14, right=0.99, top=0.84, bottom=0.19, wspace=0.32)
+
+    def draw_line(ax: Any, values: list[float], color: str, emphasize: bool) -> None:
+        x_values = list(range(1, MAX_ROUNDS + 1))
+        if emphasize:
+            ax.plot(
+                x_values,
+                values,
+                color="#111111",
+                linewidth=4.0,
+                zorder=4,
+                solid_capstyle="round",
+                solid_joinstyle="round",
+            )
+            ax.plot(x_values, values, color=color, linewidth=2.4, zorder=5)
+            ax.plot(
+                x_values,
+                values,
+                linestyle="none",
+                marker="*",
+                markersize=9,
+                markerfacecolor=color,
+                markeredgecolor="#111111",
+                markeredgewidth=1.1,
+                zorder=6,
+            )
         else:
-            n_tasks = None
+            ax.plot(
+                x_values,
+                values,
+                color=color,
+                marker="o",
+                markersize=3.4,
+                linewidth=1.4,
+                zorder=3,
+            )
 
-        letter = chr(ord("a") + panel_index)
-        subtitle = f"n = {n_tasks}" if n_tasks is not None else "no compatible runs"
-        ax.set_title(f"({letter}) {benchmark}\n{subtitle}", fontsize=8.4)
+    def legend_handle(color: str, label: str, emphasize: bool) -> Line2D:
+        if emphasize:
+            return Line2D(
+                [],
+                [],
+                color=color,
+                marker="*",
+                markersize=9,
+                markerfacecolor=color,
+                markeredgecolor="#111111",
+                markeredgewidth=1.1,
+                linewidth=2.4,
+                label=label,
+            )
+        return Line2D([], [], color=color, marker="o", markersize=4, linewidth=1.4, label=label)
+
+    # Panel (a): HARP-50, one line per model.
+    ax_a = axes[0]
+    harp_records = sorted(
+        [r for r in records if r["benchmark"] == "HARP"],
+        key=lambda record: MODEL_ORDER.index(record["model_id"])
+        if record["model_id"] in MODEL_ORDER
+        else len(MODEL_ORDER),
+    )
+    handles_a: list[Line2D] = []
+    for record in harp_records:
+        emphasize = record["model_id"] == highlight_model
+        values = [float(record[f"R{round_index}"]) for round_index in range(1, MAX_ROUNDS + 1)]
+        draw_line(ax_a, values, _model_color(record["model_id"]), emphasize)
+        handles_a.append(
+            legend_handle(
+                _model_color(record["model_id"]),
+                record["model_display"] + (" \u2605" if emphasize else ""),
+                emphasize,
+            )
+        )
+    n_a = harp_records[0]["n"] if harp_records else None
+    subtitle_a = f"n = {n_a} per model" if n_a is not None else "no compatible runs"
+    ax_a.set_title(f"(a) HARP-50 \u00d7 model\n{subtitle_a}", fontsize=8.4)
+    ax_a.legend(handles=handles_a, loc="lower left", fontsize=7.2, handlelength=1.7)
+
+    # Panel (b): DeepSeek-V4-Flash, one line per benchmark.
+    ax_b = axes[1]
+    deepseek_records = sorted(
+        [r for r in records if r["model_id"] == "deepseek_flash"],
+        key=lambda record: BENCHMARK_ORDER.index(record["benchmark"])
+        if record["benchmark"] in BENCHMARK_ORDER
+        else len(BENCHMARK_ORDER),
+    )
+    benchmark_colors = {
+        "MMLU-Pro": "#0072B2",
+        "HARP": "#009E73",
+        "LogiQA": "#CC79A7",
+    }
+    handles_b: list[Line2D] = []
+    for record in deepseek_records:
+        emphasize = record["benchmark"] == highlight_benchmark
+        values = [float(record[f"R{round_index}"]) for round_index in range(1, MAX_ROUNDS + 1)]
+        color = benchmark_colors.get(record["benchmark"], "#999999")
+        draw_line(ax_b, values, color, emphasize)
+        handles_b.append(
+            legend_handle(
+                color,
+                record["benchmark"] + (" \u2605" if emphasize else ""),
+                emphasize,
+            )
+        )
+    n_b = deepseek_records[0]["n"] if deepseek_records else None
+    subtitle_b = f"n = {n_b} per benchmark" if n_b is not None else "no compatible runs"
+    ax_b.set_title(f"(b) DeepSeek-V4-Flash \u00d7 benchmark\n{subtitle_b}", fontsize=8.4)
+    ax_b.legend(handles=handles_b, loc="lower left", fontsize=7.2, handlelength=1.7)
+
+    for panel_index, ax in enumerate(axes):
         ax.set_xticks(range(1, MAX_ROUNDS + 1))
         ax.set_xticklabels([f"R{round_index}" for round_index in range(1, MAX_ROUNDS + 1)])
         ax.set_xlim(0.85, MAX_ROUNDS + 0.15)
         ax.set_ylim(0, 100)
         ax.set_yticks([0, 25, 50, 75, 100])
-        # Shared 0-100% scale; numeric tick labels are shown once, on the
-        # left panel, so the small multiples stay clean without losing units.
         ax.yaxis.set_tick_params(labelleft=(panel_index == 0))
         ax.set_xticklabels(ax.get_xticklabels(), fontsize=7.6)
-        ax.set_yticklabels(
-            [f"{tick:g}" for tick in ax.get_yticks()], fontsize=7.6
-        )
+        ax.set_yticklabels([f"{tick:g}" for tick in ax.get_yticks()], fontsize=7.6)
 
     axes[0].set_ylabel("Accuracy (%)")
-    fig.text(0.5, 0.025, "Debate round", ha="center", va="center")
-    handles = _model_handles(records)
-    fig.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, -0.10), ncol=3, fontsize=7.6)
+    fig.text(0.5, 0.07, "Debate round", ha="center", va="center")
+    fig.text(0.5, 0.012, highlight_note, ha="center", va="center", fontsize=7.2)
     _save_figure(fig, out_path)
 
 
@@ -1159,6 +1266,9 @@ def fig02_continuation_opportunity(records: list[dict[str, Any]], out_path: Path
     fig.subplots_adjust(left=0.36, right=0.985, top=0.94, bottom=0.13, hspace=0.62)
 
     for ax, record in zip(axes, records):
+        highlight = _is_highlight_condition(record)
+        if highlight:
+            ax.set_facecolor(HIGHLIGHT_TINT)
         r1 = float(record["R1_test"])
         roundvalue = float(record["RoundValue_test"])
         oracle = float(record["Oracle_test"])
@@ -1212,11 +1322,12 @@ def fig02_continuation_opportunity(records: list[dict[str, Any]], out_path: Path
         ax.text(
             -0.015,
             0.5,
-            _condition_label(record),
+            _condition_label(record) + ("  \u2605" if highlight else ""),
             transform=ax.get_yaxis_transform(),
             ha="right",
             va="center",
             fontsize=7.6,
+            fontweight="bold" if highlight else "normal",
         )
         annotation = (
             f"Oracle headroom: {_signed_pp(record['Oracle_headroom'])}   "
@@ -1244,8 +1355,9 @@ def fig02_continuation_opportunity(records: list[dict[str, Any]], out_path: Path
         Line2D([], [], marker="o", markersize=7, markerfacecolor="white", markeredgecolor="#111111", markeredgewidth=1.6, linestyle="none", label="R1"),
         Line2D([], [], marker="D", markersize=7, markerfacecolor="#E69F00", markeredgecolor="#111111", markeredgewidth=0.9, linestyle="none", label="RoundValue"),
         Line2D([], [], marker="o", markersize=6, markerfacecolor="#009E73", markeredgecolor="white", markeredgewidth=0.8, linestyle="none", label="Oracle"),
+        Patch(facecolor=HIGHLIGHT_TINT, edgecolor="#9ECCB1", label="\u2605 DeepSeek \u00d7 HARP (highlighted)"),
     ]
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 1.015), ncol=3, fontsize=7.6)
+    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 1.015), ncol=4, fontsize=7.6)
     _save_figure(fig, out_path)
 
 
@@ -1274,6 +1386,14 @@ def fig03_r1_wrong_trajectories(records: list[dict[str, Any]], out_path: Path) -
 
     row_labels: list[str] = []
     for row_index, record in enumerate(records):
+        if _is_highlight_condition(record):
+            ax.axhspan(
+                row_index - 0.5,
+                row_index + 0.5,
+                facecolor=HIGHLIGHT_TINT,
+                edgecolor="none",
+                zorder=0,
+            )
         y_center = row_index
         x_cursor = 0.0
         for pattern_entry in record["r1_wrong_patterns"]:
@@ -1309,6 +1429,7 @@ def fig03_r1_wrong_trajectories(records: list[dict[str, Any]], out_path: Path) -
             x_cursor += pattern_stride
         row_labels.append(
             f"{_condition_label(record)}  (n_R1_wrong = {record['R1_wrong']})"
+            + ("  \u2605" if _is_highlight_condition(record) else "")
         )
 
     # R1..R5 headers sit above the first pattern block only; every block
@@ -1320,6 +1441,10 @@ def fig03_r1_wrong_trajectories(records: list[dict[str, Any]], out_path: Path) -
     )
     ax.set_yticks(range(n_rows))
     ax.set_yticklabels(row_labels, fontsize=6.8)
+    for tick_index, tick_label in enumerate(ax.get_yticklabels()):
+        if _is_highlight_condition(records[tick_index]):
+            tick_label.set_fontweight("bold")
+            tick_label.set_color("#111111")
     ax.tick_params(axis="y", length=0)
     ax.set_xlim(0.0, max_pattern_span + 1.8)
     ax.set_ylim(n_rows - 0.5, -0.5)
@@ -1343,12 +1468,13 @@ def fig03_r1_wrong_trajectories(records: list[dict[str, Any]], out_path: Path) -
     legend_handles = [
         Patch(facecolor="#009E73", edgecolor="white", label="correct"),
         Patch(facecolor="#D9D9D9", edgecolor="white", label="wrong"),
+        Patch(facecolor=HIGHLIGHT_TINT, edgecolor="#9ECCB1", label="\u2605 DeepSeek \u00d7 HARP (highlighted)"),
     ]
     fig.legend(
         handles=legend_handles,
         loc="lower center",
         bbox_to_anchor=(0.5, 0.01),
-        ncol=2,
+        ncol=3,
         fontsize=6.8,
     )
     _save_figure(fig, out_path)
@@ -1365,7 +1491,7 @@ def fig03_supp_r1_wrong_task_heatmap(
     """
 
     records = sorted(records, key=_condition_sort_key)
-    blocks: list[tuple[str, list[dict[str, Any]]]] = []
+    blocks: list[tuple[str, list[dict[str, Any]], bool]] = []
     for record in records:
         tasks = list(record["r1_wrong_tasks"])
         tasks.sort(
@@ -1376,16 +1502,22 @@ def fig03_supp_r1_wrong_task_heatmap(
             )
         )
         label = f"{_condition_label(record)}   (n_R1_wrong = {len(tasks)})"
-        blocks.append((label, tasks))
+        if _is_highlight_condition(record):
+            label += "   \u2605"
+        blocks.append((label, tasks, _is_highlight_condition(record)))
 
     matrix: list[list[float | None]] = []
     row_labels: list[str] = []
     bold_rows: set[int] = set()
-    for label, tasks in blocks:
+    highlight_rows: set[int] = set()
+    for label, tasks, is_highlight in blocks:
         if matrix:
             matrix.append([None] * MAX_ROUNDS)
             row_labels.append(label)
-            bold_rows.add(len(matrix) - 1)
+            separator_row = len(matrix) - 1
+            bold_rows.add(separator_row)
+            if is_highlight:
+                highlight_rows.add(separator_row)
         seen_labels: Counter[str] = Counter()
         for detail in tasks:
             matrix.append([1.0 if value else 0.0 for value in detail["correct_rounds"]])
@@ -1393,7 +1525,10 @@ def fig03_supp_r1_wrong_task_heatmap(
             seen_labels[short] += 1
             if seen_labels[short] > 1:
                 short = f"{short} ({seen_labels[short]})"
+            task_row = len(matrix) - 1
             row_labels.append(short)
+            if is_highlight:
+                highlight_rows.add(task_row)
 
     n_rows = len(matrix)
     fig_height = 0.14 * n_rows + 1.55
@@ -1404,6 +1539,15 @@ def fig03_supp_r1_wrong_task_heatmap(
     cmap = ListedColormap(["#D9D9D9", "#009E73"])
     cmap.set_bad("white")
     ax.imshow(array, aspect="auto", cmap=cmap, vmin=0.0, vmax=1.0, interpolation="nearest")
+    for row_index in highlight_rows:
+        ax.axhspan(
+            row_index - 0.5,
+            row_index + 0.5,
+            facecolor=HIGHLIGHT_TINT,
+            alpha=0.45,
+            edgecolor="none",
+            zorder=1,
+        )
     ax.set_xticks(range(MAX_ROUNDS))
     ax.set_xticklabels([f"R{round_index}" for round_index in range(1, MAX_ROUNDS + 1)], fontsize=7.6)
     ax.set_yticks(range(n_rows))
@@ -1429,12 +1573,13 @@ def fig03_supp_r1_wrong_task_heatmap(
     legend_handles = [
         Patch(facecolor="#009E73", edgecolor="none", label="correct"),
         Patch(facecolor="#D9D9D9", edgecolor="none", label="wrong"),
+        Patch(facecolor=HIGHLIGHT_TINT, edgecolor="#9ECCB1", label="\u2605 DeepSeek \u00d7 HARP (highlighted)"),
     ]
     ax.legend(
         handles=legend_handles,
         loc="upper right",
         bbox_to_anchor=(1.0, 1.0),
-        fontsize=6.6,
+        fontsize=6.2,
         frameon=False,
     )
     _save_figure(fig, out_path)
@@ -1446,6 +1591,7 @@ def fig04_repair_mechanism(records: list[dict[str, Any]], out_path: Path) -> Non
     records = sorted(records, key=_condition_sort_key)
     labels = [
         f"{_condition_label(record)}  (n_R1_wrong = {record['R1_wrong']})"
+        + ("  \u2605" if _is_highlight_condition(record) else "")
         for record in records
     ]
     positions = np.arange(len(records))
@@ -1456,6 +1602,18 @@ def fig04_repair_mechanism(records: list[dict[str, Any]], out_path: Path) -> Non
     fig.subplots_adjust(left=0.34, right=0.99, top=0.88, bottom=0.18, wspace=0.36)
 
     ax_a, ax_b = axes
+
+    for position, record in zip(positions, records):
+        if not _is_highlight_condition(record):
+            continue
+        for ax in (ax_a, ax_b):
+            ax.axhspan(
+                position - 0.35,
+                position + 0.35,
+                facecolor=HIGHLIGHT_TINT,
+                edgecolor="none",
+                zorder=0,
+            )
 
     # Panel A: P(blind Stage-1 gold emerges at R2..R5 | R1 wrong).
     heights = [record["gold_emergence"] if record["gold_emergence"] is not None else 0.0 for record in records]
@@ -1482,6 +1640,10 @@ def fig04_repair_mechanism(records: list[dict[str, Any]], out_path: Path) -> Non
     # against the same model x benchmark condition.
     ax_a.set_yticks(positions)
     ax_a.set_yticklabels(labels, fontsize=6.2)
+    for tick_index, tick_label in enumerate(ax_a.get_yticklabels()):
+        if _is_highlight_condition(records[tick_index]):
+            tick_label.set_fontweight("bold")
+            tick_label.set_color("#111111")
     ax_a.tick_params(axis="y", labelleft=True)
 
     # Panel B: mechanism outcome partition among R1-wrong tasks.
@@ -1522,6 +1684,8 @@ def fig04_repair_mechanism(records: list[dict[str, Any]], out_path: Path) -> Non
     legend_handles = [
         Patch(facecolor=MECHANISM_COLORS[category], edgecolor="none", label=MECHANISM_LABELS[category])
         for category in MECHANISM_ORDER
+    ] + [
+        Patch(facecolor=HIGHLIGHT_TINT, edgecolor="#9ECCB1", label="\u2605 DeepSeek \u00d7 HARP (highlighted)")
     ]
     fig.legend(
         handles=legend_handles,
@@ -1574,15 +1738,39 @@ def fig05_continuation_landscape(records: list[dict[str, Any]], out_path: Path) 
         if ever_repair is None:
             continue
         wilson_ci = record["Ever_repair_wilson_ci95"]
-        ax.scatter(
-            error_rate,
-            ever_repair,
-            s=34,
-            color=_model_color(record["model_id"]),
-            edgecolor="white",
-            linewidth=0.8,
-            zorder=3,
-        )
+        highlight = _is_highlight_condition(record)
+        if highlight:
+            # Black ring first so the highlighted point stays visible on any
+            # background, then the model-colored star on top.
+            ax.scatter(
+                [error_rate],
+                [ever_repair],
+                s=150,
+                facecolor="none",
+                edgecolor="#111111",
+                linewidth=1.6,
+                zorder=4,
+            )
+            ax.scatter(
+                [error_rate],
+                [ever_repair],
+                s=120,
+                marker="*",
+                color=_model_color(record["model_id"]),
+                edgecolor="white",
+                linewidth=0.7,
+                zorder=5,
+            )
+        else:
+            ax.scatter(
+                error_rate,
+                ever_repair,
+                s=34,
+                color=_model_color(record["model_id"]),
+                edgecolor="white",
+                linewidth=0.8,
+                zorder=3,
+            )
         if wilson_ci is not None and ever_repair is not None:
             ax.errorbar(
                 error_rate,
@@ -1605,9 +1793,22 @@ def fig05_continuation_landscape(records: list[dict[str, Any]], out_path: Path) 
     ax.set_xlabel("R1 error rate (%)")
     ax.set_ylabel("Ever-repair rate (% of R1-wrong tasks)")
 
-    if _model_handles(records):
+    legend_handles = _model_handles(records) + [
+        Line2D(
+            [],
+            [],
+            marker="*",
+            markersize=10,
+            markerfacecolor="#009E73",
+            markeredgecolor="#111111",
+            markeredgewidth=1.2,
+            linestyle="none",
+            label="\u2605 DeepSeek \u00d7 HARP (highlighted)",
+        )
+    ]
+    if legend_handles:
         legend = ax.legend(
-            handles=_model_handles(records), loc="upper right", fontsize=6.4
+            handles=legend_handles, loc="upper right", fontsize=6.4
         )
 
     # Deterministic label placement.  Candidate offsets are scored by
@@ -1618,7 +1819,7 @@ def fig05_continuation_landscape(records: list[dict[str, Any]], out_path: Path) 
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     placed_boxes: list[Bbox] = []
-    if _model_handles(records):
+    if legend_handles:
         placed_boxes.append(_inflate_bbox(legend.get_window_extent(renderer), 2.5))
     axes_box = ax.get_window_extent(renderer)
     transform = ax.transData
@@ -1647,7 +1848,7 @@ def fig05_continuation_landscape(records: list[dict[str, Any]], out_path: Path) 
         (0.0, -7.2, "center", "top"),
     ]
     label_kwargs = {
-        "fontsize": 5.8,
+        "fontsize": 6.4,
         "color": "#222222",
         "bbox": {
             "facecolor": "white",
@@ -1663,10 +1864,11 @@ def fig05_continuation_landscape(records: list[dict[str, Any]], out_path: Path) 
         ever_repair = record["Ever_repair"]
         if ever_repair is None:
             continue
-        label_text = (
-            f"{record['model_display']} \u00d7 {record['dataset_id']}\n"
-            f"(n_R1_wrong = {record['R1_wrong']})"
-        )
+        # Model identity is already carried by point color and the legend,
+        # so the per-point label only names the dataset.
+        label_text = str(record["dataset_id"])
+        if _is_highlight_condition(record):
+            label_text += "  \u2605"
         scored: list[tuple[tuple[int, int, float], Any, Bbox]] = []
         for offset_x, offset_y, ha, va in label_candidates:
             annotation = ax.annotate(
@@ -1856,30 +2058,37 @@ Skipped runs: {skipped_lines}
 ## What each figure answers
 
 - **fig01_round_accuracy_dynamics.png** - how accuracy evolves from R1 to R5,
-  as benchmark small multiples (MMLU-Pro / HARP / LogiQA) with one line per
-  model, on a shared 0-100% scale with numeric y ticks on the left panel.
-  All tasks (n = {n_all_text} per run).
+  in two panels on a shared 0-100% scale: (a) HARP-50 with one line per
+  model, and (b) DeepSeek-V4-Flash with one line per benchmark. The shared
+  condition DeepSeek-V4-Flash x HARP-50 is drawn with a black halo and star
+  markers in both panels. All tasks (n = {n_all_text} per run).
 - **fig02_continuation_opportunity.png** - the main RoundValue policy figure.
   Held-out **test tasks only** (n = {n_test_text} per run): R1 -> Oracle is the available
   continuation opportunity, R1 -> RoundValue the captured gain, and
   RoundValue -> Oracle the remaining policy regret. When R1 == RoundValue,
   the RoundValue diamond is drawn inside a black R1 ring so the equality is
-  never hidden, and the row annotation says "R1 = RoundValue".
+  never hidden, and the row annotation says "R1 = RoundValue". The
+  DeepSeek-V4-Flash x HARP-50 row is tinted and marked with a star.
 - **fig03_r1_wrong_trajectories.png** - compact trajectory-pattern counts:
   identical Writer correctness trajectories among R1-wrong tasks are
   aggregated into W/C patterns with a task count per pattern, grouped by
-  model x benchmark. No task is outcome-selected.
+  model x benchmark. No task is outcome-selected. The DeepSeek-V4-Flash x
+  HARP-50 row is tinted and marked with a star.
 - **fig03_supp_task_level_heatmap.png** - supporting/appendix figure
-  preserving the full task-level R1-wrong heatmap for auditability.
+  preserving the full task-level R1-wrong heatmap for auditability. The
+  DeepSeek-V4-Flash x HARP-50 block is tinted and marked with a star.
 - **fig04_repair_mechanism.png** - (a) P(blind Stage-1 gold emerges at
   R2..R5 | R1 wrong) per condition, and (b) a mutually exclusive,
   exhaustive partition of the R1-wrong tasks crossing blind Stage-1 gold
   emergence with Writer repair (with stable/temporary repair subdivided).
-  Panel (b) counts sum to n_R1_wrong.
+  Panel (b) counts sum to n_R1_wrong. The DeepSeek-V4-Flash x HARP-50 row
+  is tinted and marked with a star.
 - **fig05_continuation_landscape.png** - one point per model x benchmark:
   R1 error rate versus Ever-repair rate, with constant-Oracle-headroom
   contours (headroom = error headroom x recoverability) and Wilson 95%
   confidence intervals for P(EverRepair | R1 wrong). No regression lines.
+  The DeepSeek-V4-Flash x HARP-50 point is drawn with a black ring and a
+  star marker.
 
 ## Split conventions
 

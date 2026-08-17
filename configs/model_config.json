@@ -83,7 +83,7 @@
       "reasoning": {
         "enabled": false
       },
-      "max_output_tokens": 32768,
+      "max_output_tokens": 2048,
       "request_defaults": {
         "response_format": {
           "type": "json_object"

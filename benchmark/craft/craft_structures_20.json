@@ -1,0 +1,4457 @@
+[
+  {
+    "id": "structure_001",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "ys",
+        "ol",
+        "gs"
+      ],
+      "(0,1)": [
+        "gs",
+        "os",
+        "bs"
+      ],
+      "(0,2)": [
+        "os",
+        "rs",
+        "bl"
+      ],
+      "(1,0)": [
+        "bl",
+        "ol",
+        "rl"
+      ],
+      "(1,1)": [
+        "gl",
+        "gl"
+      ],
+      "(1,2)": [
+        "gl",
+        "gl",
+        "bl"
+      ],
+      "(2,0)": [
+        "bl",
+        "gs",
+        "rl"
+      ],
+      "(2,1)": [],
+      "(2,2)": [
+        "os",
+        "os",
+        "bs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(1,2)",
+          "(1,1)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,0)",
+          "(1,0)"
+        ],
+        [
+          "(1,1)",
+          "(1,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(1,2)",
+          "(0,2)"
+        ],
+        [
+          "(1,0)",
+          "(2,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 23,
+      "filled_positions": 8,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 0
+      }
+    }
+  },
+  {
+    "id": "structure_002",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "os",
+        "bs",
+        "gs"
+      ],
+      "(0,1)": [
+        "bl",
+        "bl",
+        "rl"
+      ],
+      "(0,2)": [
+        "bs",
+        "bl",
+        "rl"
+      ],
+      "(1,0)": [
+        "rl",
+        "os",
+        "ol"
+      ],
+      "(1,1)": [
+        "bl"
+      ],
+      "(1,2)": [
+        "ol",
+        "rs",
+        "rs"
+      ],
+      "(2,0)": [
+        "rl",
+        "rs",
+        "ol"
+      ],
+      "(2,1)": [
+        "gs"
+      ],
+      "(2,2)": [
+        "ol",
+        "gs",
+        "gs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(1,1)",
+          "(0,1)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,2)",
+          "(0,1)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 23,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 1,
+        "(2,1)": 1
+      }
+    }
+  },
+  {
+    "id": "structure_003",
+    "complexity": "complex",
+    "structure": {
+      "(0,0)": [
+        "gl",
+        "ol",
+        "yl"
+      ],
+      "(0,1)": [
+        "gl",
+        "ol",
+        "yl"
+      ],
+      "(0,2)": [
+        "gs",
+        "rs",
+        "gs"
+      ],
+      "(1,0)": [
+        "gl",
+        "gl",
+        "rl"
+      ],
+      "(1,1)": [
+        "gl",
+        "gs"
+      ],
+      "(1,2)": [
+        "rl",
+        "ys",
+        "bl"
+      ],
+      "(2,0)": [
+        "ol",
+        "gl",
+        "rl"
+      ],
+      "(2,1)": [
+        "ol",
+        "gl"
+      ],
+      "(2,2)": [
+        "rl",
+        "gl",
+        "bl"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(1,1)",
+          "(0,1)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ],
+        [
+          "(2,0)",
+          "(2,1)"
+        ],
+        [
+          "(1,0)",
+          "(0,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(1,0)",
+          "(2,0)"
+        ],
+        [
+          "(2,1)",
+          "(2,2)"
+        ],
+        [
+          "(0,1)",
+          "(0,0)"
+        ]
+      ],
+      "2": [
+        [
+          "(2,2)",
+          "(1,2)"
+        ],
+        [
+          "(0,1)",
+          "(0,0)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 25,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_004",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "ol",
+        "bs",
+        "bs"
+      ],
+      "(0,1)": [
+        "ol",
+        "gl",
+        "rl"
+      ],
+      "(0,2)": [
+        "os",
+        "gl",
+        "rl"
+      ],
+      "(1,0)": [
+        "bl",
+        "bs",
+        "ol"
+      ],
+      "(1,1)": [],
+      "(1,2)": [
+        "bl",
+        "rs",
+        "gl"
+      ],
+      "(2,0)": [
+        "bl",
+        "os",
+        "ol"
+      ],
+      "(2,1)": [
+        "os",
+        "gl"
+      ],
+      "(2,2)": [
+        "bl",
+        "gl",
+        "gl"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(1,0)",
+          "(2,0)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ],
+        [
+          "(0,1)",
+          "(0,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(2,1)",
+          "(2,2)"
+        ],
+        [
+          "(0,1)",
+          "(0,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ],
+        [
+          "(2,2)",
+          "(1,2)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 23,
+      "filled_positions": 8,
+      "optional_heights": {
+        "(1,1)": 0,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_005",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "bs",
+        "ys",
+        "os"
+      ],
+      "(0,1)": [
+        "rl",
+        "rl",
+        "rs"
+      ],
+      "(0,2)": [
+        "rl",
+        "rl",
+        "os"
+      ],
+      "(1,0)": [
+        "bs",
+        "bs",
+        "gl"
+      ],
+      "(1,1)": [],
+      "(1,2)": [
+        "bs",
+        "yl",
+        "rl"
+      ],
+      "(2,0)": [
+        "rl",
+        "bl",
+        "gl"
+      ],
+      "(2,1)": [
+        "rl",
+        "bl"
+      ],
+      "(2,2)": [
+        "rs",
+        "yl",
+        "rl"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(2,1)",
+          "(2,0)"
+        ],
+        [
+          "(0,2)",
+          "(0,1)"
+        ]
+      ],
+      "1": [
+        [
+          "(1,2)",
+          "(2,2)"
+        ],
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(2,0)",
+          "(2,1)"
+        ]
+      ],
+      "2": [
+        [
+          "(2,0)",
+          "(1,0)"
+        ],
+        [
+          "(2,2)",
+          "(1,2)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 23,
+      "filled_positions": 8,
+      "optional_heights": {
+        "(1,1)": 0,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_006",
+    "complexity": "complex",
+    "structure": {
+      "(0,0)": [
+        "ol",
+        "bs",
+        "ys"
+      ],
+      "(0,1)": [
+        "yl",
+        "rl",
+        "ol"
+      ],
+      "(0,2)": [
+        "yl",
+        "rl",
+        "ol"
+      ],
+      "(1,0)": [
+        "ol",
+        "bl",
+        "os"
+      ],
+      "(1,1)": [
+        "bs",
+        "bl"
+      ],
+      "(1,2)": [
+        "ys",
+        "yl",
+        "os"
+      ],
+      "(2,0)": [
+        "rs",
+        "gs",
+        "os"
+      ],
+      "(2,1)": [
+        "rs",
+        "os"
+      ],
+      "(2,2)": [
+        "gs",
+        "yl",
+        "gs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,0)",
+          "(1,0)"
+        ],
+        [
+          "(0,2)",
+          "(0,1)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(1,0)",
+          "(1,1)"
+        ],
+        [
+          "(2,2)",
+          "(1,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,2)",
+          "(0,1)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 25,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_007",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "gl",
+        "bs",
+        "rl"
+      ],
+      "(0,1)": [
+        "gl",
+        "bl",
+        "bl"
+      ],
+      "(0,2)": [
+        "ys",
+        "ys",
+        "bl"
+      ],
+      "(1,0)": [
+        "rl",
+        "os",
+        "rl"
+      ],
+      "(1,1)": [
+        "ys",
+        "bl"
+      ],
+      "(1,2)": [
+        "yl",
+        "gl",
+        "ys"
+      ],
+      "(2,0)": [
+        "rl",
+        "gs",
+        "os"
+      ],
+      "(2,1)": [
+        "bs"
+      ],
+      "(2,2)": [
+        "yl",
+        "gl",
+        "gs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,1)",
+          "(0,0)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ],
+        [
+          "(1,0)",
+          "(2,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(2,2)",
+          "(1,2)"
+        ],
+        [
+          "(1,1)",
+          "(0,1)"
+        ]
+      ],
+      "2": [
+        [
+          "(1,0)",
+          "(0,0)"
+        ],
+        [
+          "(0,1)",
+          "(0,2)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 24,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 1
+      }
+    }
+  },
+  {
+    "id": "structure_008",
+    "complexity": "simple",
+    "structure": {
+      "(0,0)": [
+        "gs",
+        "ys",
+        "ys"
+      ],
+      "(0,1)": [
+        "bs",
+        "ol",
+        "os"
+      ],
+      "(0,2)": [
+        "ys",
+        "ol",
+        "rl"
+      ],
+      "(1,0)": [
+        "gl",
+        "yl",
+        "rl"
+      ],
+      "(1,1)": [],
+      "(1,2)": [
+        "gs",
+        "yl",
+        "rl"
+      ],
+      "(2,0)": [
+        "gl",
+        "yl",
+        "rl"
+      ],
+      "(2,1)": [
+        "bs"
+      ],
+      "(2,2)": [
+        "rs",
+        "yl",
+        "rs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(2,0)",
+          "(1,0)"
+        ],
+        [
+          "(2,2)",
+          "(1,2)"
+        ],
+        [
+          "(0,2)",
+          "(0,1)"
+        ]
+      ],
+      "2": [
+        [
+          "(1,2)",
+          "(0,2)"
+        ],
+        [
+          "(1,0)",
+          "(2,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 22,
+      "filled_positions": 8,
+      "optional_heights": {
+        "(1,1)": 0,
+        "(2,1)": 1
+      }
+    }
+  },
+  {
+    "id": "structure_009",
+    "complexity": "simple",
+    "structure": {
+      "(0,0)": [
+        "gl",
+        "rl",
+        "ol"
+      ],
+      "(0,1)": [
+        "gl",
+        "bl",
+        "ol"
+      ],
+      "(0,2)": [
+        "bl",
+        "bl",
+        "rl"
+      ],
+      "(1,0)": [
+        "ys",
+        "rl",
+        "yl"
+      ],
+      "(1,1)": [],
+      "(1,2)": [
+        "bl",
+        "gs",
+        "rl"
+      ],
+      "(2,0)": [
+        "os",
+        "rs",
+        "yl"
+      ],
+      "(2,1)": [],
+      "(2,2)": [
+        "os",
+        "os",
+        "ys"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,0)",
+          "(0,1)"
+        ],
+        [
+          "(0,2)",
+          "(1,2)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(0,0)",
+          "(1,0)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,0)",
+          "(0,1)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ],
+        [
+          "(1,2)",
+          "(0,2)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 21,
+      "filled_positions": 7,
+      "optional_heights": {
+        "(1,1)": 0,
+        "(2,1)": 0
+      }
+    }
+  },
+  {
+    "id": "structure_010",
+    "complexity": "complex",
+    "structure": {
+      "(0,0)": [
+        "ys",
+        "bs",
+        "os"
+      ],
+      "(0,1)": [
+        "os",
+        "bs",
+        "gs"
+      ],
+      "(0,2)": [
+        "ys",
+        "os",
+        "os"
+      ],
+      "(1,0)": [
+        "gs",
+        "yl",
+        "yl"
+      ],
+      "(1,1)": [
+        "ol",
+        "bs"
+      ],
+      "(1,2)": [
+        "yl",
+        "rl",
+        "bl"
+      ],
+      "(2,0)": [
+        "rs",
+        "yl",
+        "yl"
+      ],
+      "(2,1)": [
+        "ol",
+        "os"
+      ],
+      "(2,2)": [
+        "yl",
+        "rl",
+        "bl"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(2,2)",
+          "(1,2)"
+        ],
+        [
+          "(2,1)",
+          "(1,1)"
+        ]
+      ],
+      "1": [
+        [
+          "(2,0)",
+          "(1,0)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(1,0)",
+          "(2,0)"
+        ],
+        [
+          "(2,2)",
+          "(1,2)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 25,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_011",
+    "complexity": "simple",
+    "structure": {
+      "(0,0)": [
+        "gl",
+        "ys",
+        "ys"
+      ],
+      "(0,1)": [
+        "gl",
+        "rl",
+        "os"
+      ],
+      "(0,2)": [
+        "os",
+        "rl",
+        "ys"
+      ],
+      "(1,0)": [
+        "rl",
+        "bl",
+        "ol"
+      ],
+      "(1,1)": [
+        "ys"
+      ],
+      "(1,2)": [
+        "gs",
+        "gs",
+        "ol"
+      ],
+      "(2,0)": [
+        "rl",
+        "bl",
+        "ol"
+      ],
+      "(2,1)": [],
+      "(2,2)": [
+        "rs",
+        "ys",
+        "ol"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,1)",
+          "(0,0)"
+        ],
+        [
+          "(1,0)",
+          "(2,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,2)",
+          "(0,1)"
+        ],
+        [
+          "(1,0)",
+          "(2,0)"
+        ]
+      ],
+      "2": [
+        [
+          "(2,2)",
+          "(1,2)"
+        ],
+        [
+          "(1,0)",
+          "(2,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 22,
+      "filled_positions": 8,
+      "optional_heights": {
+        "(1,1)": 1,
+        "(2,1)": 0
+      }
+    }
+  },
+  {
+    "id": "structure_012",
+    "complexity": "simple",
+    "structure": {
+      "(0,0)": [
+        "yl",
+        "gl",
+        "rl"
+      ],
+      "(0,1)": [
+        "bl",
+        "gl",
+        "gl"
+      ],
+      "(0,2)": [
+        "bs",
+        "rl",
+        "gl"
+      ],
+      "(1,0)": [
+        "yl",
+        "bs",
+        "rl"
+      ],
+      "(1,1)": [
+        "bl"
+      ],
+      "(1,2)": [
+        "rs",
+        "rl",
+        "gs"
+      ],
+      "(2,0)": [
+        "bs",
+        "ys",
+        "gs"
+      ],
+      "(2,1)": [],
+      "(2,2)": [
+        "ys",
+        "ys",
+        "rs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(1,0)",
+          "(0,0)"
+        ],
+        [
+          "(1,1)",
+          "(0,1)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,1)",
+          "(0,0)"
+        ],
+        [
+          "(0,2)",
+          "(1,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(0,0)",
+          "(1,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 22,
+      "filled_positions": 8,
+      "optional_heights": {
+        "(1,1)": 1,
+        "(2,1)": 0
+      }
+    }
+  },
+  {
+    "id": "structure_013",
+    "complexity": "complex",
+    "structure": {
+      "(0,0)": [
+        "bl",
+        "rs",
+        "ol"
+      ],
+      "(0,1)": [
+        "bl",
+        "rl",
+        "ol"
+      ],
+      "(0,2)": [
+        "os",
+        "rs",
+        "rs"
+      ],
+      "(1,0)": [
+        "rl",
+        "bs",
+        "rs"
+      ],
+      "(1,1)": [
+        "yl",
+        "rl"
+      ],
+      "(1,2)": [
+        "yl",
+        "ol",
+        "rs"
+      ],
+      "(2,0)": [
+        "rl",
+        "ol",
+        "rs"
+      ],
+      "(2,1)": [
+        "yl",
+        "ol"
+      ],
+      "(2,2)": [
+        "yl",
+        "ol",
+        "ys"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,0)",
+          "(0,1)"
+        ],
+        [
+          "(1,2)",
+          "(1,1)"
+        ],
+        [
+          "(2,2)",
+          "(2,1)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(1,1)",
+          "(0,1)"
+        ],
+        [
+          "(2,0)",
+          "(2,1)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,0)",
+          "(0,1)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 25,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_014",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "rs",
+        "os",
+        "os"
+      ],
+      "(0,1)": [
+        "rs",
+        "gs",
+        "bs"
+      ],
+      "(0,2)": [
+        "ol",
+        "gl",
+        "bl"
+      ],
+      "(1,0)": [
+        "yl",
+        "bs",
+        "bl"
+      ],
+      "(1,1)": [
+        "yl",
+        "bs"
+      ],
+      "(1,2)": [
+        "ol",
+        "gl",
+        "bl"
+      ],
+      "(2,0)": [
+        "yl",
+        "bs",
+        "bl"
+      ],
+      "(2,1)": [
+        "yl"
+      ],
+      "(2,2)": [
+        "rs",
+        "gs",
+        "os"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(2,0)",
+          "(2,1)"
+        ],
+        [
+          "(1,2)",
+          "(0,2)"
+        ],
+        [
+          "(1,0)",
+          "(1,1)"
+        ]
+      ],
+      "1": [
+        [
+          "(1,2)",
+          "(0,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(1,2)",
+          "(0,2)"
+        ],
+        [
+          "(1,0)",
+          "(2,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 24,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 1
+      }
+    }
+  },
+  {
+    "id": "structure_015",
+    "complexity": "simple",
+    "structure": {
+      "(0,0)": [
+        "bl",
+        "yl",
+        "gl"
+      ],
+      "(0,1)": [
+        "bl",
+        "yl",
+        "bs"
+      ],
+      "(0,2)": [
+        "gs",
+        "rl",
+        "yl"
+      ],
+      "(1,0)": [
+        "rs",
+        "yl",
+        "gl"
+      ],
+      "(1,1)": [],
+      "(1,2)": [
+        "yl",
+        "rl",
+        "yl"
+      ],
+      "(2,0)": [
+        "os",
+        "yl",
+        "os"
+      ],
+      "(2,1)": [],
+      "(2,2)": [
+        "yl",
+        "ys",
+        "gs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,1)",
+          "(0,0)"
+        ],
+        [
+          "(2,2)",
+          "(1,2)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,1)",
+          "(0,0)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ],
+        [
+          "(0,2)",
+          "(1,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(1,0)",
+          "(0,0)"
+        ],
+        [
+          "(0,2)",
+          "(1,2)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 21,
+      "filled_positions": 7,
+      "optional_heights": {
+        "(1,1)": 0,
+        "(2,1)": 0
+      }
+    }
+  },
+  {
+    "id": "structure_016",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "rl",
+        "ol",
+        "yl"
+      ],
+      "(0,1)": [
+        "rl",
+        "ol",
+        "ys"
+      ],
+      "(0,2)": [
+        "gs",
+        "rl",
+        "ys"
+      ],
+      "(1,0)": [
+        "os",
+        "rs",
+        "yl"
+      ],
+      "(1,1)": [
+        "gl"
+      ],
+      "(1,2)": [
+        "gl",
+        "rl",
+        "gl"
+      ],
+      "(2,0)": [
+        "gl",
+        "rs",
+        "os"
+      ],
+      "(2,1)": [
+        "gl",
+        "gs"
+      ],
+      "(2,2)": [
+        "os",
+        "gs",
+        "gl"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,0)",
+          "(0,1)"
+        ],
+        [
+          "(2,0)",
+          "(2,1)"
+        ],
+        [
+          "(1,1)",
+          "(1,2)"
+        ]
+      ],
+      "1": [
+        [
+          "(1,2)",
+          "(0,2)"
+        ],
+        [
+          "(0,1)",
+          "(0,0)"
+        ]
+      ],
+      "2": [
+        [
+          "(2,2)",
+          "(1,2)"
+        ],
+        [
+          "(0,0)",
+          "(1,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 24,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 1,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_017",
+    "complexity": "simple",
+    "structure": {
+      "(0,0)": [
+        "ol",
+        "bl",
+        "bs"
+      ],
+      "(0,1)": [
+        "gl",
+        "gl",
+        "bl"
+      ],
+      "(0,2)": [
+        "gl",
+        "gl",
+        "bl"
+      ],
+      "(1,0)": [
+        "ol",
+        "bl",
+        "bl"
+      ],
+      "(1,1)": [],
+      "(1,2)": [
+        "bl",
+        "os",
+        "rs"
+      ],
+      "(2,0)": [
+        "rs",
+        "gs",
+        "bl"
+      ],
+      "(2,1)": [
+        "gs"
+      ],
+      "(2,2)": [
+        "bl",
+        "os",
+        "gs"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ],
+        [
+          "(0,0)",
+          "(1,0)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,0)",
+          "(1,0)"
+        ],
+        [
+          "(0,2)",
+          "(0,1)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,1)",
+          "(0,2)"
+        ],
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 22,
+      "filled_positions": 8,
+      "optional_heights": {
+        "(1,1)": 0,
+        "(2,1)": 1
+      }
+    }
+  },
+  {
+    "id": "structure_018",
+    "complexity": "complex",
+    "structure": {
+      "(0,0)": [
+        "gl",
+        "rl",
+        "ys"
+      ],
+      "(0,1)": [
+        "os",
+        "yl",
+        "rs"
+      ],
+      "(0,2)": [
+        "os",
+        "yl",
+        "gs"
+      ],
+      "(1,0)": [
+        "gl",
+        "rl",
+        "rl"
+      ],
+      "(1,1)": [
+        "gl",
+        "rs"
+      ],
+      "(1,2)": [
+        "gl",
+        "ol",
+        "ys"
+      ],
+      "(2,0)": [
+        "gs",
+        "os",
+        "rl"
+      ],
+      "(2,1)": [
+        "gl",
+        "bs"
+      ],
+      "(2,2)": [
+        "gl",
+        "ol",
+        "os"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(1,0)",
+          "(0,0)"
+        ],
+        [
+          "(1,2)",
+          "(1,1)"
+        ],
+        [
+          "(2,2)",
+          "(2,1)"
+        ]
+      ],
+      "1": [
+        [
+          "(0,2)",
+          "(0,1)"
+        ],
+        [
+          "(0,0)",
+          "(1,0)"
+        ],
+        [
+          "(2,2)",
+          "(1,2)"
+        ]
+      ],
+      "2": [
+        [
+          "(2,0)",
+          "(1,0)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 25,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 2,
+        "(2,1)": 2
+      }
+    }
+  },
+  {
+    "id": "structure_019",
+    "complexity": "simple",
+    "structure": {
+      "(0,0)": [
+        "bl",
+        "yl",
+        "gl"
+      ],
+      "(0,1)": [
+        "bl",
+        "gs",
+        "gl"
+      ],
+      "(0,2)": [
+        "rs",
+        "rs",
+        "gs"
+      ],
+      "(1,0)": [
+        "bs",
+        "yl",
+        "rs"
+      ],
+      "(1,1)": [],
+      "(1,2)": [
+        "yl",
+        "ys",
+        "ys"
+      ],
+      "(2,0)": [
+        "os",
+        "bs",
+        "bs"
+      ],
+      "(2,1)": [],
+      "(2,2)": [
+        "yl",
+        "bs",
+        "os"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(0,1)",
+          "(0,0)"
+        ],
+        [
+          "(1,2)",
+          "(2,2)"
+        ]
+      ],
+      "1": [
+        [
+          "(1,0)",
+          "(0,0)"
+        ]
+      ],
+      "2": [
+        [
+          "(0,0)",
+          "(0,1)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 21,
+      "filled_positions": 7,
+      "optional_heights": {
+        "(1,1)": 0,
+        "(2,1)": 0
+      }
+    }
+  },
+  {
+    "id": "structure_020",
+    "complexity": "medium",
+    "structure": {
+      "(0,0)": [
+        "os",
+        "os",
+        "ys"
+      ],
+      "(0,1)": [
+        "gs",
+        "gs",
+        "bs"
+      ],
+      "(0,2)": [
+        "bl",
+        "gs",
+        "gs"
+      ],
+      "(1,0)": [
+        "gs",
+        "os",
+        "bs"
+      ],
+      "(1,1)": [
+        "bs"
+      ],
+      "(1,2)": [
+        "bl",
+        "rs",
+        "gl"
+      ],
+      "(2,0)": [
+        "ol",
+        "ol",
+        "ys"
+      ],
+      "(2,1)": [
+        "ol",
+        "ol"
+      ],
+      "(2,2)": [
+        "os",
+        "ys",
+        "gl"
+      ]
+    },
+    "spans": {
+      "0": [
+        [
+          "(2,0)",
+          "(2,1)"
+        ],
+        [
+          "(0,2)",
+          "(1,2)"
+        ]
+      ],
+      "1": [
+        [
+          "(2,0)",
+          "(2,1)"
+        ]
+      ],
+      "2": [
+        [
+          "(2,2)",
+          "(1,2)"
+        ]
+      ]
+    },
+    "director_views": {
+      "D1": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ]
+      },
+      "D2": {
+        "row_0": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "orange",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "yellow",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      },
+      "D3": {
+        "row_0": [
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "blue",
+            "size": 1
+          },
+          {
+            "color": "orange",
+            "size": 1
+          }
+        ],
+        "row_1": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "red",
+            "size": 1
+          },
+          {
+            "color": "yellow",
+            "size": 1
+          }
+        ],
+        "row_2": [
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          },
+          {
+            "color": "green",
+            "size": 1
+          }
+        ]
+      }
+    },
+    "metadata": {
+      "total_blocks": 24,
+      "filled_positions": 9,
+      "optional_heights": {
+        "(1,1)": 1,
+        "(2,1)": 2
+      }
+    }
+  }
+]

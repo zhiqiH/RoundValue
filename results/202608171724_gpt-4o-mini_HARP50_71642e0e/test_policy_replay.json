@@ -1,0 +1,3105 @@
+{
+  "bootstrap": {
+    "samples": 2000,
+    "seed": 20260813
+  },
+  "evaluated_at": "2026-08-17T22:48:36.267493+00:00",
+  "evaluation_split": "test",
+  "label_parameters": {
+    "lambda_cost": 0.0,
+    "mu_latency": 0.0
+  },
+  "max_rounds": 5,
+  "model_status": {
+    "provided": true,
+    "roundvalue_kind": "linear",
+    "task_only_kind": "linear"
+  },
+  "n_records": 10,
+  "pairwise_vs_fixed_1": {
+    "fixed_1": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "fixed_2": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 8745.9,
+        "ci95_low": 7232.4,
+        "mean_difference": 7823.9,
+        "n_paired": 10
+      }
+    },
+    "fixed_3": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 17411.8,
+        "ci95_low": 14419.2,
+        "mean_difference": 15590.1,
+        "n_paired": 10
+      }
+    },
+    "fixed_4": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 25798.8,
+        "ci95_low": 21548.2,
+        "mean_difference": 23212.9,
+        "n_paired": 10
+      }
+    },
+    "fixed_5": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 34337.3,
+        "ci95_low": 28732.6,
+        "mean_difference": 30890.8,
+        "n_paired": 10
+      }
+    },
+    "oracle": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      }
+    },
+    "roundvalue": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 7145.9,
+        "ci95_low": 2876.8,
+        "mean_difference": 5088.4,
+        "n_paired": 10
+      }
+    },
+    "task_only": {
+      "quality_difference": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean_difference": 0.0,
+        "n_paired": 10
+      },
+      "total_tokens_difference": {
+        "ci95_high": 7490.9,
+        "ci95_low": 3731.4,
+        "mean_difference": 5910.8,
+        "n_paired": 10
+      }
+    }
+  },
+  "policies": {
+    "fixed_1": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 12964.6,
+        "mean_cost_usd": 0.0015309149999999999,
+        "mean_input_tokens": 6386.5,
+        "mean_latency_ms": 7482.6,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 954.9,
+        "mean_quality": 0.3,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 7341.4,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 7482.6,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 9436.0,
+          "available": true,
+          "checkpoint_hash": "b7a4f6bb8eb84f6746c53414fb3ae8ec71d736014e7d512e6b632a86402f92df",
+          "cost_usd": 0.0013775999999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6012.0,
+          "latency_ms": 4160.0,
+          "logical_calls": 7.0,
+          "output_tokens": 793.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "fixed_round",
+          "total_tokens": 6805.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 4160.0
+        },
+        {
+          "api_latency_ms": 10680.0,
+          "available": true,
+          "checkpoint_hash": "477cc0e64ed3075d0f9395b3eac12a6200f7581b77bef47b2881440cb31834f7",
+          "cost_usd": 0.00136905,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6163.0,
+          "latency_ms": 5185.0,
+          "logical_calls": 7.0,
+          "output_tokens": 741.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "fixed_round",
+          "total_tokens": 6904.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 5185.0
+        },
+        {
+          "api_latency_ms": 32267.0,
+          "available": true,
+          "checkpoint_hash": "8c219d6ad2cb97f9ea5329eb1e9fdbe55a0b327a3cfeafaed6cdaaf43a936944",
+          "cost_usd": 0.0026736,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6684.0,
+          "latency_ms": 26801.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2785.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 9469.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 26801.0
+        },
+        {
+          "api_latency_ms": 10366.0,
+          "available": true,
+          "checkpoint_hash": "2621eaa674d4a1e6aed66a4b1f7a657530ef80cde0df155e3ed0cc4a8a08e079",
+          "cost_usd": 0.0014295,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6558.0,
+          "latency_ms": 5077.0,
+          "logical_calls": 7.0,
+          "output_tokens": 743.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "fixed_round",
+          "total_tokens": 7301.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 5077.0
+        },
+        {
+          "api_latency_ms": 13682.0,
+          "available": true,
+          "checkpoint_hash": "4a9c6818db1ca4897753cfc33f2c14b78fe8ebb4e5c7a9eca595d0358ca95257",
+          "cost_usd": 0.0019377,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8958.0,
+          "latency_ms": 7639.0,
+          "logical_calls": 7.0,
+          "output_tokens": 990.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "fixed_round",
+          "total_tokens": 9948.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 7639.0
+        },
+        {
+          "api_latency_ms": 9462.0,
+          "available": true,
+          "checkpoint_hash": "7176486af8fbad67a865199225f663815cfaab84771414e5d751c2f288082e04",
+          "cost_usd": 0.0012573,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 5738.0,
+          "latency_ms": 4263.0,
+          "logical_calls": 7.0,
+          "output_tokens": 661.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "fixed_round",
+          "total_tokens": 6399.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 4263.0
+        },
+        {
+          "api_latency_ms": 10519.0,
+          "available": true,
+          "checkpoint_hash": "b5c2310774a8c24f8248c8d9ac97e04b4dfdd316ea482c3f2d32bee203103000",
+          "cost_usd": 0.0013223999999999998,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6048.0,
+          "latency_ms": 5286.0,
+          "logical_calls": 7.0,
+          "output_tokens": 692.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "fixed_round",
+          "total_tokens": 6740.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 5286.0
+        },
+        {
+          "api_latency_ms": 11361.0,
+          "available": true,
+          "checkpoint_hash": "18bc23bd246b0e09d10707eca74a0654bd7f86e273a030eaf73d35ed07d31df3",
+          "cost_usd": 0.0012957,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 5790.0,
+          "latency_ms": 5792.0,
+          "logical_calls": 7.0,
+          "output_tokens": 712.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "fixed_round",
+          "total_tokens": 6502.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 5792.0
+        },
+        {
+          "api_latency_ms": 12364.0,
+          "available": true,
+          "checkpoint_hash": "e5e3fcea66d8563953feba73065ef8c85cc04417e86729b720a01f1d412d5c58",
+          "cost_usd": 0.0013504499999999998,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6007.0,
+          "latency_ms": 6106.0,
+          "logical_calls": 7.0,
+          "output_tokens": 749.0,
+          "policy": "fixed_1",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "fixed_round",
+          "total_tokens": 6756.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 6106.0
+        },
+        {
+          "api_latency_ms": 9509.0,
+          "available": true,
+          "checkpoint_hash": "5939d67d3dd2b716306ab480dc1dd4d5d7229db1026609025ca47a5db872aa5a",
+          "cost_usd": 0.0012958499999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 5907.0,
+          "latency_ms": 4517.0,
+          "logical_calls": 7.0,
+          "output_tokens": 683.0,
+          "policy": "fixed_1",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 6590.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 4517.0
+        }
+      ]
+    },
+    "fixed_2": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 24168.5,
+        "mean_cost_usd": 0.0030657149999999997,
+        "mean_input_tokens": 13407.7,
+        "mean_latency_ms": 13247.3,
+        "mean_logical_calls": 14.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 1757.6,
+        "mean_quality": 0.3,
+        "mean_stop_round": 2.0,
+        "mean_total_tokens": 15165.3,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 13247.3,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "2": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 19182.0,
+          "available": true,
+          "checkpoint_hash": "a741f26c3c9d9c2af48518c5cba1d02cdbc52b646d65a62a07d5ec84a439ddfb",
+          "cost_usd": 0.0027378000000000003,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12352.0,
+          "latency_ms": 8971.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1475.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "fixed_round",
+          "total_tokens": 13827.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 8971.0
+        },
+        {
+          "api_latency_ms": 20862.0,
+          "available": true,
+          "checkpoint_hash": "618f645a7ac90249d67fc9c81b77251a6eae935746d88742fc765a1edff9132d",
+          "cost_usd": 0.0029003999999999996,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 13076.0,
+          "latency_ms": 9793.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1565.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "fixed_round",
+          "total_tokens": 14641.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 9793.0
+        },
+        {
+          "api_latency_ms": 49412.0,
+          "available": true,
+          "checkpoint_hash": "4cdc97916e670bbf5dbd46fc08c2e0bd9216f427e1409d0e7749c012c50bf19d",
+          "cost_usd": 0.0044109,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 14030.0,
+          "latency_ms": 36982.0,
+          "logical_calls": 14.0,
+          "output_tokens": 3844.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 17874.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 36982.0
+        },
+        {
+          "api_latency_ms": 20123.0,
+          "available": true,
+          "checkpoint_hash": "4ccf9f7bf1bc2dd5faff64d01d5a8c5712f578967920ba774447268b4a43c4d8",
+          "cost_usd": 0.0028576499999999998,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 13551.0,
+          "latency_ms": 10095.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1375.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "fixed_round",
+          "total_tokens": 14926.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 10095.0
+        },
+        {
+          "api_latency_ms": 28717.0,
+          "available": true,
+          "checkpoint_hash": "528150e5477fe3faf6f078bc51cef1d1a6294aaf98307a9336ea65ccf4f70fd8",
+          "cost_usd": 0.00426705,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 19123.0,
+          "latency_ms": 15933.0,
+          "logical_calls": 14.0,
+          "output_tokens": 2331.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "fixed_round",
+          "total_tokens": 21454.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 15933.0
+        },
+        {
+          "api_latency_ms": 18369.0,
+          "available": true,
+          "checkpoint_hash": "a84d65d55b9520394aeb6c804c539556f33c2eba5be35b5c3a27aa8934702e4c",
+          "cost_usd": 0.00256245,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 11903.0,
+          "latency_ms": 8157.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1295.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "fixed_round",
+          "total_tokens": 13198.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 8157.0
+        },
+        {
+          "api_latency_ms": 19643.0,
+          "available": true,
+          "checkpoint_hash": "17ba2061324336868d7d7e0fd4cb52cae20d8287985909d45af76121800440ed",
+          "cost_usd": 0.002724,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12664.0,
+          "latency_ms": 9688.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1374.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "fixed_round",
+          "total_tokens": 14038.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 9688.0
+        },
+        {
+          "api_latency_ms": 22098.0,
+          "available": true,
+          "checkpoint_hash": "80f90965234690a312aa621ca06b771c66eb2c33792854067950066297721f63",
+          "cost_usd": 0.0027135,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12310.0,
+          "latency_ms": 11326.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1445.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "fixed_round",
+          "total_tokens": 13755.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 11326.0
+        },
+        {
+          "api_latency_ms": 24305.0,
+          "available": true,
+          "checkpoint_hash": "48f1a1fc0cbda5f594bde3382526561d948684081c411be662cd92172ebb67bf",
+          "cost_usd": 0.00280995,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12689.0,
+          "latency_ms": 12453.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1511.0,
+          "policy": "fixed_2",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "fixed_round",
+          "total_tokens": 14200.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 12453.0
+        },
+        {
+          "api_latency_ms": 18974.0,
+          "available": true,
+          "checkpoint_hash": "0c7a2069dbde415b63a30af003657cd4c1bc041db7d7db2cbe3c14f38a353cd9",
+          "cost_usd": 0.00267345,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12379.0,
+          "latency_ms": 9075.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1361.0,
+          "policy": "fixed_2",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 13740.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 9075.0
+        }
+      ]
+    },
+    "fixed_3": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 35268.5,
+        "mean_cost_usd": 0.00457107,
+        "mean_input_tokens": 20417.4,
+        "mean_latency_ms": 18914.0,
+        "mean_logical_calls": 21.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 2514.1,
+        "mean_quality": 0.3,
+        "mean_stop_round": 3.0,
+        "mean_total_tokens": 22931.5,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 18914.0,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "3": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 28265.0,
+          "available": true,
+          "checkpoint_hash": "6de928917fcbd2f1fcfcfdb8d0236027d11cd3c469cd2e509fc6b8c39fc23eea",
+          "cost_usd": 0.0041025,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 18686.0,
+          "latency_ms": 12862.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2166.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "fixed_round",
+          "total_tokens": 20852.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 12862.0
+        },
+        {
+          "api_latency_ms": 31633.0,
+          "available": true,
+          "checkpoint_hash": "7bd5570794d553521ef1ff6e87d757d683bf51e847a1b06529463466bb89a810",
+          "cost_usd": 0.00450735,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 20661.0,
+          "latency_ms": 14604.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2347.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "fixed_round",
+          "total_tokens": 23008.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 14604.0
+        },
+        {
+          "api_latency_ms": 62438.0,
+          "available": true,
+          "checkpoint_hash": "d96413b388d7696346ce7c900ae0058704eb7ab4b8ae4f7040a39ea2605fb28c",
+          "cost_usd": 0.0060111,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 20938.0,
+          "latency_ms": 43390.0,
+          "logical_calls": 21.0,
+          "output_tokens": 4784.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 25722.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 43390.0
+        },
+        {
+          "api_latency_ms": 30544.0,
+          "available": true,
+          "checkpoint_hash": "cb0040a56908e538fff00291b06c3e528bb851b2a4f45b2b5d4867a6d8618f9a",
+          "cost_usd": 0.004336049999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 20683.0,
+          "latency_ms": 15318.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2056.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "fixed_round",
+          "total_tokens": 22739.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 15318.0
+        },
+        {
+          "api_latency_ms": 46398.0,
+          "available": true,
+          "checkpoint_hash": "1dc8df47e580d72ef6aa963b01c21d377700ccd3f532ad967a6e3a0c39aa79f9",
+          "cost_usd": 0.00640725,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 29195.0,
+          "latency_ms": 27285.0,
+          "logical_calls": 21.0,
+          "output_tokens": 3380.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "fixed_round",
+          "total_tokens": 32575.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 27285.0
+        },
+        {
+          "api_latency_ms": 28546.0,
+          "available": true,
+          "checkpoint_hash": "b136a747cfa37ed4993eedd1f73ae49239e81352b6ea4035e87cf16c84a61fbc",
+          "cost_usd": 0.0038108999999999994,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 17890.0,
+          "latency_ms": 13478.0,
+          "logical_calls": 21.0,
+          "output_tokens": 1879.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "fixed_round",
+          "total_tokens": 19769.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 13478.0
+        },
+        {
+          "api_latency_ms": 28507.0,
+          "available": true,
+          "checkpoint_hash": "cf945c70551db89eeedf67d6e7fbf14bbbae4420a917db0ce2e6f8fba2850ca7",
+          "cost_usd": 0.004074,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 19132.0,
+          "latency_ms": 14193.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2007.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "fixed_round",
+          "total_tokens": 21139.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 14193.0
+        },
+        {
+          "api_latency_ms": 32057.0,
+          "available": true,
+          "checkpoint_hash": "de64a3dd1a38cf2dd91332b1d0b28daadc11af5457ac8f527ab93893fe9e4603",
+          "cost_usd": 0.0041283000000000005,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 18790.0,
+          "latency_ms": 15935.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2183.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "fixed_round",
+          "total_tokens": 20973.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 15935.0
+        },
+        {
+          "api_latency_ms": 35071.0,
+          "available": true,
+          "checkpoint_hash": "74cce2bffb5850dd64aaf5b19ac2f742b08c967a68ad43cfb95b027e6e017f1d",
+          "cost_usd": 0.00422385,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 19215.0,
+          "latency_ms": 17880.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2236.0,
+          "policy": "fixed_3",
+          "quality": 1.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "fixed_round",
+          "total_tokens": 21451.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 17880.0
+        },
+        {
+          "api_latency_ms": 29226.0,
+          "available": true,
+          "checkpoint_hash": "583959f76d4f09f84d34980f68060cbf2d3b859316fa9fd58acf1fb310ffdbe8",
+          "cost_usd": 0.0041094,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 3
+            }
+          ],
+          "input_tokens": 18984.0,
+          "latency_ms": 14195.0,
+          "logical_calls": 21.0,
+          "output_tokens": 2103.0,
+          "policy": "fixed_3",
+          "quality": 0.0,
+          "selected_round": 3,
+          "split": "test",
+          "stop_round": 3,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 21087.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 14195.0
+        }
+      ]
+    },
+    "fixed_4": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 45645.0,
+        "mean_cost_usd": 0.0060453749999999995,
+        "mean_input_tokens": 27304.9,
+        "mean_latency_ms": 24039.5,
+        "mean_logical_calls": 28.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 3249.4,
+        "mean_quality": 0.3,
+        "mean_stop_round": 4.0,
+        "mean_total_tokens": 30554.3,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 24039.5,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "4": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 39314.0,
+          "available": true,
+          "checkpoint_hash": "29ea3e3df500837ad323223ee62ab29b21e7c52a6ef63154c97160e84cbf2555",
+          "cost_usd": 0.0054161999999999995,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 24848.0,
+          "latency_ms": 18289.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2815.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "fixed_round",
+          "total_tokens": 27663.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 18289.0
+        },
+        {
+          "api_latency_ms": 42256.0,
+          "available": true,
+          "checkpoint_hash": "8a557952c6932906c1cd696014c6e24a8d98389bc19a5ed6d0916ba81023f8bf",
+          "cost_usd": 0.005962349999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 27353.0,
+          "latency_ms": 19761.0,
+          "logical_calls": 28.0,
+          "output_tokens": 3099.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "fixed_round",
+          "total_tokens": 30452.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 19761.0
+        },
+        {
+          "api_latency_ms": 74418.0,
+          "available": true,
+          "checkpoint_hash": "b09fd12e1647298da8382422ffc65c661f14522096b6f540ff945145c9563ea4",
+          "cost_usd": 0.007593299999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 27906.0,
+          "latency_ms": 49351.0,
+          "logical_calls": 28.0,
+          "output_tokens": 5679.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 33585.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 49351.0
+        },
+        {
+          "api_latency_ms": 39947.0,
+          "available": true,
+          "checkpoint_hash": "423169f605a2dd681ff6182d1cc88174575c2b5b307242d4f0a123d914c4d09d",
+          "cost_usd": 0.0058023,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 27770.0,
+          "latency_ms": 19710.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2728.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "fixed_round",
+          "total_tokens": 30498.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 19710.0
+        },
+        {
+          "api_latency_ms": 59817.0,
+          "available": true,
+          "checkpoint_hash": "363f2ddd1e6b682cdacee7c72c790b2c299aadbb8786166842f7e02a0787cdae",
+          "cost_usd": 0.0084756,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 38932.0,
+          "latency_ms": 34672.0,
+          "logical_calls": 28.0,
+          "output_tokens": 4393.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "fixed_round",
+          "total_tokens": 43325.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 34672.0
+        },
+        {
+          "api_latency_ms": 37317.0,
+          "available": true,
+          "checkpoint_hash": "29fc683b3ad2bf9b0324530393baf204dcb8a2f2b9d7a89168a0e09aca85a0c3",
+          "cost_usd": 0.00512385,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 24099.0,
+          "latency_ms": 17574.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2515.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "fixed_round",
+          "total_tokens": 26614.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 17574.0
+        },
+        {
+          "api_latency_ms": 37464.0,
+          "available": true,
+          "checkpoint_hash": "b93a9dd9eceec434ee224882169d4857b5d736e1197bbb44a85da10311a4ac63",
+          "cost_usd": 0.005450399999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 25700.0,
+          "latency_ms": 18495.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2659.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "fixed_round",
+          "total_tokens": 28359.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 18495.0
+        },
+        {
+          "api_latency_ms": 41835.0,
+          "available": true,
+          "checkpoint_hash": "d0af39ececf5b1df6e79071f02b3cb3e707fc5196f53ae36eb4b5956fd5c08c9",
+          "cost_usd": 0.00552375,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 25241.0,
+          "latency_ms": 20517.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2896.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "fixed_round",
+          "total_tokens": 28137.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 20517.0
+        },
+        {
+          "api_latency_ms": 45798.0,
+          "available": true,
+          "checkpoint_hash": "03e411901accb2037e8d202be3ec9ba0c0c4df7bfb1ffa175a3ed300d7181975",
+          "cost_usd": 0.00563715,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 25769.0,
+          "latency_ms": 23326.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2953.0,
+          "policy": "fixed_4",
+          "quality": 1.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "fixed_round",
+          "total_tokens": 28722.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 23326.0
+        },
+        {
+          "api_latency_ms": 38284.0,
+          "available": true,
+          "checkpoint_hash": "83d09b0cb4f01f056967db9f901298c0d7fe51e68c5c3cc7fa4eafcf68559ce4",
+          "cost_usd": 0.005468849999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 4
+            }
+          ],
+          "input_tokens": 25431.0,
+          "latency_ms": 18700.0,
+          "logical_calls": 28.0,
+          "output_tokens": 2757.0,
+          "policy": "fixed_4",
+          "quality": 0.0,
+          "selected_round": 4,
+          "split": "test",
+          "stop_round": 4,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 28188.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 18700.0
+        }
+      ]
+    },
+    "fixed_5": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 56275.9,
+        "mean_cost_usd": 0.00753735,
+        "mean_input_tokens": 34226.6,
+        "mean_latency_ms": 29413.9,
+        "mean_logical_calls": 35.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 4005.6,
+        "mean_quality": 0.3,
+        "mean_stop_round": 5.0,
+        "mean_total_tokens": 38232.2,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 29413.9,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "5": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 48461.0,
+          "available": true,
+          "checkpoint_hash": "d26459ba68b90c4547c94cc7d08bf56d67c3bf85b5363c007d4ed6ba163fbe4c",
+          "cost_usd": 0.0067944,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 31188.0,
+          "latency_ms": 22487.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3527.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "fixed_round",
+          "total_tokens": 34715.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 22487.0
+        },
+        {
+          "api_latency_ms": 53760.0,
+          "available": true,
+          "checkpoint_hash": "85c404eefa45d5982ed78deed8e2ea5e8e3f58eee5b01033c8a5eebd9c4467b3",
+          "cost_usd": 0.007421850000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 34083.0,
+          "latency_ms": 25662.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3849.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "fixed_round",
+          "total_tokens": 37932.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 25662.0
+        },
+        {
+          "api_latency_ms": 84988.0,
+          "available": true,
+          "checkpoint_hash": "6ba56bdd58ca9c54ceda6f7a23a71f5e13ac10d5650c30f1e0143dbabe86e00c",
+          "cost_usd": 0.0090609,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 34522.0,
+          "latency_ms": 54401.0,
+          "logical_calls": 35.0,
+          "output_tokens": 6471.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 40993.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 54401.0
+        },
+        {
+          "api_latency_ms": 49424.0,
+          "available": true,
+          "checkpoint_hash": "b687d0e727754347d65d621516287c2f19a37dfc64fedd3357e1a092c6dc6052",
+          "cost_usd": 0.0072296999999999995,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 34726.0,
+          "latency_ms": 24387.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3368.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "fixed_round",
+          "total_tokens": 38094.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 24387.0
+        },
+        {
+          "api_latency_ms": 73459.0,
+          "available": true,
+          "checkpoint_hash": "d014d66ff8d3cca19d66878f72c2b51a8386f028f4875da1e06c54db4bd9dfaf",
+          "cost_usd": 0.010698899999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 49166.0,
+          "latency_ms": 41942.0,
+          "logical_calls": 35.0,
+          "output_tokens": 5540.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "fixed_round",
+          "total_tokens": 54706.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 41942.0
+        },
+        {
+          "api_latency_ms": 46483.0,
+          "available": true,
+          "checkpoint_hash": "deb6da8737607a1695248cc6cada1287d49d42dcd3b15e47ea5159f5bbeaa680",
+          "cost_usd": 0.00649125,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 30443.0,
+          "latency_ms": 21772.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3208.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "fixed_round",
+          "total_tokens": 33651.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 21772.0
+        },
+        {
+          "api_latency_ms": 46292.0,
+          "available": true,
+          "checkpoint_hash": "f0e195cd77ad49c7bd99aab8537e3c2406e3feb7ac8f2fb54797e68051776bb5",
+          "cost_usd": 0.006815099999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 32198.0,
+          "latency_ms": 22712.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3309.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "fixed_round",
+          "total_tokens": 35507.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 22712.0
+        },
+        {
+          "api_latency_ms": 51628.0,
+          "available": true,
+          "checkpoint_hash": "0c82f944fc1dbac9da61648e21e276a0f0ef2f8c8d7820177d2b44e5764e97c7",
+          "cost_usd": 0.006893849999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 31599.0,
+          "latency_ms": 25253.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3590.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "fixed_round",
+          "total_tokens": 35189.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 25253.0
+        },
+        {
+          "api_latency_ms": 60163.0,
+          "available": true,
+          "checkpoint_hash": "bb41b2a449ccb8c54b82601ac1f79a228550ca1882e4729c269ae79ba965b30d",
+          "cost_usd": 0.00711075,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 32409.0,
+          "latency_ms": 31703.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3749.0,
+          "policy": "fixed_5",
+          "quality": 1.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "fixed_round",
+          "total_tokens": 36158.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 31703.0
+        },
+        {
+          "api_latency_ms": 48101.0,
+          "available": true,
+          "checkpoint_hash": "e638b700ef06856543d59c1799b4f79b8aef7049ad02e47b1ea98dd9bb9b3774",
+          "cost_usd": 0.006856800000000001,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "fixed_round",
+              "round_index": 5
+            }
+          ],
+          "input_tokens": 31932.0,
+          "latency_ms": 23820.0,
+          "logical_calls": 35.0,
+          "output_tokens": 3445.0,
+          "policy": "fixed_5",
+          "quality": 0.0,
+          "selected_round": 5,
+          "split": "test",
+          "stop_round": 5,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "fixed_round",
+          "total_tokens": 35377.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 23820.0
+        }
+      ]
+    },
+    "oracle": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 12964.6,
+        "mean_cost_usd": 0.0015309149999999999,
+        "mean_input_tokens": 6386.5,
+        "mean_latency_ms": 7482.6,
+        "mean_logical_calls": 7.0,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 954.9,
+        "mean_quality": 0.3,
+        "mean_stop_round": 1.0,
+        "mean_total_tokens": 7341.4,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 7482.6,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 10
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 9436.0,
+          "available": true,
+          "checkpoint_hash": "b7a4f6bb8eb84f6746c53414fb3ae8ec71d736014e7d512e6b632a86402f92df",
+          "cost_usd": 0.0013775999999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6012.0,
+          "latency_ms": 4160.0,
+          "logical_calls": 7.0,
+          "output_tokens": 793.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 6805.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 4160.0
+        },
+        {
+          "api_latency_ms": 10680.0,
+          "available": true,
+          "checkpoint_hash": "477cc0e64ed3075d0f9395b3eac12a6200f7581b77bef47b2881440cb31834f7",
+          "cost_usd": 0.00136905,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6163.0,
+          "latency_ms": 5185.0,
+          "logical_calls": 7.0,
+          "output_tokens": 741.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 6904.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 5185.0
+        },
+        {
+          "api_latency_ms": 32267.0,
+          "available": true,
+          "checkpoint_hash": "8c219d6ad2cb97f9ea5329eb1e9fdbe55a0b327a3cfeafaed6cdaaf43a936944",
+          "cost_usd": 0.0026736,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6684.0,
+          "latency_ms": 26801.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2785.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 9469.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 26801.0
+        },
+        {
+          "api_latency_ms": 10366.0,
+          "available": true,
+          "checkpoint_hash": "2621eaa674d4a1e6aed66a4b1f7a657530ef80cde0df155e3ed0cc4a8a08e079",
+          "cost_usd": 0.0014295,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6558.0,
+          "latency_ms": 5077.0,
+          "logical_calls": 7.0,
+          "output_tokens": 743.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 7301.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 5077.0
+        },
+        {
+          "api_latency_ms": 13682.0,
+          "available": true,
+          "checkpoint_hash": "4a9c6818db1ca4897753cfc33f2c14b78fe8ebb4e5c7a9eca595d0358ca95257",
+          "cost_usd": 0.0019377,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8958.0,
+          "latency_ms": 7639.0,
+          "logical_calls": 7.0,
+          "output_tokens": 990.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 9948.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 7639.0
+        },
+        {
+          "api_latency_ms": 9462.0,
+          "available": true,
+          "checkpoint_hash": "7176486af8fbad67a865199225f663815cfaab84771414e5d751c2f288082e04",
+          "cost_usd": 0.0012573,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 5738.0,
+          "latency_ms": 4263.0,
+          "logical_calls": 7.0,
+          "output_tokens": 661.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 6399.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 4263.0
+        },
+        {
+          "api_latency_ms": 10519.0,
+          "available": true,
+          "checkpoint_hash": "b5c2310774a8c24f8248c8d9ac97e04b4dfdd316ea482c3f2d32bee203103000",
+          "cost_usd": 0.0013223999999999998,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6048.0,
+          "latency_ms": 5286.0,
+          "logical_calls": 7.0,
+          "output_tokens": 692.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 6740.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 5286.0
+        },
+        {
+          "api_latency_ms": 11361.0,
+          "available": true,
+          "checkpoint_hash": "18bc23bd246b0e09d10707eca74a0654bd7f86e273a030eaf73d35ed07d31df3",
+          "cost_usd": 0.0012957,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 5790.0,
+          "latency_ms": 5792.0,
+          "logical_calls": 7.0,
+          "output_tokens": 712.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 6502.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 5792.0
+        },
+        {
+          "api_latency_ms": 12364.0,
+          "available": true,
+          "checkpoint_hash": "e5e3fcea66d8563953feba73065ef8c85cc04417e86729b720a01f1d412d5c58",
+          "cost_usd": 0.0013504499999999998,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6007.0,
+          "latency_ms": 6106.0,
+          "logical_calls": 7.0,
+          "output_tokens": 749.0,
+          "policy": "oracle",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 6756.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 6106.0
+        },
+        {
+          "api_latency_ms": 9509.0,
+          "available": true,
+          "checkpoint_hash": "5939d67d3dd2b716306ab480dc1dd4d5d7229db1026609025ca47a5db872aa5a",
+          "cost_usd": 0.0012958499999999999,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "reason": "trajectory_oracle",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 5907.0,
+          "latency_ms": 4517.0,
+          "logical_calls": 7.0,
+          "output_tokens": 683.0,
+          "policy": "oracle",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "trajectory_oracle_max_utility",
+          "total_tokens": 6590.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 4517.0
+        }
+      ]
+    },
+    "roundvalue": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 19756.4,
+        "mean_cost_usd": 0.0025131,
+        "mean_input_tokens": 10988.4,
+        "mean_latency_ms": 10765.1,
+        "mean_logical_calls": 11.9,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 1441.4,
+        "mean_quality": 0.3,
+        "mean_stop_round": 1.7,
+        "mean_total_tokens": 12429.8,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 10765.1,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 3,
+          "2": 7
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 19182.0,
+          "available": true,
+          "checkpoint_hash": "a741f26c3c9d9c2af48518c5cba1d02cdbc52b646d65a62a07d5ec84a439ddfb",
+          "cost_usd": 0.0027378000000000003,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.22547387479366435,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.14287393211395974,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12352.0,
+          "latency_ms": 8971.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1475.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 13827.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 8971.0
+        },
+        {
+          "api_latency_ms": 20862.0,
+          "available": true,
+          "checkpoint_hash": "618f645a7ac90249d67fc9c81b77251a6eae935746d88742fc765a1edff9132d",
+          "cost_usd": 0.0029003999999999996,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.1764862517544367,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0993542931452157,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 13076.0,
+          "latency_ms": 9793.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1565.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 14641.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 9793.0
+        },
+        {
+          "api_latency_ms": 32267.0,
+          "available": true,
+          "checkpoint_hash": "8c219d6ad2cb97f9ea5329eb1e9fdbe55a0b327a3cfeafaed6cdaaf43a936944",
+          "cost_usd": 0.0026736,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": -0.00038901017076668244,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6684.0,
+          "latency_ms": 26801.0,
+          "logical_calls": 7.0,
+          "output_tokens": 2785.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 9469.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 26801.0
+        },
+        {
+          "api_latency_ms": 20123.0,
+          "available": true,
+          "checkpoint_hash": "4ccf9f7bf1bc2dd5faff64d01d5a8c5712f578967920ba774447268b4a43c4d8",
+          "cost_usd": 0.0028576499999999998,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.18659170488212173,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.09094258741331784,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 13551.0,
+          "latency_ms": 10095.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1375.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 14926.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 10095.0
+        },
+        {
+          "api_latency_ms": 13682.0,
+          "available": true,
+          "checkpoint_hash": "4a9c6818db1ca4897753cfc33f2c14b78fe8ebb4e5c7a9eca595d0358ca95257",
+          "cost_usd": 0.0019377,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.10908268368106669,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8958.0,
+          "latency_ms": 7639.0,
+          "logical_calls": 7.0,
+          "output_tokens": 990.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 9948.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 7639.0
+        },
+        {
+          "api_latency_ms": 18369.0,
+          "available": true,
+          "checkpoint_hash": "a84d65d55b9520394aeb6c804c539556f33c2eba5be35b5c3a27aa8934702e4c",
+          "cost_usd": 0.00256245,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.17204511350916946,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.0860846967807935,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 11903.0,
+          "latency_ms": 8157.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1295.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 13198.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 8157.0
+        },
+        {
+          "api_latency_ms": 19643.0,
+          "available": true,
+          "checkpoint_hash": "17ba2061324336868d7d7e0fd4cb52cae20d8287985909d45af76121800440ed",
+          "cost_usd": 0.002724,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.16994313061450134,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.09521151805415398,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12664.0,
+          "latency_ms": 9688.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1374.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 14038.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 9688.0
+        },
+        {
+          "api_latency_ms": 22098.0,
+          "available": true,
+          "checkpoint_hash": "80f90965234690a312aa621ca06b771c66eb2c33792854067950066297721f63",
+          "cost_usd": 0.0027135,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.16259118884453722,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.07119217897532404,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12310.0,
+          "latency_ms": 11326.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1445.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 13755.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 11326.0
+        },
+        {
+          "api_latency_ms": 12364.0,
+          "available": true,
+          "checkpoint_hash": "e5e3fcea66d8563953feba73065ef8c85cc04417e86729b720a01f1d412d5c58",
+          "cost_usd": 0.0013504499999999998,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.1250045635337334,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6007.0,
+          "latency_ms": 6106.0,
+          "logical_calls": 7.0,
+          "output_tokens": 749.0,
+          "policy": "roundvalue",
+          "quality": 1.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 6756.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 6106.0
+        },
+        {
+          "api_latency_ms": 18974.0,
+          "available": true,
+          "checkpoint_hash": "0c7a2069dbde415b63a30af003657cd4c1bc041db7d7db2cbe3c14f38a353cd9",
+          "cost_usd": 0.00267345,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.18641917034311054,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.09159204021760238,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12379.0,
+          "latency_ms": 9075.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1361.0,
+          "policy": "roundvalue",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "roundvalue_stop",
+          "total_tokens": 13740.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 9075.0
+        }
+      ]
+    },
+    "task_only": {
+      "metrics": {
+        "accuracy": 0.3,
+        "coverage": 1.0,
+        "mean_api_latency_ms": 21689.3,
+        "mean_cost_usd": 0.002689965,
+        "mean_input_tokens": 11691.9,
+        "mean_latency_ms": 11916.1,
+        "mean_logical_calls": 12.6,
+        "mean_oracle_quality_regret": 0.0,
+        "mean_oracle_utility_regret": 0.0,
+        "mean_output_tokens": 1560.3,
+        "mean_quality": 0.3,
+        "mean_stop_round": 1.8,
+        "mean_total_tokens": 13252.2,
+        "mean_utility": 0.3,
+        "mean_wall_clock_ms": 11916.1,
+        "n_api_latency_ms_observed": 10,
+        "n_available": 10,
+        "n_cost_usd_observed": 10,
+        "n_input_tokens_observed": 10,
+        "n_latency_ms_observed": 10,
+        "n_logical_calls_observed": 10,
+        "n_oracle_paired": 10,
+        "n_oracle_utility_paired": 10,
+        "n_output_tokens_observed": 10,
+        "n_quality_observed": 10,
+        "n_records": 10,
+        "n_stop_round_observed": 10,
+        "n_total_tokens_observed": 10,
+        "n_utility_observed": 10,
+        "n_wall_clock_ms_observed": 10,
+        "stop_round_counts": {
+          "1": 2,
+          "2": 8
+        }
+      },
+      "task_results": [
+        {
+          "api_latency_ms": 19182.0,
+          "available": true,
+          "checkpoint_hash": "a741f26c3c9d9c2af48518c5cba1d02cdbc52b646d65a62a07d5ec84a439ddfb",
+          "cost_usd": 0.0027378000000000003,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.1640639671470707,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.11739730086929294,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12352.0,
+          "latency_ms": 8971.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1475.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1990::AJHSME::19",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 13827.0,
+          "trajectory_id": "642b157ea23e9f18e768873c",
+          "utility": 0.0,
+          "wall_clock_ms": 8971.0
+        },
+        {
+          "api_latency_ms": 20862.0,
+          "available": true,
+          "checkpoint_hash": "618f645a7ac90249d67fc9c81b77251a6eae935746d88742fc765a1edff9132d",
+          "cost_usd": 0.0029003999999999996,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.15948734046840288,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.1128206741906251,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 13076.0,
+          "latency_ms": 9793.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1565.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1998::AHSME::28",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 14641.0,
+          "trajectory_id": "cae5689e66849a183a14ef0a",
+          "utility": 0.0,
+          "wall_clock_ms": 9793.0
+        },
+        {
+          "api_latency_ms": 49412.0,
+          "available": true,
+          "checkpoint_hash": "4cdc97916e670bbf5dbd46fc08c2e0bd9216f427e1409d0e7749c012c50bf19d",
+          "cost_usd": 0.0044109,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.16166457063592446,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.11499790435814669,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 14030.0,
+          "latency_ms": 36982.0,
+          "logical_calls": 14.0,
+          "output_tokens": 3844.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2016::AMC_10B::6",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 17874.0,
+          "trajectory_id": "5ec5931135da223c706f5be5",
+          "utility": 0.0,
+          "wall_clock_ms": 36982.0
+        },
+        {
+          "api_latency_ms": 10366.0,
+          "available": true,
+          "checkpoint_hash": "2621eaa674d4a1e6aed66a4b1f7a657530ef80cde0df155e3ed0cc4a8a08e079",
+          "cost_usd": 0.0014295,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.14780139079374616,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 6558.0,
+          "latency_ms": 5077.0,
+          "logical_calls": 7.0,
+          "output_tokens": 743.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::1980::AHSME::13",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 7301.0,
+          "trajectory_id": "f767662e6fc3d097367ad6d3",
+          "utility": 0.0,
+          "wall_clock_ms": 5077.0
+        },
+        {
+          "api_latency_ms": 13682.0,
+          "available": true,
+          "checkpoint_hash": "4a9c6818db1ca4897753cfc33f2c14b78fe8ebb4e5c7a9eca595d0358ca95257",
+          "cost_usd": 0.0019377,
+          "decision_trace": [
+            {
+              "decision": "STOP",
+              "predicted_value": 0.12274102723288537,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 1
+            }
+          ],
+          "input_tokens": 8958.0,
+          "latency_ms": 7639.0,
+          "logical_calls": 7.0,
+          "output_tokens": 990.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 1,
+          "split": "test",
+          "stop_round": 1,
+          "task_id": "harp::2019::AMC_12B::15",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 9948.0,
+          "trajectory_id": "7b3d4503d721515153be046f",
+          "utility": 0.0,
+          "wall_clock_ms": 7639.0
+        },
+        {
+          "api_latency_ms": 18369.0,
+          "available": true,
+          "checkpoint_hash": "a84d65d55b9520394aeb6c804c539556f33c2eba5be35b5c3a27aa8934702e4c",
+          "cost_usd": 0.00256245,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.16313086850384717,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.1164642022260694,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 11903.0,
+          "latency_ms": 8157.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1295.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2004::AMC_10A::1",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 13198.0,
+          "trajectory_id": "69e4e1f72c4e4ff416d6d801",
+          "utility": 1.0,
+          "wall_clock_ms": 8157.0
+        },
+        {
+          "api_latency_ms": 19643.0,
+          "available": true,
+          "checkpoint_hash": "17ba2061324336868d7d7e0fd4cb52cae20d8287985909d45af76121800440ed",
+          "cost_usd": 0.002724,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.16237550293552336,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.11570883665774558,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12664.0,
+          "latency_ms": 9688.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1374.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1984::AHSME::8",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 14038.0,
+          "trajectory_id": "67376f970d3d64d1e4147a94",
+          "utility": 1.0,
+          "wall_clock_ms": 9688.0
+        },
+        {
+          "api_latency_ms": 22098.0,
+          "available": true,
+          "checkpoint_hash": "80f90965234690a312aa621ca06b771c66eb2c33792854067950066297721f63",
+          "cost_usd": 0.0027135,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.16219776986062362,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.11553110358284585,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12310.0,
+          "latency_ms": 11326.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1445.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2014::AMC_10A::17",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 13755.0,
+          "trajectory_id": "a37ad0011dd967ebaddd9e4e",
+          "utility": 0.0,
+          "wall_clock_ms": 11326.0
+        },
+        {
+          "api_latency_ms": 24305.0,
+          "available": true,
+          "checkpoint_hash": "48f1a1fc0cbda5f594bde3382526561d948684081c411be662cd92172ebb67bf",
+          "cost_usd": 0.00280995,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.15913187431860343,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.11246520804082566,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12689.0,
+          "latency_ms": 12453.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1511.0,
+          "policy": "task_only",
+          "quality": 1.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::2011::AMC_12A::3",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 14200.0,
+          "trajectory_id": "0778a7d715e070f6a741fed1",
+          "utility": 1.0,
+          "wall_clock_ms": 12453.0
+        },
+        {
+          "api_latency_ms": 18974.0,
+          "available": true,
+          "checkpoint_hash": "0c7a2069dbde415b63a30af003657cd4c1bc041db7d7db2cbe3c14f38a353cd9",
+          "cost_usd": 0.00267345,
+          "decision_trace": [
+            {
+              "decision": "CONTINUE",
+              "predicted_value": 0.16393066734089592,
+              "reason": "positive_predicted_value",
+              "round_index": 1
+            },
+            {
+              "decision": "STOP",
+              "predicted_value": 0.11726400106311814,
+              "reason": "nonpositive_predicted_value",
+              "round_index": 2
+            }
+          ],
+          "input_tokens": 12379.0,
+          "latency_ms": 9075.0,
+          "logical_calls": 14.0,
+          "output_tokens": 1361.0,
+          "policy": "task_only",
+          "quality": 0.0,
+          "selected_round": 2,
+          "split": "test",
+          "stop_round": 2,
+          "task_id": "harp::1997::AHSME::6",
+          "termination_reason": "task_only_stop",
+          "total_tokens": 13740.0,
+          "trajectory_id": "660c316081bc358f62b725ce",
+          "utility": 0.0,
+          "wall_clock_ms": 9075.0
+        }
+      ]
+    }
+  },
+  "policy_metrics": {
+    "fixed_1": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 12964.6,
+      "mean_cost_usd": 0.0015309149999999999,
+      "mean_input_tokens": 6386.5,
+      "mean_latency_ms": 7482.6,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 954.9,
+      "mean_quality": 0.3,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 7341.4,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 7482.6,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "fixed_2": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 24168.5,
+      "mean_cost_usd": 0.0030657149999999997,
+      "mean_input_tokens": 13407.7,
+      "mean_latency_ms": 13247.3,
+      "mean_logical_calls": 14.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 1757.6,
+      "mean_quality": 0.3,
+      "mean_stop_round": 2.0,
+      "mean_total_tokens": 15165.3,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 13247.3,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "2": 10
+      }
+    },
+    "fixed_3": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 35268.5,
+      "mean_cost_usd": 0.00457107,
+      "mean_input_tokens": 20417.4,
+      "mean_latency_ms": 18914.0,
+      "mean_logical_calls": 21.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 2514.1,
+      "mean_quality": 0.3,
+      "mean_stop_round": 3.0,
+      "mean_total_tokens": 22931.5,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 18914.0,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "3": 10
+      }
+    },
+    "fixed_4": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 45645.0,
+      "mean_cost_usd": 0.0060453749999999995,
+      "mean_input_tokens": 27304.9,
+      "mean_latency_ms": 24039.5,
+      "mean_logical_calls": 28.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 3249.4,
+      "mean_quality": 0.3,
+      "mean_stop_round": 4.0,
+      "mean_total_tokens": 30554.3,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 24039.5,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "4": 10
+      }
+    },
+    "fixed_5": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 56275.9,
+      "mean_cost_usd": 0.00753735,
+      "mean_input_tokens": 34226.6,
+      "mean_latency_ms": 29413.9,
+      "mean_logical_calls": 35.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 4005.6,
+      "mean_quality": 0.3,
+      "mean_stop_round": 5.0,
+      "mean_total_tokens": 38232.2,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 29413.9,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "5": 10
+      }
+    },
+    "oracle": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 12964.6,
+      "mean_cost_usd": 0.0015309149999999999,
+      "mean_input_tokens": 6386.5,
+      "mean_latency_ms": 7482.6,
+      "mean_logical_calls": 7.0,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 954.9,
+      "mean_quality": 0.3,
+      "mean_stop_round": 1.0,
+      "mean_total_tokens": 7341.4,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 7482.6,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 10
+      }
+    },
+    "roundvalue": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 19756.4,
+      "mean_cost_usd": 0.0025131,
+      "mean_input_tokens": 10988.4,
+      "mean_latency_ms": 10765.1,
+      "mean_logical_calls": 11.9,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 1441.4,
+      "mean_quality": 0.3,
+      "mean_stop_round": 1.7,
+      "mean_total_tokens": 12429.8,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 10765.1,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 3,
+        "2": 7
+      }
+    },
+    "task_only": {
+      "accuracy": 0.3,
+      "coverage": 1.0,
+      "mean_api_latency_ms": 21689.3,
+      "mean_cost_usd": 0.002689965,
+      "mean_input_tokens": 11691.9,
+      "mean_latency_ms": 11916.1,
+      "mean_logical_calls": 12.6,
+      "mean_oracle_quality_regret": 0.0,
+      "mean_oracle_utility_regret": 0.0,
+      "mean_output_tokens": 1560.3,
+      "mean_quality": 0.3,
+      "mean_stop_round": 1.8,
+      "mean_total_tokens": 13252.2,
+      "mean_utility": 0.3,
+      "mean_wall_clock_ms": 11916.1,
+      "n_api_latency_ms_observed": 10,
+      "n_available": 10,
+      "n_cost_usd_observed": 10,
+      "n_input_tokens_observed": 10,
+      "n_latency_ms_observed": 10,
+      "n_logical_calls_observed": 10,
+      "n_oracle_paired": 10,
+      "n_oracle_utility_paired": 10,
+      "n_output_tokens_observed": 10,
+      "n_quality_observed": 10,
+      "n_records": 10,
+      "n_stop_round_observed": 10,
+      "n_total_tokens_observed": 10,
+      "n_utility_observed": 10,
+      "n_wall_clock_ms_observed": 10,
+      "stop_round_counts": {
+        "1": 2,
+        "2": 8
+      }
+    }
+  },
+  "policy_version": "roundvalue-replay-v3",
+  "replay_mode": "offline_saved_trajectories_only",
+  "run_id": "202608171724_gpt-4o-mini_HARP50_71642e0e",
+  "schema_version": "1.0",
+  "transition_metrics": {
+    "n_checkpoints": 50,
+    "n_decisions": 40,
+    "transition_counts": {
+      "harm": 0,
+      "neutral": 40,
+      "recovery": 0,
+      "repair": 0,
+      "terminal": 10,
+      "unknown": 0
+    },
+    "transition_rates": {
+      "harm": 0.0,
+      "neutral": 1.0,
+      "recovery": 0.0,
+      "repair": 0.0
+    }
+  }
+}

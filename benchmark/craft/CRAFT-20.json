@@ -1,0 +1,1998 @@
+{
+  "schema_version": "1.0",
+  "benchmark_id": "CRAFT-20-RoundValue-v1",
+  "dataset_id": "CRAFT-20",
+  "domain": "craft",
+  "generator": "roundvalue-craft-20-v1",
+  "purpose": "A text-only 20-task adaptation of the 20 CRAFT evaluation structures. Each task asks the model to select the complete structure matching three partial Director wall projections.",
+  "provenance": {
+    "schema_version": "1.0",
+    "dataset_id": "CRAFT-20",
+    "domain": "craft",
+    "generator": "roundvalue-craft-20-v1",
+    "upstream": {
+      "repository": "https://github.com/csu-signal/CRAFT",
+      "revision": "f174fa5ae80c20ce5ccc7bb7cbf4aeab69efe430",
+      "file": "data/structures_dataset_20.json",
+      "license": "MIT",
+      "paper": "arXiv:2603.25268"
+    },
+    "source_file": "benchmark/craft/craft_structures_20.json",
+    "source_sha256": "c7a57048ec0d2e92c25bde8aa7936c911919accdcdcedc078e9ccf1e0a2c9e3a",
+    "task_construction": {
+      "method": "one task per CRAFT evaluation structure; four candidates per task (target plus deterministic structures at +5, +10, +15 in raw order); target option position is index mod 4",
+      "split": "first 12 train, next 4 validation, final 4 test"
+    },
+    "task_ids": [
+      "craft::structure_001",
+      "craft::structure_002",
+      "craft::structure_003",
+      "craft::structure_004",
+      "craft::structure_005",
+      "craft::structure_006",
+      "craft::structure_007",
+      "craft::structure_008",
+      "craft::structure_009",
+      "craft::structure_010",
+      "craft::structure_011",
+      "craft::structure_012",
+      "craft::structure_013",
+      "craft::structure_014",
+      "craft::structure_015",
+      "craft::structure_016",
+      "craft::structure_017",
+      "craft::structure_018",
+      "craft::structure_019",
+      "craft::structure_020"
+    ]
+  },
+  "split": {
+    "counts": {
+      "train": 12,
+      "validation": 4,
+      "test": 4
+    },
+    "ratios": {
+      "train": 0.6,
+      "validation": 0.2,
+      "test": 0.2
+    }
+  },
+  "tasks": [
+    {
+      "task_id": "craft::structure_001",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: yellow, blue, blue | row 1: orange, orange, green | row 2: green, red, red\nD2: row 0: yellow, green, orange | row 1: orange, orange, red | row 2: green, blue, blue\nD3: row 0: orange, green, orange | row 1: red, green, orange | row 2: blue, blue, blue\n\nCandidates:\n(A) (0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small\n(B) (0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small\n(C) (0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large\n(D) (0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small",
+        "(0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small",
+        "(0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large",
+        "(0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large"
+      ],
+      "answer_index": 0,
+      "reference_answer": "A",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_001",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "ys",
+          "ol",
+          "gs"
+        ],
+        "(0,1)": [
+          "gs",
+          "os",
+          "bs"
+        ],
+        "(0,2)": [
+          "os",
+          "rs",
+          "bl"
+        ],
+        "(1,0)": [
+          "bl",
+          "ol",
+          "rl"
+        ],
+        "(1,1)": [
+          "gl",
+          "gl"
+        ],
+        "(1,2)": [
+          "gl",
+          "gl",
+          "bl"
+        ],
+        "(2,0)": [
+          "bl",
+          "gs",
+          "rl"
+        ],
+        "(2,1)": [],
+        "(2,2)": [
+          "os",
+          "os",
+          "bs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(1,2)",
+            "(1,1)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,0)",
+            "(1,0)"
+          ],
+          [
+            "(1,1)",
+            "(1,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(1,2)",
+            "(0,2)"
+          ],
+          [
+            "(1,0)",
+            "(2,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_002",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: orange, red, red | row 1: blue, orange, red | row 2: green, orange, orange\nD2: row 0: orange, blue, blue | row 1: blue, blue, blue | row 2: green, red, red\nD3: row 0: blue, orange, orange | row 1: blue, red, green | row 2: red, red, green\n\nCandidates:\n(A) (0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small\n(B) (0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small\n(C) (0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small\n(D) (0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small",
+        "(0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small",
+        "(0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small",
+        "(0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small"
+      ],
+      "answer_index": 1,
+      "reference_answer": "B",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_002",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "os",
+          "bs",
+          "gs"
+        ],
+        "(0,1)": [
+          "bl",
+          "bl",
+          "rl"
+        ],
+        "(0,2)": [
+          "bs",
+          "bl",
+          "rl"
+        ],
+        "(1,0)": [
+          "rl",
+          "os",
+          "ol"
+        ],
+        "(1,1)": [
+          "bl"
+        ],
+        "(1,2)": [
+          "ol",
+          "rs",
+          "rs"
+        ],
+        "(2,0)": [
+          "rl",
+          "rs",
+          "ol"
+        ],
+        "(2,1)": [
+          "gs"
+        ],
+        "(2,2)": [
+          "ol",
+          "gs",
+          "gs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(1,1)",
+            "(0,1)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,2)",
+            "(0,1)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_003",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: green, green, orange | row 1: orange, green, green | row 2: yellow, red, red\nD2: row 0: green, green, green | row 1: orange, orange, red | row 2: yellow, yellow, green\nD3: row 0: green, red, red | row 1: red, yellow, green | row 2: green, blue, blue\n\nCandidates:\n(A) (0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small\n(B) (0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small\n(C) (0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large\n(D) (0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small",
+        "(0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small",
+        "(0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large",
+        "(0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small"
+      ],
+      "answer_index": 2,
+      "reference_answer": "C",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_003",
+        "complexity": "complex"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "gl",
+          "ol",
+          "yl"
+        ],
+        "(0,1)": [
+          "gl",
+          "ol",
+          "yl"
+        ],
+        "(0,2)": [
+          "gs",
+          "rs",
+          "gs"
+        ],
+        "(1,0)": [
+          "gl",
+          "gl",
+          "rl"
+        ],
+        "(1,1)": [
+          "gl",
+          "gs"
+        ],
+        "(1,2)": [
+          "rl",
+          "ys",
+          "bl"
+        ],
+        "(2,0)": [
+          "ol",
+          "gl",
+          "rl"
+        ],
+        "(2,1)": [
+          "ol",
+          "gl"
+        ],
+        "(2,2)": [
+          "rl",
+          "gl",
+          "bl"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(1,1)",
+            "(0,1)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ],
+          [
+            "(2,0)",
+            "(2,1)"
+          ],
+          [
+            "(1,0)",
+            "(0,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(1,0)",
+            "(2,0)"
+          ],
+          [
+            "(2,1)",
+            "(2,2)"
+          ],
+          [
+            "(0,1)",
+            "(0,0)"
+          ]
+        ],
+        "2": [
+          [
+            "(2,2)",
+            "(1,2)"
+          ],
+          [
+            "(0,1)",
+            "(0,0)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_004",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: orange, blue, blue | row 1: blue, blue, orange | row 2: blue, orange, orange\nD2: row 0: orange, orange, orange | row 1: blue, green, green | row 2: blue, red, red\nD3: row 0: orange, blue, blue | row 1: green, red, green | row 2: red, green, green\n\nCandidates:\n(A) (0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small\n(B) (0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small\n(C) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small\n(D) (0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small",
+        "(0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small",
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small",
+        "(0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large"
+      ],
+      "answer_index": 3,
+      "reference_answer": "D",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_004",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "ol",
+          "bs",
+          "bs"
+        ],
+        "(0,1)": [
+          "ol",
+          "gl",
+          "rl"
+        ],
+        "(0,2)": [
+          "os",
+          "gl",
+          "rl"
+        ],
+        "(1,0)": [
+          "bl",
+          "bs",
+          "ol"
+        ],
+        "(1,1)": [],
+        "(1,2)": [
+          "bl",
+          "rs",
+          "gl"
+        ],
+        "(2,0)": [
+          "bl",
+          "os",
+          "ol"
+        ],
+        "(2,1)": [
+          "os",
+          "gl"
+        ],
+        "(2,2)": [
+          "bl",
+          "gl",
+          "gl"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(1,0)",
+            "(2,0)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ],
+          [
+            "(0,1)",
+            "(0,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(2,1)",
+            "(2,2)"
+          ],
+          [
+            "(0,1)",
+            "(0,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ],
+          [
+            "(2,2)",
+            "(1,2)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_005",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: blue, blue, red | row 1: yellow, blue, blue | row 2: orange, green, green\nD2: row 0: blue, red, red | row 1: yellow, red, red | row 2: orange, red, orange\nD3: row 0: red, blue, red | row 1: red, yellow, yellow | row 2: orange, red, red\n\nCandidates:\n(A) (0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large\n(B) (0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large\n(C) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small\n(D) (0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large",
+        "(0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large",
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small",
+        "(0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large"
+      ],
+      "answer_index": 0,
+      "reference_answer": "A",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_005",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "bs",
+          "ys",
+          "os"
+        ],
+        "(0,1)": [
+          "rl",
+          "rl",
+          "rs"
+        ],
+        "(0,2)": [
+          "rl",
+          "rl",
+          "os"
+        ],
+        "(1,0)": [
+          "bs",
+          "bs",
+          "gl"
+        ],
+        "(1,1)": [],
+        "(1,2)": [
+          "bs",
+          "yl",
+          "rl"
+        ],
+        "(2,0)": [
+          "rl",
+          "bl",
+          "gl"
+        ],
+        "(2,1)": [
+          "rl",
+          "bl"
+        ],
+        "(2,2)": [
+          "rs",
+          "yl",
+          "rl"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(2,1)",
+            "(2,0)"
+          ],
+          [
+            "(0,2)",
+            "(0,1)"
+          ]
+        ],
+        "1": [
+          [
+            "(1,2)",
+            "(2,2)"
+          ],
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(2,0)",
+            "(2,1)"
+          ]
+        ],
+        "2": [
+          [
+            "(2,0)",
+            "(1,0)"
+          ],
+          [
+            "(2,2)",
+            "(1,2)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_006",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: orange, orange, red | row 1: blue, blue, green | row 2: yellow, orange, orange\nD2: row 0: orange, yellow, yellow | row 1: blue, red, red | row 2: yellow, orange, orange\nD3: row 0: yellow, yellow, green | row 1: red, yellow, yellow | row 2: orange, orange, green\n\nCandidates:\n(A) (0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large\n(B) (0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small\n(C) (0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large\n(D) (0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large",
+        "(0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small",
+        "(0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large",
+        "(0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small"
+      ],
+      "answer_index": 1,
+      "reference_answer": "B",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_006",
+        "complexity": "complex"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "ol",
+          "bs",
+          "ys"
+        ],
+        "(0,1)": [
+          "yl",
+          "rl",
+          "ol"
+        ],
+        "(0,2)": [
+          "yl",
+          "rl",
+          "ol"
+        ],
+        "(1,0)": [
+          "ol",
+          "bl",
+          "os"
+        ],
+        "(1,1)": [
+          "bs",
+          "bl"
+        ],
+        "(1,2)": [
+          "ys",
+          "yl",
+          "os"
+        ],
+        "(2,0)": [
+          "rs",
+          "gs",
+          "os"
+        ],
+        "(2,1)": [
+          "rs",
+          "os"
+        ],
+        "(2,2)": [
+          "gs",
+          "yl",
+          "gs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,0)",
+            "(1,0)"
+          ],
+          [
+            "(0,2)",
+            "(0,1)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(1,0)",
+            "(1,1)"
+          ],
+          [
+            "(2,2)",
+            "(1,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,2)",
+            "(0,1)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_007",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: green, red, red | row 1: blue, orange, green | row 2: red, red, orange\nD2: row 0: green, green, yellow | row 1: blue, blue, yellow | row 2: red, blue, blue\nD3: row 0: yellow, yellow, yellow | row 1: yellow, green, green | row 2: blue, yellow, green\n\nCandidates:\n(A) (0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small\n(B) (0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small\n(C) (0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small\n(D) (0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small",
+        "(0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small",
+        "(0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small",
+        "(0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small"
+      ],
+      "answer_index": 2,
+      "reference_answer": "C",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_007",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "gl",
+          "bs",
+          "rl"
+        ],
+        "(0,1)": [
+          "gl",
+          "bl",
+          "bl"
+        ],
+        "(0,2)": [
+          "ys",
+          "ys",
+          "bl"
+        ],
+        "(1,0)": [
+          "rl",
+          "os",
+          "rl"
+        ],
+        "(1,1)": [
+          "ys",
+          "bl"
+        ],
+        "(1,2)": [
+          "yl",
+          "gl",
+          "ys"
+        ],
+        "(2,0)": [
+          "rl",
+          "gs",
+          "os"
+        ],
+        "(2,1)": [
+          "bs"
+        ],
+        "(2,2)": [
+          "yl",
+          "gl",
+          "gs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,1)",
+            "(0,0)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ],
+          [
+            "(1,0)",
+            "(2,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(2,2)",
+            "(1,2)"
+          ],
+          [
+            "(1,1)",
+            "(0,1)"
+          ]
+        ],
+        "2": [
+          [
+            "(1,0)",
+            "(0,0)"
+          ],
+          [
+            "(0,1)",
+            "(0,2)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_008",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: green, green, green | row 1: yellow, yellow, yellow | row 2: yellow, red, red\nD2: row 0: green, blue, yellow | row 1: yellow, orange, orange | row 2: yellow, orange, red\nD3: row 0: yellow, green, red | row 1: orange, yellow, yellow | row 2: red, red, red\n\nCandidates:\n(A) (0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small\n(B) (0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small\n(C) (0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large\n(D) (0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small",
+        "(0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small",
+        "(0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large",
+        "(0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small"
+      ],
+      "answer_index": 3,
+      "reference_answer": "D",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_008",
+        "complexity": "simple"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "gs",
+          "ys",
+          "ys"
+        ],
+        "(0,1)": [
+          "bs",
+          "ol",
+          "os"
+        ],
+        "(0,2)": [
+          "ys",
+          "ol",
+          "rl"
+        ],
+        "(1,0)": [
+          "gl",
+          "yl",
+          "rl"
+        ],
+        "(1,1)": [],
+        "(1,2)": [
+          "gs",
+          "yl",
+          "rl"
+        ],
+        "(2,0)": [
+          "gl",
+          "yl",
+          "rl"
+        ],
+        "(2,1)": [
+          "bs"
+        ],
+        "(2,2)": [
+          "rs",
+          "yl",
+          "rs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(2,0)",
+            "(1,0)"
+          ],
+          [
+            "(2,2)",
+            "(1,2)"
+          ],
+          [
+            "(0,2)",
+            "(0,1)"
+          ]
+        ],
+        "2": [
+          [
+            "(1,2)",
+            "(0,2)"
+          ],
+          [
+            "(1,0)",
+            "(2,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_009",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: green, yellow, orange | row 1: red, red, red | row 2: orange, yellow, yellow\nD2: row 0: green, green, blue | row 1: red, blue, blue | row 2: orange, orange, red\nD3: row 0: blue, blue, orange | row 1: blue, green, orange | row 2: red, red, yellow\n\nCandidates:\n(A) (0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small\n(B) (0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small\n(C) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small\n(D) (0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small",
+        "(0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small",
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small",
+        "(0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large"
+      ],
+      "answer_index": 0,
+      "reference_answer": "A",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_009",
+        "complexity": "simple"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "gl",
+          "rl",
+          "ol"
+        ],
+        "(0,1)": [
+          "gl",
+          "bl",
+          "ol"
+        ],
+        "(0,2)": [
+          "bl",
+          "bl",
+          "rl"
+        ],
+        "(1,0)": [
+          "ys",
+          "rl",
+          "yl"
+        ],
+        "(1,1)": [],
+        "(1,2)": [
+          "bl",
+          "gs",
+          "rl"
+        ],
+        "(2,0)": [
+          "os",
+          "rs",
+          "yl"
+        ],
+        "(2,1)": [],
+        "(2,2)": [
+          "os",
+          "os",
+          "ys"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,0)",
+            "(0,1)"
+          ],
+          [
+            "(0,2)",
+            "(1,2)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(0,0)",
+            "(1,0)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,0)",
+            "(0,1)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ],
+          [
+            "(1,2)",
+            "(0,2)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_010",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: yellow, green, red | row 1: blue, yellow, yellow | row 2: orange, yellow, yellow\nD2: row 0: yellow, orange, yellow | row 1: blue, blue, orange | row 2: orange, green, orange\nD3: row 0: yellow, yellow, yellow | row 1: orange, red, red | row 2: orange, blue, blue\n\nCandidates:\n(A) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small\n(B) (0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large\n(C) (0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large\n(D) (0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small",
+        "(0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large",
+        "(0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large",
+        "(0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large"
+      ],
+      "answer_index": 1,
+      "reference_answer": "B",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_010",
+        "complexity": "complex"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "ys",
+          "bs",
+          "os"
+        ],
+        "(0,1)": [
+          "os",
+          "bs",
+          "gs"
+        ],
+        "(0,2)": [
+          "ys",
+          "os",
+          "os"
+        ],
+        "(1,0)": [
+          "gs",
+          "yl",
+          "yl"
+        ],
+        "(1,1)": [
+          "ol",
+          "bs"
+        ],
+        "(1,2)": [
+          "yl",
+          "rl",
+          "bl"
+        ],
+        "(2,0)": [
+          "rs",
+          "yl",
+          "yl"
+        ],
+        "(2,1)": [
+          "ol",
+          "os"
+        ],
+        "(2,2)": [
+          "yl",
+          "rl",
+          "bl"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(2,2)",
+            "(1,2)"
+          ],
+          [
+            "(2,1)",
+            "(1,1)"
+          ]
+        ],
+        "1": [
+          [
+            "(2,0)",
+            "(1,0)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(1,0)",
+            "(2,0)"
+          ],
+          [
+            "(2,2)",
+            "(1,2)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_011",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: green, red, red | row 1: yellow, blue, blue | row 2: yellow, orange, orange\nD2: row 0: green, green, orange | row 1: yellow, red, red | row 2: yellow, orange, yellow\nD3: row 0: orange, green, red | row 1: red, green, yellow | row 2: yellow, orange, orange\n\nCandidates:\n(A) (0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large\n(B) (0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small\n(C) (0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large\n(D) (0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large",
+        "(0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small",
+        "(0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large",
+        "(0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small"
+      ],
+      "answer_index": 2,
+      "reference_answer": "C",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_011",
+        "complexity": "simple"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "gl",
+          "ys",
+          "ys"
+        ],
+        "(0,1)": [
+          "gl",
+          "rl",
+          "os"
+        ],
+        "(0,2)": [
+          "os",
+          "rl",
+          "ys"
+        ],
+        "(1,0)": [
+          "rl",
+          "bl",
+          "ol"
+        ],
+        "(1,1)": [
+          "ys"
+        ],
+        "(1,2)": [
+          "gs",
+          "gs",
+          "ol"
+        ],
+        "(2,0)": [
+          "rl",
+          "bl",
+          "ol"
+        ],
+        "(2,1)": [],
+        "(2,2)": [
+          "rs",
+          "ys",
+          "ol"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,1)",
+            "(0,0)"
+          ],
+          [
+            "(1,0)",
+            "(2,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,2)",
+            "(0,1)"
+          ],
+          [
+            "(1,0)",
+            "(2,0)"
+          ]
+        ],
+        "2": [
+          [
+            "(2,2)",
+            "(1,2)"
+          ],
+          [
+            "(1,0)",
+            "(2,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_012",
+      "domain": "craft",
+      "split": "train",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: yellow, yellow, blue | row 1: green, blue, yellow | row 2: red, red, green\nD2: row 0: yellow, blue, blue | row 1: green, green, red | row 2: red, green, green\nD3: row 0: blue, red, yellow | row 1: red, red, yellow | row 2: green, green, red\n\nCandidates:\n(A) (0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small\n(B) (0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small\n(C) (0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small\n(D) (0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small",
+        "(0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small",
+        "(0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small",
+        "(0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small"
+      ],
+      "answer_index": 3,
+      "reference_answer": "D",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_012",
+        "complexity": "simple"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "yl",
+          "gl",
+          "rl"
+        ],
+        "(0,1)": [
+          "bl",
+          "gl",
+          "gl"
+        ],
+        "(0,2)": [
+          "bs",
+          "rl",
+          "gl"
+        ],
+        "(1,0)": [
+          "yl",
+          "bs",
+          "rl"
+        ],
+        "(1,1)": [
+          "bl"
+        ],
+        "(1,2)": [
+          "rs",
+          "rl",
+          "gs"
+        ],
+        "(2,0)": [
+          "bs",
+          "ys",
+          "gs"
+        ],
+        "(2,1)": [],
+        "(2,2)": [
+          "ys",
+          "ys",
+          "rs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(1,0)",
+            "(0,0)"
+          ],
+          [
+            "(1,1)",
+            "(0,1)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,1)",
+            "(0,0)"
+          ],
+          [
+            "(0,2)",
+            "(1,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(0,0)",
+            "(1,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_013",
+      "domain": "craft",
+      "split": "validation",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: blue, red, red | row 1: red, blue, orange | row 2: orange, red, red\nD2: row 0: blue, blue, orange | row 1: red, red, red | row 2: orange, orange, red\nD3: row 0: orange, yellow, yellow | row 1: red, orange, orange | row 2: red, red, yellow\n\nCandidates:\n(A) (0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small\n(B) (0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small\n(C) (0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large\n(D) (0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small",
+        "(0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small",
+        "(0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large",
+        "(0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small"
+      ],
+      "answer_index": 0,
+      "reference_answer": "A",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_013",
+        "complexity": "complex"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "bl",
+          "rs",
+          "ol"
+        ],
+        "(0,1)": [
+          "bl",
+          "rl",
+          "ol"
+        ],
+        "(0,2)": [
+          "os",
+          "rs",
+          "rs"
+        ],
+        "(1,0)": [
+          "rl",
+          "bs",
+          "rs"
+        ],
+        "(1,1)": [
+          "yl",
+          "rl"
+        ],
+        "(1,2)": [
+          "yl",
+          "ol",
+          "rs"
+        ],
+        "(2,0)": [
+          "rl",
+          "ol",
+          "rs"
+        ],
+        "(2,1)": [
+          "yl",
+          "ol"
+        ],
+        "(2,2)": [
+          "yl",
+          "ol",
+          "ys"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,0)",
+            "(0,1)"
+          ],
+          [
+            "(1,2)",
+            "(1,1)"
+          ],
+          [
+            "(2,2)",
+            "(2,1)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(1,1)",
+            "(0,1)"
+          ],
+          [
+            "(2,0)",
+            "(2,1)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,0)",
+            "(0,1)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_014",
+      "domain": "craft",
+      "split": "validation",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: red, yellow, yellow | row 1: orange, blue, blue | row 2: orange, blue, blue\nD2: row 0: red, red, orange | row 1: orange, green, green | row 2: orange, blue, blue\nD3: row 0: orange, orange, red | row 1: green, green, green | row 2: blue, blue, orange\n\nCandidates:\n(A) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small\n(B) (0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small\n(C) (0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large\n(D) (0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small",
+        "(0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small",
+        "(0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large",
+        "(0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small"
+      ],
+      "answer_index": 1,
+      "reference_answer": "B",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_014",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "rs",
+          "os",
+          "os"
+        ],
+        "(0,1)": [
+          "rs",
+          "gs",
+          "bs"
+        ],
+        "(0,2)": [
+          "ol",
+          "gl",
+          "bl"
+        ],
+        "(1,0)": [
+          "yl",
+          "bs",
+          "bl"
+        ],
+        "(1,1)": [
+          "yl",
+          "bs"
+        ],
+        "(1,2)": [
+          "ol",
+          "gl",
+          "bl"
+        ],
+        "(2,0)": [
+          "yl",
+          "bs",
+          "bl"
+        ],
+        "(2,1)": [
+          "yl"
+        ],
+        "(2,2)": [
+          "rs",
+          "gs",
+          "os"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(2,0)",
+            "(2,1)"
+          ],
+          [
+            "(1,2)",
+            "(0,2)"
+          ],
+          [
+            "(1,0)",
+            "(1,1)"
+          ]
+        ],
+        "1": [
+          [
+            "(1,2)",
+            "(0,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(1,2)",
+            "(0,2)"
+          ],
+          [
+            "(1,0)",
+            "(2,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_015",
+      "domain": "craft",
+      "split": "validation",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: blue, red, orange | row 1: yellow, yellow, yellow | row 2: green, green, orange\nD2: row 0: blue, blue, green | row 1: yellow, yellow, red | row 2: green, blue, yellow\nD3: row 0: green, yellow, yellow | row 1: red, red, yellow | row 2: yellow, yellow, green\n\nCandidates:\n(A) (0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large\n(B) (0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large\n(C) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small\n(D) (0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large",
+        "(0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large",
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small",
+        "(0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large"
+      ],
+      "answer_index": 2,
+      "reference_answer": "C",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_015",
+        "complexity": "simple"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "bl",
+          "yl",
+          "gl"
+        ],
+        "(0,1)": [
+          "bl",
+          "yl",
+          "bs"
+        ],
+        "(0,2)": [
+          "gs",
+          "rl",
+          "yl"
+        ],
+        "(1,0)": [
+          "rs",
+          "yl",
+          "gl"
+        ],
+        "(1,1)": [],
+        "(1,2)": [
+          "yl",
+          "rl",
+          "yl"
+        ],
+        "(2,0)": [
+          "os",
+          "yl",
+          "os"
+        ],
+        "(2,1)": [],
+        "(2,2)": [
+          "yl",
+          "ys",
+          "gs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,1)",
+            "(0,0)"
+          ],
+          [
+            "(2,2)",
+            "(1,2)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,1)",
+            "(0,0)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ],
+          [
+            "(0,2)",
+            "(1,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(1,0)",
+            "(0,0)"
+          ],
+          [
+            "(0,2)",
+            "(1,2)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_016",
+      "domain": "craft",
+      "split": "validation",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: red, orange, green | row 1: orange, red, red | row 2: yellow, yellow, orange\nD2: row 0: red, red, green | row 1: orange, orange, red | row 2: yellow, yellow, yellow\nD3: row 0: green, green, orange | row 1: red, red, green | row 2: yellow, green, green\n\nCandidates:\n(A) (0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small\n(B) (0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small\n(C) (0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large\n(D) (0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): yellow-small, orange-large, green-small; (0,1): green-small, orange-small, blue-small; (0,2): orange-small, red-small, blue-large; (1,0): blue-large, orange-large, red-large; (1,1): green-large, green-large; (1,2): green-large, green-large, blue-large; (2,0): blue-large, green-small, red-large; (2,1): empty; (2,2): orange-small, orange-small, blue-small",
+        "(0,0): orange-large, blue-small, yellow-small; (0,1): yellow-large, red-large, orange-large; (0,2): yellow-large, red-large, orange-large; (1,0): orange-large, blue-large, orange-small; (1,1): blue-small, blue-large; (1,2): yellow-small, yellow-large, orange-small; (2,0): red-small, green-small, orange-small; (2,1): red-small, orange-small; (2,2): green-small, yellow-large, green-small",
+        "(0,0): green-large, yellow-small, yellow-small; (0,1): green-large, red-large, orange-small; (0,2): orange-small, red-large, yellow-small; (1,0): red-large, blue-large, orange-large; (1,1): yellow-small; (1,2): green-small, green-small, orange-large; (2,0): red-large, blue-large, orange-large; (2,1): empty; (2,2): red-small, yellow-small, orange-large",
+        "(0,0): red-large, orange-large, yellow-large; (0,1): red-large, orange-large, yellow-small; (0,2): green-small, red-large, yellow-small; (1,0): orange-small, red-small, yellow-large; (1,1): green-large; (1,2): green-large, red-large, green-large; (2,0): green-large, red-small, orange-small; (2,1): green-large, green-small; (2,2): orange-small, green-small, green-large"
+      ],
+      "answer_index": 3,
+      "reference_answer": "D",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_016",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "rl",
+          "ol",
+          "yl"
+        ],
+        "(0,1)": [
+          "rl",
+          "ol",
+          "ys"
+        ],
+        "(0,2)": [
+          "gs",
+          "rl",
+          "ys"
+        ],
+        "(1,0)": [
+          "os",
+          "rs",
+          "yl"
+        ],
+        "(1,1)": [
+          "gl"
+        ],
+        "(1,2)": [
+          "gl",
+          "rl",
+          "gl"
+        ],
+        "(2,0)": [
+          "gl",
+          "rs",
+          "os"
+        ],
+        "(2,1)": [
+          "gl",
+          "gs"
+        ],
+        "(2,2)": [
+          "os",
+          "gs",
+          "gl"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,0)",
+            "(0,1)"
+          ],
+          [
+            "(2,0)",
+            "(2,1)"
+          ],
+          [
+            "(1,1)",
+            "(1,2)"
+          ]
+        ],
+        "1": [
+          [
+            "(1,2)",
+            "(0,2)"
+          ],
+          [
+            "(0,1)",
+            "(0,0)"
+          ]
+        ],
+        "2": [
+          [
+            "(2,2)",
+            "(1,2)"
+          ],
+          [
+            "(0,0)",
+            "(1,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_017",
+      "domain": "craft",
+      "split": "test",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: orange, orange, red | row 1: blue, blue, green | row 2: blue, blue, blue\nD2: row 0: orange, green, green | row 1: blue, green, green | row 2: blue, blue, blue\nD3: row 0: green, blue, blue | row 1: green, orange, orange | row 2: blue, red, green\n\nCandidates:\n(A) (0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small\n(B) (0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small\n(C) (0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small\n(D) (0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): orange-large, blue-large, blue-small; (0,1): green-large, green-large, blue-large; (0,2): green-large, green-large, blue-large; (1,0): orange-large, blue-large, blue-large; (1,1): empty; (1,2): blue-large, orange-small, red-small; (2,0): red-small, green-small, blue-large; (2,1): green-small; (2,2): blue-large, orange-small, green-small",
+        "(0,0): orange-small, blue-small, green-small; (0,1): blue-large, blue-large, red-large; (0,2): blue-small, blue-large, red-large; (1,0): red-large, orange-small, orange-large; (1,1): blue-large; (1,2): orange-large, red-small, red-small; (2,0): red-large, red-small, orange-large; (2,1): green-small; (2,2): orange-large, green-small, green-small",
+        "(0,0): green-large, blue-small, red-large; (0,1): green-large, blue-large, blue-large; (0,2): yellow-small, yellow-small, blue-large; (1,0): red-large, orange-small, red-large; (1,1): yellow-small, blue-large; (1,2): yellow-large, green-large, yellow-small; (2,0): red-large, green-small, orange-small; (2,1): blue-small; (2,2): yellow-large, green-large, green-small",
+        "(0,0): yellow-large, green-large, red-large; (0,1): blue-large, green-large, green-large; (0,2): blue-small, red-large, green-large; (1,0): yellow-large, blue-small, red-large; (1,1): blue-large; (1,2): red-small, red-large, green-small; (2,0): blue-small, yellow-small, green-small; (2,1): empty; (2,2): yellow-small, yellow-small, red-small"
+      ],
+      "answer_index": 0,
+      "reference_answer": "A",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_017",
+        "complexity": "simple"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "ol",
+          "bl",
+          "bs"
+        ],
+        "(0,1)": [
+          "gl",
+          "gl",
+          "bl"
+        ],
+        "(0,2)": [
+          "gl",
+          "gl",
+          "bl"
+        ],
+        "(1,0)": [
+          "ol",
+          "bl",
+          "bl"
+        ],
+        "(1,1)": [],
+        "(1,2)": [
+          "bl",
+          "os",
+          "rs"
+        ],
+        "(2,0)": [
+          "rs",
+          "gs",
+          "bl"
+        ],
+        "(2,1)": [
+          "gs"
+        ],
+        "(2,2)": [
+          "bl",
+          "os",
+          "gs"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ],
+          [
+            "(0,0)",
+            "(1,0)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,0)",
+            "(1,0)"
+          ],
+          [
+            "(0,2)",
+            "(0,1)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,1)",
+            "(0,2)"
+          ],
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_018",
+      "domain": "craft",
+      "split": "test",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: green, green, green | row 1: red, red, orange | row 2: yellow, red, red\nD2: row 0: green, orange, orange | row 1: red, yellow, yellow | row 2: yellow, red, green\nD3: row 0: orange, green, green | row 1: yellow, orange, orange | row 2: green, yellow, orange\n\nCandidates:\n(A) (0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large\n(B) (0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small\n(C) (0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small\n(D) (0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): green-large, orange-large, yellow-large; (0,1): green-large, orange-large, yellow-large; (0,2): green-small, red-small, green-small; (1,0): green-large, green-large, red-large; (1,1): green-large, green-small; (1,2): red-large, yellow-small, blue-large; (2,0): orange-large, green-large, red-large; (2,1): orange-large, green-large; (2,2): red-large, green-large, blue-large",
+        "(0,0): green-large, red-large, yellow-small; (0,1): orange-small, yellow-large, red-small; (0,2): orange-small, yellow-large, green-small; (1,0): green-large, red-large, red-large; (1,1): green-large, red-small; (1,2): green-large, orange-large, yellow-small; (2,0): green-small, orange-small, red-large; (2,1): green-large, blue-small; (2,2): green-large, orange-large, orange-small",
+        "(0,0): green-small, yellow-small, yellow-small; (0,1): blue-small, orange-large, orange-small; (0,2): yellow-small, orange-large, red-large; (1,0): green-large, yellow-large, red-large; (1,1): empty; (1,2): green-small, yellow-large, red-large; (2,0): green-large, yellow-large, red-large; (2,1): blue-small; (2,2): red-small, yellow-large, red-small",
+        "(0,0): blue-large, red-small, orange-large; (0,1): blue-large, red-large, orange-large; (0,2): orange-small, red-small, red-small; (1,0): red-large, blue-small, red-small; (1,1): yellow-large, red-large; (1,2): yellow-large, orange-large, red-small; (2,0): red-large, orange-large, red-small; (2,1): yellow-large, orange-large; (2,2): yellow-large, orange-large, yellow-small"
+      ],
+      "answer_index": 1,
+      "reference_answer": "B",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_018",
+        "complexity": "complex"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "gl",
+          "rl",
+          "ys"
+        ],
+        "(0,1)": [
+          "os",
+          "yl",
+          "rs"
+        ],
+        "(0,2)": [
+          "os",
+          "yl",
+          "gs"
+        ],
+        "(1,0)": [
+          "gl",
+          "rl",
+          "rl"
+        ],
+        "(1,1)": [
+          "gl",
+          "rs"
+        ],
+        "(1,2)": [
+          "gl",
+          "ol",
+          "ys"
+        ],
+        "(2,0)": [
+          "gs",
+          "os",
+          "rl"
+        ],
+        "(2,1)": [
+          "gl",
+          "bs"
+        ],
+        "(2,2)": [
+          "gl",
+          "ol",
+          "os"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(1,0)",
+            "(0,0)"
+          ],
+          [
+            "(1,2)",
+            "(1,1)"
+          ],
+          [
+            "(2,2)",
+            "(2,1)"
+          ]
+        ],
+        "1": [
+          [
+            "(0,2)",
+            "(0,1)"
+          ],
+          [
+            "(0,0)",
+            "(1,0)"
+          ],
+          [
+            "(2,2)",
+            "(1,2)"
+          ]
+        ],
+        "2": [
+          [
+            "(2,0)",
+            "(1,0)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_019",
+      "domain": "craft",
+      "split": "test",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: blue, blue, orange | row 1: yellow, yellow, blue | row 2: green, red, blue\nD2: row 0: blue, blue, red | row 1: yellow, green, red | row 2: green, green, green\nD3: row 0: red, yellow, yellow | row 1: red, yellow, blue | row 2: green, yellow, orange\n\nCandidates:\n(A) (0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large\n(B) (0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small\n(C) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small\n(D) (0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): orange-large, blue-small, blue-small; (0,1): orange-large, green-large, red-large; (0,2): orange-small, green-large, red-large; (1,0): blue-large, blue-small, orange-large; (1,1): empty; (1,2): blue-large, red-small, green-large; (2,0): blue-large, orange-small, orange-large; (2,1): orange-small, green-large; (2,2): blue-large, green-large, green-large",
+        "(0,0): green-large, red-large, orange-large; (0,1): green-large, blue-large, orange-large; (0,2): blue-large, blue-large, red-large; (1,0): yellow-small, red-large, yellow-large; (1,1): empty; (1,2): blue-large, green-small, red-large; (2,0): orange-small, red-small, yellow-large; (2,1): empty; (2,2): orange-small, orange-small, yellow-small",
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, green-small, green-large; (0,2): red-small, red-small, green-small; (1,0): blue-small, yellow-large, red-small; (1,1): empty; (1,2): yellow-large, yellow-small, yellow-small; (2,0): orange-small, blue-small, blue-small; (2,1): empty; (2,2): yellow-large, blue-small, orange-small",
+        "(0,0): red-small, orange-small, orange-small; (0,1): red-small, green-small, blue-small; (0,2): orange-large, green-large, blue-large; (1,0): yellow-large, blue-small, blue-large; (1,1): yellow-large, blue-small; (1,2): orange-large, green-large, blue-large; (2,0): yellow-large, blue-small, blue-large; (2,1): yellow-large; (2,2): red-small, green-small, orange-small"
+      ],
+      "answer_index": 2,
+      "reference_answer": "C",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_019",
+        "complexity": "simple"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "bl",
+          "yl",
+          "gl"
+        ],
+        "(0,1)": [
+          "bl",
+          "gs",
+          "gl"
+        ],
+        "(0,2)": [
+          "rs",
+          "rs",
+          "gs"
+        ],
+        "(1,0)": [
+          "bs",
+          "yl",
+          "rs"
+        ],
+        "(1,1)": [],
+        "(1,2)": [
+          "yl",
+          "ys",
+          "ys"
+        ],
+        "(2,0)": [
+          "os",
+          "bs",
+          "bs"
+        ],
+        "(2,1)": [],
+        "(2,2)": [
+          "yl",
+          "bs",
+          "os"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(0,1)",
+            "(0,0)"
+          ],
+          [
+            "(1,2)",
+            "(2,2)"
+          ]
+        ],
+        "1": [
+          [
+            "(1,0)",
+            "(0,0)"
+          ]
+        ],
+        "2": [
+          [
+            "(0,0)",
+            "(0,1)"
+          ]
+        ]
+      }
+    },
+    {
+      "task_id": "craft::structure_020",
+      "domain": "craft",
+      "split": "test",
+      "prompt": "You are given the three Director wall projections of one CRAFT 3x3x3 block structure. Each projection is a 3x3 grid of block colors. Below are four candidate complete structures. Identify the candidate whose three wall projections are consistent with the provided views.\n\nDirector wall projections:\nD1: row 0: orange, green, orange | row 1: orange, orange, orange | row 2: yellow, blue, yellow\nD2: row 0: orange, green, blue | row 1: orange, green, green | row 2: yellow, blue, green\nD3: row 0: blue, blue, orange | row 1: green, red, yellow | row 2: green, green, green\n\nCandidates:\n(A) (0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large\n(B) (0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large\n(C) (0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small\n(D) (0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large\n\nReturn only the letter of the correct choice (A-D).",
+      "options": [
+        "(0,0): blue-small, yellow-small, orange-small; (0,1): red-large, red-large, red-small; (0,2): red-large, red-large, orange-small; (1,0): blue-small, blue-small, green-large; (1,1): empty; (1,2): blue-small, yellow-large, red-large; (2,0): red-large, blue-large, green-large; (2,1): red-large, blue-large; (2,2): red-small, yellow-large, red-large",
+        "(0,0): yellow-small, blue-small, orange-small; (0,1): orange-small, blue-small, green-small; (0,2): yellow-small, orange-small, orange-small; (1,0): green-small, yellow-large, yellow-large; (1,1): orange-large, blue-small; (1,2): yellow-large, red-large, blue-large; (2,0): red-small, yellow-large, yellow-large; (2,1): orange-large, orange-small; (2,2): yellow-large, red-large, blue-large",
+        "(0,0): blue-large, yellow-large, green-large; (0,1): blue-large, yellow-large, blue-small; (0,2): green-small, red-large, yellow-large; (1,0): red-small, yellow-large, green-large; (1,1): empty; (1,2): yellow-large, red-large, yellow-large; (2,0): orange-small, yellow-large, orange-small; (2,1): empty; (2,2): yellow-large, yellow-small, green-small",
+        "(0,0): orange-small, orange-small, yellow-small; (0,1): green-small, green-small, blue-small; (0,2): blue-large, green-small, green-small; (1,0): green-small, orange-small, blue-small; (1,1): blue-small; (1,2): blue-large, red-small, green-large; (2,0): orange-large, orange-large, yellow-small; (2,1): orange-large, orange-large; (2,2): orange-small, yellow-small, green-large"
+      ],
+      "answer_index": 3,
+      "reference_answer": "D",
+      "public_metadata": {
+        "option_count": 4,
+        "source_dataset": "CRAFT",
+        "structure_id": "structure_020",
+        "complexity": "medium"
+      },
+      "reference_structure": {
+        "(0,0)": [
+          "os",
+          "os",
+          "ys"
+        ],
+        "(0,1)": [
+          "gs",
+          "gs",
+          "bs"
+        ],
+        "(0,2)": [
+          "bl",
+          "gs",
+          "gs"
+        ],
+        "(1,0)": [
+          "gs",
+          "os",
+          "bs"
+        ],
+        "(1,1)": [
+          "bs"
+        ],
+        "(1,2)": [
+          "bl",
+          "rs",
+          "gl"
+        ],
+        "(2,0)": [
+          "ol",
+          "ol",
+          "ys"
+        ],
+        "(2,1)": [
+          "ol",
+          "ol"
+        ],
+        "(2,2)": [
+          "os",
+          "ys",
+          "gl"
+        ]
+      },
+      "reference_spans": {
+        "0": [
+          [
+            "(2,0)",
+            "(2,1)"
+          ],
+          [
+            "(0,2)",
+            "(1,2)"
+          ]
+        ],
+        "1": [
+          [
+            "(2,0)",
+            "(2,1)"
+          ]
+        ],
+        "2": [
+          [
+            "(2,2)",
+            "(1,2)"
+          ]
+        ]
+      }
+    }
+  ]
+}
