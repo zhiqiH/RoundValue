@@ -369,6 +369,45 @@ def _policy_task_qualities(
     return result
 
 
+def single_quality_by_task(
+    records: Sequence[Mapping[str, Any]],
+) -> dict[str, float]:
+    """Return one Single-Agent quality per observed task identifier."""
+
+    qualities: dict[str, float] = {}
+    for record in records:
+        task = _mapping(record.get("task")) or {}
+        task_id = str(task.get("task_id"))
+        quality = _single_quality(record)
+        if quality is not None:
+            qualities[task_id] = quality
+    return qualities
+
+
+def _replay_task_ids(replay: Mapping[str, Any], name: str) -> set[str]:
+    """Task identifiers present in one saved policy-replay condition."""
+
+    return set(_policy_task_qualities(replay, name))
+
+
+def _evaluation_task_ids(replay: Mapping[str, Any]) -> set[str]:
+    """The exact task set shared by the Debate policy conditions."""
+
+    ids: set[str] = set()
+    for name in ("fixed_1", "fixed_2", "fixed_3", "fixed_4", "fixed_5", "roundvalue", "oracle"):
+        ids |= _replay_task_ids(replay, name)
+    return ids
+
+
+def _intersection_accuracy(
+    source: Mapping[str, float], ids: set[str]
+) -> tuple[float | None, int]:
+    observed = [source[task_id] for task_id in sorted(ids) if task_id in source]
+    if not observed:
+        return None, 0
+    return sum(observed) / len(observed), len(observed)
+
+
 def _paired_counts(
     single: Mapping[str, float], debate: Mapping[str, float]
 ) -> dict[str, Any]:
@@ -433,18 +472,17 @@ def paired_single_vs_debate(
             continue
         counts = _paired_counts(single, debate)
         counts["defined"] = bool(debate)
-        single_observed = [value for value in single.values()]
-        debate_observed = [debate[task_id] for task_id in single if task_id in debate]
-        counts["single_accuracy"] = (
-            sum(single_observed) / len(single_observed)
-            if single_observed
-            else None
+        paired_ids = sorted(set(single) & set(debate))
+        counts["single_accuracy"], single_paired = _intersection_accuracy(
+            single, set(paired_ids)
         )
-        counts["debate_accuracy"] = (
-            sum(debate_observed) / len(debate_observed)
-            if debate_observed
-            else None
+        counts["debate_accuracy"], debate_paired = _intersection_accuracy(
+            debate, set(paired_ids)
         )
+        if single_paired != debate_paired or single_paired != len(paired_ids):
+            raise AssertionError(
+                "paired Single-vs-Debate accuracy must use the same task IDs"
+            )
         paired[name] = counts
     return paired
 
@@ -452,20 +490,39 @@ def paired_single_vs_debate(
 def baseline_table(
     single_summary: Mapping[str, Any],
     replay: Mapping[str, Any],
+    single_by_task: Mapping[str, float] | None = None,
 ) -> list[dict[str, Any]]:
-    """Merge Single-Agent with the Debate baselines into one ordered table."""
+    """Merge Single-Agent with the Debate baselines into one ordered table.
+
+    The correctness invariant is that every accuracy comparison in this table
+    uses the exact same task identifiers.  The Single-Agent row therefore
+    reports its accuracy over the task set shared by the Debate policy
+    conditions, not over every collected task, so a table cell can never mix
+    all-task accuracy with an evaluation-split-only number.
+    """
 
     rows: list[dict[str, Any]] = []
     resources = _mapping(single_summary.get("resources")) or {}
+    evaluation_ids = _evaluation_task_ids(replay)
+    if single_by_task is None:
+        single_by_task = {}
+    if evaluation_ids:
+        single_accuracy, single_paired = _intersection_accuracy(
+            dict(single_by_task), evaluation_ids
+        )
+        single_n_tasks = single_paired
+    else:
+        single_accuracy = _number(
+            (_mapping(single_summary.get("accuracy")) or {}).get("accuracy")
+        )
+        single_n_tasks = single_summary.get("tasks_complete")
     rows.append(
         {
             "condition": SINGLE_BASELINE_ID,
             "display_name": "Single-Agent",
             "defined": bool(single_summary.get("defined")),
-            "accuracy": _number(
-                (_mapping(single_summary.get("accuracy")) or {}).get("accuracy")
-            ),
-            "n_tasks": single_summary.get("tasks_complete"),
+            "accuracy": single_accuracy,
+            "n_tasks": single_n_tasks,
             "mean_input_tokens": _number(
                 (_mapping(resources.get("input_tokens")) or {}).get("mean")
             ),
@@ -511,6 +568,13 @@ def baseline_table(
         "oracle",
     ):
         metrics = _mapping(policy_metrics.get(name))
+        condition_ids = _replay_task_ids(replay, name)
+        paired_single_accuracy = None
+        n_paired = 0
+        if condition_ids and single_by_task:
+            paired_single_accuracy, n_paired = _intersection_accuracy(
+                dict(single_by_task), condition_ids
+            )
         rows.append(
             {
                 "condition": name,
@@ -522,6 +586,8 @@ def baseline_table(
                 "n_tasks": metrics.get("n_records")
                 if metrics is not None
                 else None,
+                "paired_single_accuracy": paired_single_accuracy,
+                "n_paired": n_paired,
                 "mean_input_tokens": _number(metrics.get("mean_input_tokens"))
                 if metrics is not None
                 else None,
@@ -562,6 +628,7 @@ __all__ = [
     "baseline_table",
     "build_single_baseline",
     "paired_single_vs_debate",
+    "single_quality_by_task",
     "single_observation_rows",
     "summarize_single_baseline",
 ]

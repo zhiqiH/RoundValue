@@ -3,8 +3,9 @@
 The runner and policy stages are benchmark-agnostic: a benchmark supplies one
 ``domain``, a self-contained ``prompt`` (including any answer choices), and
 offline-only label fields.  This module enforces the per-domain task contract
-for the two supported representations, ``math`` and ``mmlu_pro``, while
-keeping gold answers and choice indices out of every Agent-facing view.
+for the supported representations (``math`` plus the shared multiple-choice
+contract used by ``mmlu_pro``, ``harp``, and ``logiqa``) while keeping gold
+answers and choice indices out of every Agent-facing view.
 """
 
 from __future__ import annotations
@@ -30,7 +31,7 @@ PRIVATE_TASK_FIELDS = {
 # The domains the offline scorer and benchmark validation understand.  New
 # benchmarks must add their domain-specific contract and scoring path here;
 # the Debate runner itself does not care which domain it is executing.
-SUPPORTED_DOMAINS = frozenset({"math", "mmlu_pro"})
+SUPPORTED_DOMAINS = frozenset({"math", "mmlu_pro", "harp", "logiqa"})
 
 # Multiple-choice tasks label their choices ``A`` through ``J`` in order.
 MULTIPLE_CHOICE_OPTION_LABELS = tuple(chr(ord("A") + index) for index in range(26))
@@ -51,6 +52,10 @@ PUBLIC_OPTIONAL_TASK_FIELDS = {
 PUBLIC_METADATA_HIDDEN_KEYS = frozenset(
     {
         "source_task_id",
+        "source_id",
+        "source_contest",
+        "source_year",
+        "source_number",
     }
 )
 
@@ -76,9 +81,11 @@ def _validate_math_task(
     )
 
 
-def _validate_mmlu_pro_task(
+def _validate_multiple_choice_task(
     task: dict[str, Any], task_id: str, source: Path
 ) -> None:
+    """Enforce the one strict multiple-choice contract shared by MC domains."""
+
     options = require_list(task.get("options"), f"{source} task {task_id}.options")
     if not 2 <= len(options) <= len(MULTIPLE_CHOICE_OPTION_LABELS):
         raise ConfigurationError(
@@ -123,7 +130,7 @@ def _validate_task(task: dict[str, Any], *, source: Path) -> dict[str, Any]:
     if domain == "math":
         _validate_math_task(task, task_id, source)
     else:
-        _validate_mmlu_pro_task(task, task_id, source)
+        _validate_multiple_choice_task(task, task_id, source)
     return task
 
 

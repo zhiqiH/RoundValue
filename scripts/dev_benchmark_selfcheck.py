@@ -1,4 +1,4 @@
-"""Offline self-check for the MMLU-Pro benchmark, scorer, and analysis path.
+"""Offline self-check for the real benchmark, scorer, and analysis paths.
 
 This script never contacts a model provider.  It exercises the exact
 benchmark-specific boundaries added for MMLU-Pro:
@@ -6,6 +6,8 @@ benchmark-specific boundaries added for MMLU-Pro:
 * conservative multiple-choice answer normalization and deterministic
   correct / incorrect / ambiguous / malformed scoring;
 * the public-task privacy boundary for multiple-choice tasks;
+* HARP and LogiQA option-label mapping, strict MC scoring, privacy, and the
+  deterministic 500/50 construction (via ``verify_real_benchmarks``);
 * deterministic MMLU-Pro-500 / MMLU-Pro-50 construction and their
   300/100/100 and 30/10/10 partitions (via ``verify_real_benchmarks``);
 * a synthetic trajectory -> score -> label -> policy fit -> threshold
@@ -28,7 +30,13 @@ if str(SRC_DIRECTORY) not in sys.path:
 from benchmark_io import load_benchmark, public_task  # noqa: E402
 from labels import build_labels  # noqa: E402
 from policy import build_policy_features, fit_policy_models, replay_policies  # noqa: E402
-from scorer import normalize_mc_answer, score_task, score_trajectory  # noqa: E402
+from scorer import (  # noqa: E402
+    normalize_mc_answer,
+    score_multiple_choice,
+    score_mmlu_pro,
+    score_task,
+    score_trajectory,
+)
 from visualize import build_analysis  # noqa: E402
 import verify_real_benchmarks  # noqa: E402
 
@@ -160,8 +168,14 @@ def _check_manifests() -> None:
             for split in ("train", "validation", "test")
         }
 
-    check(counts(full_document) == {"train": 300, "validation": 100, "test": 100}, "MMLU-Pro-500 is 300/100/100")
-    check(counts(small_document) == {"train": 30, "validation": 10, "test": 10}, "MMLU-Pro-50 is 30/10/10")
+    check(
+        counts(full_document) == {"train": 300, "validation": 100, "test": 100},
+        "MMLU-Pro-500 is 300/100/100",
+    )
+    check(
+        counts(small_document) == {"train": 30, "validation": 10, "test": 10},
+        "MMLU-Pro-50 is 30/10/10",
+    )
     check(
         all(
             len(task["options"]) == task["public_metadata"]["option_count"]
@@ -178,6 +192,207 @@ def _check_manifests() -> None:
         "the lightweight smoke benchmark loads as MMLU-Pro tasks",
     )
 
+
+def _harp_task(task_id: str) -> dict[str, Any]:
+    return {
+        "task_id": task_id,
+        "domain": "harp",
+        "split": "train",
+        "prompt": (
+            "If 64 is divided into three parts proportional to 2, 4, and 6, "
+            "the smallest part is:\n\nChoices:\n(A) 11\n(B) 5 1/3\n(C) 5\n"
+            "(D) 10 2/3\n(E) None of these answers\n\n"
+            "Return only the letter of the correct choice (A-E)."
+        ),
+        "options": ["11", "5 1/3", "5", "10 2/3", "None of these answers"],
+        "answer_index": 3,
+        "reference_answer": "D",
+        "public_metadata": {
+            "source_dataset": "HARP",
+            "source_task_id": task_id,
+            "source_contest": "AHSME",
+            "source_year": "1950",
+            "source_number": 1,
+            "subject": "prealgebra",
+            "level": 2,
+            "multiple_choice_only": False,
+            "option_count": 5,
+        },
+        "solution_1": "The human solution must never reach an Agent.",
+    }
+
+
+def _logiqa_task(task_id: str) -> dict[str, Any]:
+    return {
+        "task_id": task_id,
+        "domain": "logiqa",
+        "split": "validation",
+        "prompt": (
+            "Passage:\nA short logical passage.\n\nQuestion:\nWhich one follows?\n\n"
+            "Choices:\n(A) First\n(B) Second\n(C) Third\n(D) Fourth\n\n"
+            "Return only the letter of the correct choice (A-D)."
+        ),
+        "options": ["First", "Second", "Third", "Fourth"],
+        "answer_index": 2,
+        "reference_answer": "C",
+        "public_metadata": {
+            "source_dataset": "LogiQA 2.0 English MRC",
+            "source_task_id": "42",
+            "source_split": "dev",
+            "reasoning_types": [
+                "Categorical Reasoning",
+                "Necessry Condtional Reasoning",
+            ],
+            "option_count": 4,
+        },
+    }
+
+
+def _check_new_benchmarks() -> None:
+    harp = _harp_task("harp::1950::AHSME::1")
+    logiqa = _logiqa_task("logiqa2::dev::42")
+
+    harp_score = score_task(harp, {"answer": "D", "reasoning_summary": "proportional parts"})
+    check(
+        harp_score["quality"] == 1.0
+        and harp_score["reason"] == "exact_option_match"
+        and harp_score["domain"] == "harp",
+        "HARP source answer maps to one canonical option label",
+    )
+    logiqa_score = score_task(logiqa, {"answer": "C", "reasoning_summary": "follows"})
+    check(
+        logiqa_score["quality"] == 1.0
+        and logiqa_score["domain"] == "logiqa",
+        "LogiQA integer answer maps to the canonical A-D label",
+    )
+    check(
+        score_task(harp, {"answer": "B", "reasoning_summary": "wrong"})["quality"] == 0.0,
+        "HARP scorer is exact-option only",
+    )
+    check(
+        score_task(logiqa, {"answer": "B and D", "reasoning_summary": "ambiguous"})[
+            "quality"
+        ]
+        == 0.0
+        and score_task(logiqa, {"answer": "B and D", "reasoning_summary": "ambiguous"})[
+            "reason"
+        ]
+        == "ambiguous_or_missing_option",
+        "LogiQA scorer rejects ambiguous answers",
+    )
+    mmlu = _mc_task("dev::shared::scorer")
+    check(
+        score_multiple_choice(mmlu, {"answer": "B"}, domain="mmlu_pro")["quality"]
+        == score_mmlu_pro(mmlu, {"answer": "B"})["quality"]
+        == 1.0,
+        "shared MC scorer preserves historical MMLU-Pro behavior",
+    )
+
+    harp_visible = public_task(harp)
+    logiqa_visible = public_task(logiqa)
+    for visible, private in (
+        (harp_visible, {"answer_index", "reference_answer", "solution_1", "solution"}),
+        (logiqa_visible, {"answer_index", "reference_answer"}),
+    ):
+        for field in private:
+            check(field not in visible, f"private field {field} stays out of public task")
+    for visible in (harp_visible, logiqa_visible):
+        check(
+            visible.get("task_id") != visible.get("public_metadata", {}).get(
+                "source_task_id"
+            )
+            and "::" not in str(visible.get("task_id", "")),
+            "Agent-facing task identifiers are anonymized",
+        )
+    check(
+        harp_visible.get("public_metadata", {}).get("source_contest") is None
+        and harp_visible.get("public_metadata", {}).get("source_year") is None
+        and harp_visible.get("public_metadata", {}).get("source_number") is None,
+        "HARP source identifiers stay out of public metadata",
+    )
+    check(
+        logiqa_visible.get("public_metadata", {}).get("source_task_id") is None,
+        "LogiQA source identifier stays out of public metadata",
+    )
+
+    # Invalid gold mappings and option counts must fail validation loudly.
+    import json as _json
+    import tempfile
+    from contracts import ConfigurationError
+    from benchmark_io import load_benchmark as _load
+
+    cases = (
+        (
+            "invalid_answer_index",
+            {
+                "task_id": "dev::invalid::index",
+                "domain": "logiqa",
+                "split": "test",
+                "prompt": "Choices:\n(A) a\n(B) b\n\nReturn only the letter (A-B).",
+                "options": ["a", "b"],
+                "answer_index": 5,
+                "reference_answer": "A",
+            },
+        ),
+        (
+            "invalid_option_count",
+            {
+                "task_id": "dev::invalid::count",
+                "domain": "harp",
+                "split": "test",
+                "prompt": "Return only the letter of the correct choice (A-B).",
+                "options": ["only one"],
+                "answer_index": 0,
+                "reference_answer": "A",
+            },
+        ),
+        (
+            "ambiguous_gold",
+            {
+                "task_id": "dev::ambiguous::gold",
+                "domain": "harp",
+                "split": "test",
+                "prompt": "Choices:\n(A) a\n(B) b\n\nReturn only the letter (A-B).",
+                "options": ["a", "b"],
+                "answer_index": 1,
+                "reference_answer": "A and B",
+            },
+        ),
+    )
+    for label, bad_task in cases:
+        with tempfile.TemporaryDirectory() as temporary:
+            from pathlib import Path as _Path
+
+            bad_path = _Path(temporary) / "bad.json"
+            bad_path.write_text(
+                _json.dumps({"schema_version": "1.0", "tasks": [bad_task]}),
+                encoding="utf-8",
+            )
+            raised = False
+            try:
+                _load(PROJECT_ROOT, bad_path)
+            except ConfigurationError:
+                raised = True
+            check(raised, f"validation fails for {label}")
+
+    verified = verify_real_benchmarks.verify()
+    check(verified["status"] == "verified", "all real benchmarks verify together")
+    check(
+        set(verified["split_counts"])
+        >= {"HARP-500", "HARP-50", "LogiQA-500", "LogiQA-50"},
+        "verifier reports the new benchmark families",
+    )
+    check(
+        verified["split_counts"]["HARP-500"]
+        == {"train": 300, "validation": 100, "test": 100}
+        and verified["split_counts"]["HARP-50"]
+        == {"train": 30, "validation": 10, "test": 10}
+        and verified["split_counts"]["LogiQA-500"]
+        == {"train": 300, "validation": 100, "test": 100}
+        and verified["split_counts"]["LogiQA-50"]
+        == {"train": 30, "validation": 10, "test": 10},
+        "new benchmarks carry the exact 300/100/100 and 30/10/10 partitions",
+    )
 
 def _synthetic_record(
     task: dict[str, Any], split: str, qualities: tuple[int, ...], index: int
@@ -485,9 +700,10 @@ def _check_pipeline() -> None:
 def main() -> int:
     _check_normalization()
     _check_manifests()
+    _check_new_benchmarks()
     _check_legacy_records()
     _check_pipeline()
-    print("PASS all MMLU-Pro benchmark self-checks")
+    print("PASS all real-benchmark self-checks")
     return 0
 
 

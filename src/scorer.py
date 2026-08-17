@@ -10,9 +10,10 @@ truth for every stage of the pipeline:
 
 * ``math`` keeps the conservative PRM800K/MATH normalization plus a narrow
   numeric fallback used by the legacy MATH manifests;
-* ``mmlu_pro`` requires one unambiguous canonical option label (``A``-``J``)
-  and compares it exactly against the gold label.  There is no LLM judge and
-  no textual-similarity fallback.
+* ``mmlu_pro``, ``harp``, and ``logiqa`` share one strict multiple-choice
+  scorer: the predicted answer must normalize to exactly one canonical option
+  label (``A``-``J``) and equal the gold label.  There is no LLM judge, no
+  textual-similarity fallback, and no solution-based rescue.
 
 The canonical trajectory shape is documented in :func:`score_trajectory`,
 but compatibility readers also accept common older flat checkpoint fields.
@@ -552,18 +553,21 @@ def _mc_reference_label(task: Mapping[str, Any]) -> str | None:
     return None
 
 
-def score_mmlu_pro(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]:
-    """Score one Writer answer against the canonical MMLU-Pro option label.
+def score_multiple_choice(
+    task: Mapping[str, Any], final_answer: Any, domain: str
+) -> dict[str, Any]:
+    """Score one Writer answer against the canonical multiple-choice label.
 
     Correctness is the exact equality of the normalized predicted label and
     the gold label; no judge model or textual reasoning score is involved.
+    ``mmlu_pro``, ``harp``, and ``logiqa`` share these semantics exactly.
     """
 
     answer = extract_final_answer(final_answer)
     if answer is None:
         return _result(
             task,
-            domain="mmlu_pro",
+            domain=domain,
             answer=None,
             quality=0.0,
             reason="missing_final_answer",
@@ -572,7 +576,7 @@ def score_mmlu_pro(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]
     if reference is None:
         return _result(
             task,
-            domain="mmlu_pro",
+            domain=domain,
             answer=answer,
             quality=0.0,
             reason="missing_or_invalid_reference_answer",
@@ -581,7 +585,7 @@ def score_mmlu_pro(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]
     if predicted is None:
         return _result(
             task,
-            domain="mmlu_pro",
+            domain=domain,
             answer=answer,
             quality=0.0,
             reason="ambiguous_or_missing_option",
@@ -589,11 +593,17 @@ def score_mmlu_pro(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]
     matched = predicted == reference
     return _result(
         task,
-        domain="mmlu_pro",
+        domain=domain,
         answer=predicted,
         quality=1.0 if matched else 0.0,
         reason="exact_option_match" if matched else "option_mismatch",
     )
+
+
+def score_mmlu_pro(task: Mapping[str, Any], final_answer: Any) -> dict[str, Any]:
+    """Backward-compatible MMLU-Pro alias of the shared MC scorer."""
+
+    return score_multiple_choice(task, final_answer, domain="mmlu_pro")
 
 
 def score_task(
@@ -607,10 +617,12 @@ def score_task(
     domain = task.get("domain")
     if domain == "mmlu_pro":
         return score_mmlu_pro(task, final_answer)
+    if domain in {"harp", "logiqa"}:
+        return score_multiple_choice(task, final_answer, domain=str(domain))
     if domain == "math":
         return score_math(task, final_answer)
     raise TypeError(
-        "task scoring requires domain 'math' or 'mmlu_pro'; "
+        "task scoring requires domain 'math', 'mmlu_pro', 'harp', or 'logiqa'; "
         f"got {domain!r}"
     )
 
@@ -811,6 +823,7 @@ __all__ = [
     "normalize_mc_answer",
     "score_checkpoint",
     "score_math",
+    "score_multiple_choice",
     "score_mmlu_pro",
     "score_task",
     "score_task_answer",

@@ -4,8 +4,11 @@ Run from the repository root with ``python src/verify_real_benchmarks.py``.
 
 The verification covers every self-contained task document, its
 train/validation/test partition, the public-task privacy boundary, and the
-deterministic parent/subset relationship for both benchmark families:
-MATH-500/MATH-50 (legacy) and MMLU-Pro-500/MMLU-Pro-50 (active).
+deterministic parent/subset relationship for the benchmark families:
+MATH-500/MATH-50 (legacy), MMLU-Pro-500/MMLU-Pro-50 (active),
+HARP-500/HARP-50, and LogiQA-500/LogiQA-50.  The two new 50-task subsets and
+the two new 500-task assets are also rebuilt into a temporary directory and
+compared byte for byte against the committed files.
 """
 
 from __future__ import annotations
@@ -42,7 +45,19 @@ SPECS = (
     ("benchmark/math/MATH-50.json", "MATH-50", "math", 50),
     ("benchmark/mmlu_pro/MMLU-Pro-500.json", "MMLU-Pro-500", "mmlu_pro", 500),
     ("benchmark/mmlu_pro/MMLU-Pro-50.json", "MMLU-Pro-50", "mmlu_pro", 50),
+    ("benchmark/harp/HARP-500.json", "HARP-500", "harp", 500),
+    ("benchmark/harp/HARP-50.json", "HARP-50", "harp", 50),
+    ("benchmark/logiqa2/LogiQA-500.json", "LogiQA-500", "logiqa", 500),
+    ("benchmark/logiqa2/LogiQA-50.json", "LogiQA-50", "logiqa", 50),
 )
+
+
+HARP_POOL_SIZE = 4110
+HARP_REVISION = "dac2734ff6443bcaf3bbdcb10f13cf21ae9729c2"
+HARP_ASSET_SHA256 = (
+    "bf1456623321561a1be328042f635046cb408fdbdc5dc1b8d8090053f9ea6824"
+)
+LOGIQA_REVISION = "955e1d3df6c59d9bfb44d9913da1e1a27ec14e18"
 
 
 def _disjoint_prompts(tasks: list[dict[str, Any]]) -> None:
@@ -86,6 +101,12 @@ def _verify_privacy(tasks: list[dict[str, Any]]) -> None:
 
 
 def _verify_mmlu_pro_task(task: dict[str, Any]) -> None:
+    _verify_multiple_choice_task(task, max_options=10)
+
+
+def _verify_multiple_choice_task(
+    task: dict[str, Any], *, max_options: int
+) -> None:
     options = task.get("options")
     if not isinstance(options, list) or not options:
         raise AssertionError(f"{task['task_id']} must carry a non-empty options list")
@@ -98,10 +119,68 @@ def _verify_mmlu_pro_task(task: dict[str, Any]) -> None:
     ):
         raise AssertionError(f"{task['task_id']} has an invalid answer_index")
     label = chr(ord("A") + answer_index)
-    if reference != label or not 1 < len(options) <= 10:
+    if reference != label or not 1 < len(options) <= max_options:
         raise AssertionError(
             f"{task['task_id']} has inconsistent option labels or option count"
         )
+
+
+def _verify_harp_document(document: dict[str, Any], tasks: list[dict[str, Any]]) -> None:
+    provenance = document.get("provenance") or {}
+    sources = provenance.get("sources") or {}
+    harp_source = sources.get("harp_mcq") or {}
+    if harp_source.get("revision") != HARP_REVISION:
+        raise AssertionError("HARP provenance does not pin the official revision")
+    if harp_source.get("asset_sha256") != HARP_ASSET_SHA256:
+        raise AssertionError("HARP provenance pins the wrong MCQ asset hash")
+    if document.get("dataset_id") == "HARP-500":
+        if provenance.get("selection", {}).get("pool_size") != HARP_POOL_SIZE:
+            raise AssertionError("HARP-500 must report the official MCQ pool size")
+    for task in tasks:
+        metadata = task.get("public_metadata") or {}
+        if not isinstance(metadata.get("subject"), str) or not metadata["subject"]:
+            raise AssertionError(f"{task['task_id']} has no HARP subject metadata")
+        if (
+            isinstance(metadata.get("level"), bool)
+            or not isinstance(metadata.get("level"), int)
+        ):
+            raise AssertionError(f"{task['task_id']} has no HARP difficulty level")
+
+
+def _verify_logiqa_document(
+    document: dict[str, Any], tasks: list[dict[str, Any]]
+) -> None:
+    provenance = document.get("provenance") or {}
+    sources = provenance.get("sources") or {}
+    logiqa_source = sources.get("logiqa2_english_mrc") or {}
+    if logiqa_source.get("revision") != LOGIQA_REVISION:
+        raise AssertionError("LogiQA provenance does not pin the official revision")
+    official_for_roundvalue = {
+        "train": "train",
+        "validation": "dev",
+        "test": "test",
+    }
+    for task in tasks:
+        metadata = task.get("public_metadata") or {}
+        source_split = metadata.get("source_split")
+        if source_split != official_for_roundvalue.get(task.get("split")):
+            raise AssertionError(
+                f"{task['task_id']} crosses an official LogiQA 2.0 split boundary"
+            )
+        reasoning_types = metadata.get("reasoning_types")
+        if not isinstance(reasoning_types, list) or not reasoning_types:
+            raise AssertionError(
+                f"{task['task_id']} has no usable reasoning-type annotations"
+            )
+    if document.get("dataset_id") == "LogiQA-500":
+        selection = provenance.get("selection") or {}
+        if selection.get("official_split_counts", {}).get("train") != 12567:
+            raise AssertionError("LogiQA-500 must record the official train size")
+        distribution = selection.get("reasoning_type_distribution")
+        if not isinstance(distribution, dict) or not distribution:
+            raise AssertionError(
+                "LogiQA-500 must record the reasoning-type distribution"
+            )
 
 
 def _verify_documents() -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, int]]]:
@@ -144,6 +223,14 @@ def _verify_documents() -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, 
         if domain == "mmlu_pro":
             for task in tasks:
                 _verify_mmlu_pro_task(task)
+        elif domain == "harp":
+            for task in tasks:
+                _verify_multiple_choice_task(task, max_options=26)
+            _verify_harp_document(document, tasks)
+        elif domain == "logiqa":
+            for task in tasks:
+                _verify_multiple_choice_task(task, max_options=26)
+            _verify_logiqa_document(document, tasks)
         _verify_privacy(tasks)
         documents[dataset_id] = document
         tasks_by_dataset[dataset_id] = tasks
@@ -203,11 +290,41 @@ def verify() -> dict[str, Any]:
             "public_metadata",
         ),
     )
+    _verify_subset(
+        documents,
+        "HARP-500",
+        "HARP-50",
+        "benchmark/harp/HARP-500.json",
+        (
+            "prompt",
+            "options",
+            "answer_index",
+            "reference_answer",
+            "public_metadata",
+            "split",
+        ),
+    )
+    _verify_subset(
+        documents,
+        "LogiQA-500",
+        "LogiQA-50",
+        "benchmark/logiqa2/LogiQA-500.json",
+        (
+            "prompt",
+            "options",
+            "answer_index",
+            "reference_answer",
+            "public_metadata",
+            "split",
+        ),
+    )
 
-    # Both small manifests must also reconstruct byte-for-byte from their
-    # parent, which proves the subset is deterministic rather than hand-edited.
+    # Every 50-task manifest must reconstruct byte-for-byte from its parent,
+    # which proves the subset is deterministic rather than hand-edited.
     from build_math50 import build as build_math50
     from build_mmlu_pro_50 import build as build_mmlu_pro_50
+    from build_harp_50 import build as build_harp_50
+    from build_logiqa_50 import build as build_logiqa_50
 
     for builder, parent_relative, subset_relative in (
         (
@@ -220,6 +337,16 @@ def verify() -> dict[str, Any]:
             "benchmark/mmlu_pro/MMLU-Pro-500.json",
             "benchmark/mmlu_pro/MMLU-Pro-50.json",
         ),
+        (
+            build_harp_50,
+            "benchmark/harp/HARP-500.json",
+            "benchmark/harp/HARP-50.json",
+        ),
+        (
+            build_logiqa_50,
+            "benchmark/logiqa2/LogiQA-500.json",
+            "benchmark/logiqa2/LogiQA-50.json",
+        ),
     ):
         with tempfile.TemporaryDirectory() as temporary:
             rebuilt = Path(temporary) / "subset.json"
@@ -227,6 +354,38 @@ def verify() -> dict[str, Any]:
             if rebuilt.read_bytes() != (root / subset_relative).read_bytes():
                 raise AssertionError(
                     f"{subset_relative} is not byte-for-byte reproducible from its parent"
+                )
+
+    # The two 500-task assets must also rebuild byte-for-byte from the pinned
+    # upstream sources.  The builders download missing pinned files on demand
+    # and always verify their SHA-256 before use.
+    source_root = PROJECT_ROOT / ".cache" / "upstream" / "sources"
+    from build_harp import build as build_harp_500
+    from build_logiqa import build as build_logiqa_500
+
+    for builder, committed_relative, nested_name in (
+        (
+            build_harp_500,
+            "benchmark/harp/HARP-500.json",
+            "harp/HARP-500.json",
+        ),
+        (
+            build_logiqa_500,
+            "benchmark/logiqa2/LogiQA-500.json",
+            "logiqa2/LogiQA-500.json",
+        ),
+    ):
+        with tempfile.TemporaryDirectory() as temporary:
+            output_root = Path(temporary)
+            builder(
+                output_root=output_root,
+                source_root=source_root if source_root.exists() else None,
+            )
+            rebuilt = output_root / nested_name
+            if rebuilt.read_bytes() != (root / committed_relative).read_bytes():
+                raise AssertionError(
+                    f"{committed_relative} is not byte-for-byte reproducible "
+                    "from the pinned upstream sources"
                 )
 
     return {

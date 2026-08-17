@@ -1,0 +1,1375 @@
+{
+  "benchmark_id": "LogiQA-50-RoundValue-v1",
+  "dataset_id": "LogiQA-50",
+  "domain": "logiqa",
+  "generator": "roundvalue-logiqa-v1",
+  "provenance": {
+    "dataset_id": "LogiQA-50",
+    "domain": "logiqa",
+    "generator": "roundvalue-logiqa-v1",
+    "parent": {
+      "dataset_id": "LogiQA-500",
+      "file": "benchmark/logiqa2/LogiQA-500.json",
+      "sha256": "0983a9074343a406e19adb1c7ca59dcf78d43ada2dd30b46818e795d38ffbed5"
+    },
+    "raw_source_record_sha256": {
+      "dev.txt": "79c3e3899cdcb2c5a0805cb2f292b2df45de18b6d7eb1add14156ffe3bc293bd",
+      "test.txt": "3b07de4e5c38a72a0c1e2e2400800ef08d77aec064818024ef8ced0b2864b519",
+      "train.txt": "04c625b8692f9930ada08b1a181d3c894b3cf29ae7facf60e2f82734387308b0"
+    },
+    "schema_version": "1.0",
+    "selection": {
+      "method": "largest-remainder reasoning-type-signature counts within each parent split; stable hash ordering within each signature",
+      "seed": "roundvalue-logiqa50-selection-v1",
+      "signature_counts": {
+        "test::Categorical Reasoning::Conjunctive Reasoning::Disjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "test::Categorical Reasoning::Conjunctive Reasoning::Disjunctive Reasoning::Sufficient Conditional Reasoning": 1,
+        "test::Categorical Reasoning::Conjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 2,
+        "test::Categorical Reasoning::Conjunctive Reasoning::Sufficient Conditional Reasoning": 2,
+        "test::Conjunctive Reasoning::Disjunctive Reasoning::Sufficient Conditional Reasoning": 1,
+        "test::Conjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "test::Conjunctive Reasoning::Sufficient Conditional Reasoning": 2,
+        "train::Categorical Reasoning::Conjunctive Reasoning": 1,
+        "train::Categorical Reasoning::Conjunctive Reasoning::Disjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 2,
+        "train::Categorical Reasoning::Conjunctive Reasoning::Disjunctive Reasoning::Sufficient Conditional Reasoning": 3,
+        "train::Categorical Reasoning::Conjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 5,
+        "train::Categorical Reasoning::Conjunctive Reasoning::Sufficient Conditional Reasoning": 6,
+        "train::Categorical Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "train::Categorical Reasoning::Sufficient Conditional Reasoning": 1,
+        "train::Conjunctive Reasoning::Disjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "train::Conjunctive Reasoning::Disjunctive Reasoning::Sufficient Conditional Reasoning": 2,
+        "train::Conjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 2,
+        "train::Conjunctive Reasoning::Sufficient Conditional Reasoning": 4,
+        "train::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "train::Sufficient Conditional Reasoning": 1,
+        "validation::Categorical Reasoning::Conjunctive Reasoning::Disjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "validation::Categorical Reasoning::Conjunctive Reasoning::Disjunctive Reasoning::Sufficient Conditional Reasoning": 1,
+        "validation::Categorical Reasoning::Conjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 2,
+        "validation::Categorical Reasoning::Conjunctive Reasoning::Sufficient Conditional Reasoning": 2,
+        "validation::Categorical Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "validation::Conjunctive Reasoning::Disjunctive Reasoning::Sufficient Conditional Reasoning": 1,
+        "validation::Conjunctive Reasoning::Necessry Condtional Reasoning::Sufficient Conditional Reasoning": 1,
+        "validation::Conjunctive Reasoning::Sufficient Conditional Reasoning": 1
+      },
+      "total": 50
+    },
+    "sources": {
+      "logiqa2_english_mrc": {
+        "files": {
+          "dev.txt": {
+            "path": "logiqa/DATA/LOGIQA/dev.txt",
+            "sha256": "bbefb563b7ddc02640ccdc314c1315d5727dba48539d0ecdd126fa351e511b09"
+          },
+          "test.txt": {
+            "path": "logiqa/DATA/LOGIQA/test.txt",
+            "sha256": "71940b37ae0184b677c253a148d57ad4e75d6113447b1563c2ca82483e4e4f8d"
+          },
+          "train.txt": {
+            "path": "logiqa/DATA/LOGIQA/train.txt",
+            "sha256": "98eb412e8ed53b3d65da5ef75b00b7a0bbdea7970c05ad699291a2a0510922de"
+          }
+        },
+        "license": "CC BY-NC-SA 4.0",
+        "paper": "IEEE/ACM TASLP 31:2947-2962 (2023), doi:10.1109/TASLP.2023.3293046",
+        "project": "csitfun/LogiQA2.0",
+        "revision": "955e1d3df6c59d9bfb44d9913da1e1a27ec14e18",
+        "subset": "LogiQA 2.0 English MRC",
+        "upstream": "https://github.com/csitfun/LogiQA2.0"
+      }
+    },
+    "split": {
+      "counts": {
+        "test": 10,
+        "train": 30,
+        "validation": 10
+      },
+      "method": "parent LogiQA-500 split retained verbatim; official LogiQA 2.0 train/dev/test boundaries preserved"
+    },
+    "test_task_ids": [
+      "logiqa2::test::10570",
+      "logiqa2::test::11420",
+      "logiqa2::test::11550",
+      "logiqa2::test::14388",
+      "logiqa2::test::3478",
+      "logiqa2::test::426",
+      "logiqa2::test::4297",
+      "logiqa2::test::5319",
+      "logiqa2::test::9039",
+      "logiqa2::test::9940"
+    ]
+  },
+  "purpose": "A deterministic, reasoning-type stratified 50-task subset of LogiQA-500, split 30/10/10 and preserving official LogiQA 2.0 source split boundaries, for fast validation runs.",
+  "schema_version": "1.0",
+  "split_protocol": {
+    "counts": {
+      "test": 10,
+      "train": 30,
+      "validation": 10
+    },
+    "seed": "roundvalue-logiqa50-selection-v1",
+    "stratification": "reasoning-type-signature stratified selection within each LogiQA-500 split"
+  },
+  "tasks": [
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "Patients with prostate tumors taking lycopene are between 45 and 65 years old",
+        "A small number of patients with prostate tumors taking lycopene are seriously ill",
+        "There is also a similar group of prostate tumor patients waiting for surgery who did not take lycopene capsules and their tumors did not shrink",
+        "Lycopene exists not only in tomatoes but also in watermelons, grapes and other fruits"
+      ],
+      "prompt": "Passage:\nA doctor gave a group of prostate tumor patients waiting for surgery a capsule made of lycopene he extracted from tomatoes, 15 mg twice a day.Three weeks later, it was found that the tumors in this group were significantly reduced, and some of them were almost eliminated. the doctor speculated that lycopene had the effect of reducing prostate tumors.\n\nQuestion:\nWhich of the following options, if correct, can best support the doctor's conclusion?\n\nChoices:\n(A) Patients with prostate tumors taking lycopene are between 45 and 65 years old\n(B) A small number of patients with prostate tumors taking lycopene are seriously ill\n(C) There is also a similar group of prostate tumor patients waiting for surgery who did not take lycopene capsules and their tumors did not shrink\n(D) Lycopene exists not only in tomatoes but also in watermelons, grapes and other fruits\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10028"
+      },
+      "reference_answer": "C",
+      "split": "train",
+      "task_id": "logiqa2::train::10028"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "If a person only cares about the present and muddles along, he has no taste.",
+        "If a man is hegemonic, he is immoral.",
+        "If a man plundered nature, there would be no eternal life.",
+        "If a person is immoral, he is hegemonic and he only cares about the present and muddles along, he has no taste."
+      ],
+      "prompt": "Passage:\nCulture is embodied in how a person treats himself, others and the natural environment in which he or she is located. In a society with a thick cultural environment, people know how to respect themselves-only if they don't care about the present and don't muddle along, can they have taste; people know how to respect others-- they are not hegemonic, they are moral if they are not hegemonic; they know how to respect nature-- they do not plunder. If you don't plunder, you will have eternal life.\n\nQuestion:\nWhich of the followings can not be inferred from the above sentence?\n\nChoices:\n(A) If a person only cares about the present and muddles along, he has no taste.\n(B) If a man is hegemonic, he is immoral.\n(C) If a man plundered nature, there would be no eternal life.\n(D) If a person is immoral, he is hegemonic and he only cares about the present and muddles along, he has no taste.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10127"
+      },
+      "reference_answer": "D",
+      "split": "train",
+      "task_id": "logiqa2::train::10127"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "Whether the electronic order process is faster and more accurate than the manual order process",
+        "Whether a faster and more accurate ordering process will benefit their financial benefits",
+        "Whether switching to an electronic order process will benefit their financial benefits",
+        "For most customers, whether the electronic order process really seems indifferent and inhumane"
+      ],
+      "prompt": "Passage:\nZhang Qiang: the process of processing orders quickly and accurately is helpful to our transaction. In order to increase profits, we should use electronic procedures instead of manual operation. With electronic procedures, customer orders will directly enter all relevant queues. Li Ming: if we use the electronic order process, our income will be reduced. Many people prefer to call when placing an order. If we switch to an electronic order process, our transactions will look cold and impersonal, and we will attract fewer passers-by.\n\nQuestion:\nWhich of the followings is the difference of opinion between Zhang Qiang and Li Ming:\n\nChoices:\n(A) Whether the electronic order process is faster and more accurate than the manual order process\n(B) Whether a faster and more accurate ordering process will benefit their financial benefits\n(C) Whether switching to an electronic order process will benefit their financial benefits\n(D) For most customers, whether the electronic order process really seems indifferent and inhumane\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10307"
+      },
+      "reference_answer": "C",
+      "split": "train",
+      "task_id": "logiqa2::train::10307"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "The shark's teeth have to be changed many times in a lifetime, but the shark skeleton does not change for the rest of its life and has only one skeleton.",
+        "Compared with the skeletons of teeth or other vertebrates, the cartilage skeletons of sharks are not easily fossilized.",
+        "The process of fossilization of shark skeleton is the same as that of fossilization of shark teeth.",
+        "It is indeed doubtful that fossils of shark teeth cannot be found in the place where fossils of its teeth are found."
+      ],
+      "prompt": "Passage:\nAmong vertebrate fossils, shark teeth are one of the most common fossils. However, fossils of shark skeletons are very rare. Compared with the discovery of fossilized skeletons of other vertebrates, the discovery of fossils of shark skeletons is better than none at all.\n\nQuestion:\nWhich of the following options, if true, will most help to solve the confusion in the above?\n\nChoices:\n(A) The shark's teeth have to be changed many times in a lifetime, but the shark skeleton does not change for the rest of its life and has only one skeleton.\n(B) Compared with the skeletons of teeth or other vertebrates, the cartilage skeletons of sharks are not easily fossilized.\n(C) The process of fossilization of shark skeleton is the same as that of fossilization of shark teeth.\n(D) It is indeed doubtful that fossils of shark teeth cannot be found in the place where fossils of its teeth are found.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10358"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::10358"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "The 18650 type battery has the characteristics of high energy density, stability and good consistency",
+        "Billions of 18650-type batteries are produced globally every year, and their safety levels are constantly improving",
+        "TESLA has a very advanced battery management system that will automatically disconnect the output of abnormal battery cells",
+        "The 18650 type battery can be recharged many times, thus greatly extending the life of the battery"
+      ],
+      "prompt": "Passage:\nThe battery used in the American electric vehicle TESLA is composed of nearly 7,000 Panasonic 18650 batteries connected in series. Large battery packs combined in parallel. The safety of the TESLA battery power system has been questioned by the automotive industry. A battery expert said that the probability of fire of 18650 type batteries in the United States is 0.2 millionths, then the probability of fire of a battery pack composed of 7,000 small batteries is 0.14%. Based on the current sales of TESLA, this will be As a result, it has a battery fire accident almost every month.\n\nQuestion:\nIf the following statements are true, which of the following most powerfully undermines the expert's judgment?\n\nChoices:\n(A) The 18650 type battery has the characteristics of high energy density, stability and good consistency\n(B) Billions of 18650-type batteries are produced globally every year, and their safety levels are constantly improving\n(C) TESLA has a very advanced battery management system that will automatically disconnect the output of abnormal battery cells\n(D) The 18650 type battery can be recharged many times, thus greatly extending the life of the battery\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10403"
+      },
+      "reference_answer": "C",
+      "split": "train",
+      "task_id": "logiqa2::train::10403"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "The first is presented as an obvious truth on which the argument is based; the second is a claim that has been advanced In support of a position that the argument opposes.",
+        "The first is presented as an obvious truth on which the argument is based; the second is a judgment advanced in support of the main conclusion of the argument.",
+        "The first is a generalization that the argument seeks to establish; the second is a conclusion that the argument draws in order to support that generalization.",
+        "The first provides evidence in support of the main conclusion of the argument; the second is a claim that the argument challenges."
+      ],
+      "prompt": "Passage:\nLast year a record number of new manufacturing jobs were created. Will this year bring another record? Well, <b> any new manufacturing job is created either within an existing company or by the start-up of a new company. </b> Within existing firms, new jobs have been created this year at well below last years record pace. At the same time, there is considerable evidence that the number of new companies starting up will be no higher this year than it was last year and <b> there is no reason to think that the new companies starting up this year will create more jobs per company than did last year' s start-ups. </b>So clearly, the number of new jobs created this year will fall short of last years record.\n\nQuestion:\nIn the argument given, the two portions in boldface play which of the following ?\n\nChoices:\n(A) The first is presented as an obvious truth on which the argument is based; the second is a claim that has been advanced In support of a position that the argument opposes.\n(B) The first is presented as an obvious truth on which the argument is based; the second is a judgment advanced in support of the main conclusion of the argument.\n(C) The first is a generalization that the argument seeks to establish; the second is a conclusion that the argument draws in order to support that generalization.\n(D) The first provides evidence in support of the main conclusion of the argument; the second is a claim that the argument challenges.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10772"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::10772::72674eef"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "the recipes of the chocolate candies date from the 19th century, while the non-chocolate candies were all developed more recently.",
+        "a large proportion of XO's customers are those who initially bought XO's chocolate candies and eventually went on to buy other candies made by XO.",
+        "XO has recently removed its two lowest-selling chocolate candies from their product line and replaced them with different types of chocolate candies.",
+        "the chocolate candies are distributed differently than the non-chocolate candies, as chocolates are more popular on the coasts."
+      ],
+      "prompt": "Passage:\nAn analysis of the XO Candy Corporation divided its products into two categories: chocolate-based candies and non-chocolate-based candies. The analysis shows that, unlike the non-chocolate candies, few chocolate candies sold enough units to be profitable. Nevertheless, stopping production of the unprofitable chocolate candies will not necessarily make the entire company more profitable, because__ .\n\nQuestion:\nWhich of the following most logically completes the passage?\n\nChoices:\n(A) the recipes of the chocolate candies date from the 19th century, while the non-chocolate candies were all developed more recently.\n(B) a large proportion of XO's customers are those who initially bought XO's chocolate candies and eventually went on to buy other candies made by XO.\n(C) XO has recently removed its two lowest-selling chocolate candies from their product line and replaced them with different types of chocolate candies.\n(D) the chocolate candies are distributed differently than the non-chocolate candies, as chocolates are more popular on the coasts.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10794"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::10794::289469c5"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "if the world's energy problems are not solved within the next 50 years, it will be too late to solve those problems",
+        "mining the Moon for helium-3 is not a possible solution to the world's energy problems",
+        "mining the Moon for helium-3 is currently not feasible",
+        "people who advocate mining the Moon for helium-3 do not realize that fusion reactors could be designed to use fuels other than helium-3"
+      ],
+      "prompt": "Passage:\nEngineer: Some people argue that the world' s energy problems could be solved by mining the Moon for helium-3, which could be used for fuel in fusion reactors. But this is nonsense. Even if it were possible to mine the Moon for helium-3, the technology needed to build viable fusion reactors that could use such fuel is at least 50 years away. If the world' s energy problems are not solved before then, it will be too late to solve those problems.\n\nQuestion:\nThe main point of the argument is that\n\nChoices:\n(A) if the world's energy problems are not solved within the next 50 years, it will be too late to solve those problems\n(B) mining the Moon for helium-3 is not a possible solution to the world's energy problems\n(C) mining the Moon for helium-3 is currently not feasible\n(D) people who advocate mining the Moon for helium-3 do not realize that fusion reactors could be designed to use fuels other than helium-3\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "10998"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::10998::e273b956"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "Most of the individual trees growing on the coastal islands in this area are deciduous. Ttherefore, most of the tree species on these islands are probably deciduous varieties.",
+        "Most of the stone artifacts that have been found at the archaeological site have been domestic tools. Thus, if the next artifact found at the site is made of stone, it will probably be a domestic tool.",
+        "Most of the entries that were received after the deadline for last year's photography contest were rejected by the judges' committee. Thus, the people whose entries were received after the deadline last year will probably send them in well before the deadline this year.",
+        "Most of the editors who have worked for the local newspaper have not been sympathetic to local farmers. Thus, if the newspaper hires someone who is sympathetic to local farmers, they will probably not be hired as an editor."
+      ],
+      "prompt": "Passage:\nTo date, most of the proposals that have been endorsed by the Citizens League have been passed by the city council. Thus, any future proposal that is endorsed by the Citizens League will probably be passed as well.\n\nQuestion:\nThe pattern of reasoning in which one of the following arguments is most similar to that in the argument above?\n\nChoices:\n(A) Most of the individual trees growing on the coastal islands in this area are deciduous. Ttherefore, most of the tree species on these islands are probably deciduous varieties.\n(B) Most of the stone artifacts that have been found at the archaeological site have been domestic tools. Thus, if the next artifact found at the site is made of stone, it will probably be a domestic tool.\n(C) Most of the entries that were received after the deadline for last year's photography contest were rejected by the judges' committee. Thus, the people whose entries were received after the deadline last year will probably send them in well before the deadline this year.\n(D) Most of the editors who have worked for the local newspaper have not been sympathetic to local farmers. Thus, if the newspaper hires someone who is sympathetic to local farmers, they will probably not be hired as an editor.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "11990"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::11990"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "The traditional position of literature and history in colleges and universities",
+        "How did experimental science develop rapidly",
+        "How the monopoly of the humanities was broken",
+        "Why it is wrong to antagonize science and humanities"
+      ],
+      "prompt": "Passage:\nThere is a tradition in education that science is opposed to literature and history in curriculum design. This opposition is easy to explain historically. Before experimental science, literature, language and philosophy had occupied a strong position in all colleges and universities. Experimental science must naturally forge ahead. No fortified and strong power group will easily give up the monopoly it may have. However, in either way, it is believed that language and literature are all humanist, while science belongs purely to nature,this is a misconception.\n\nQuestion:\nWhich of the following is most likely to be described next?\n\nChoices:\n(A) The traditional position of literature and history in colleges and universities\n(B) How did experimental science develop rapidly\n(C) How the monopoly of the humanities was broken\n(D) Why it is wrong to antagonize science and humanities\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "1278"
+      },
+      "reference_answer": "D",
+      "split": "train",
+      "task_id": "logiqa2::train::1278"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "There are other products on the market that are advertised as providing fiber as a dietary supplement.",
+        "The recommended daily intake of fiber is 20 to 30 grams, and the pill contains one-third gram.",
+        "Nutritionists base their recommendation on medical findings that dietary fiber protects against some kinds of cancer.",
+        "The label of the advertised product recommends taking 3 pills every day."
+      ],
+      "prompt": "Passage:\nNutritionists have recommended that people eat more fiber. Advertisements for a new fiber-supplement pill state only that it contains 44 percent fiber. \n\nQuestion:\nThe advertising claim is misleading in its selection of information on which to focus if which one of the following is true?\n\nChoices:\n(A) There are other products on the market that are advertised as providing fiber as a dietary supplement.\n(B) The recommended daily intake of fiber is 20 to 30 grams, and the pill contains one-third gram.\n(C) Nutritionists base their recommendation on medical findings that dietary fiber protects against some kinds of cancer.\n(D) The label of the advertised product recommends taking 3 pills every day.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "13029"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::13029"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "If there is not a manager's sale being run in some month, then there is a holiday sale being run in that month.",
+        "If a holiday sale is not being run, then it is the month of August.",
+        "If there is no excess merchandise in the warehouse, then it is the month of August.",
+        "If a manager's sale is being run in some month, then there is no excess merchandise in the warehouse in that month."
+      ],
+      "prompt": "Passage:\nA certain retailer promotes merchandise by using the following policy: At all times there is either a manager' s sale or a holiday sale or both going on. All sales are run for exactly one calendar month. In any given month, if a manager wishes to clear out a particular line of merchandise, then a manager' s sale is declared. If a holiday falls within the calendar month and there is excess merchandise in the warehouse, then a holiday sale is declared. However, there is no holiday that falls within the month of August and, in that month, the warehouse never contains excess merchandise.\n\nQuestion:\nWhich one of the following can be concluded from the passage?\n\nChoices:\n(A) If there is not a manager's sale being run in some month, then there is a holiday sale being run in that month.\n(B) If a holiday sale is not being run, then it is the month of August.\n(C) If there is no excess merchandise in the warehouse, then it is the month of August.\n(D) If a manager's sale is being run in some month, then there is no excess merchandise in the warehouse in that month.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "13880"
+      },
+      "reference_answer": "A",
+      "split": "train",
+      "task_id": "logiqa2::train::13880"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "Because it cannot identify all of the customers who were adversely affected by the incorrect expiration date, the Thimble Corporation should deny the rebate to all of the customers who applied for it.",
+        "If a customer did not rely on an incorrect expiration date when applying for the rebate but was denied the rebate for any other reason, the Thimble Corporation is not obligated to offer that customer the rebate.",
+        "If there is a chance that any customers did not apply for the rebate because of an incorrect expiration date on their rebate coupon, the Thimble Corporation is obligated to try to identify them and offer them the rebate.",
+        "If a customer believed that the expiration date had passed but applied for the rebate anyway, the Thimble Corporation is not obligated to give a rebate to that customer."
+      ],
+      "prompt": "Passage:\nProblem: The Thimble Corporation recently distributed rebate coupons for one of its products. Some of the coupons bore an expiration date that was too early. This created an unfair situation in which some customers believed, incorrectly, that the rebate offer had already expired. Principle: Anyone who creates an unfair situation has an obligation to rectify any unfair result of that situation.\n\nQuestion:\nThe principle, if valid, most helps to justify which one of the following judgments concerning the problem?\n\nChoices:\n(A) Because it cannot identify all of the customers who were adversely affected by the incorrect expiration date, the Thimble Corporation should deny the rebate to all of the customers who applied for it.\n(B) If a customer did not rely on an incorrect expiration date when applying for the rebate but was denied the rebate for any other reason, the Thimble Corporation is not obligated to offer that customer the rebate.\n(C) If there is a chance that any customers did not apply for the rebate because of an incorrect expiration date on their rebate coupon, the Thimble Corporation is obligated to try to identify them and offer them the rebate.\n(D) If a customer believed that the expiration date had passed but applied for the rebate anyway, the Thimble Corporation is not obligated to give a rebate to that customer.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "13921"
+      },
+      "reference_answer": "C",
+      "split": "train",
+      "task_id": "logiqa2::train::13921"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "Mr. Lou has lived overseas for many years and seldom uses Chinese, let alone home dialect. I met a fellow-townsman at a dinner party, and the phrase rotten noodles evoked a local accent that had almost been forgotten long ago, and the two chatted all night in their native dialect",
+        "Lao Zhang and his wife have been married for more than ten years, and the eating habits of the family can no longer tell the difference between the north and the south. Even Mr. Zhang's northeast accent has almost lost its original flavor, and his wife's Cantonese has become strange. The daughter often teases them that they are the real husband and wife",
+        "Ms. Zhu's oral Chinese class is very popular with foreign students. She not only has standard pronunciation and soft intonation, but also tells some interesting jokes in class from time to time. In less than half a year, most of the students were able to learn her tone and engage in daily conversation",
+        "After Huang came to work in a seaside town in the south, he watched local dialect TV programs every day to imitate the pronunciation of the announcer. Six months later, her tone, tone and words sounded like a native"
+      ],
+      "prompt": "Passage:\nSpeech fusion refers to the gradual convergence of two accents that communicate frequently without realizing it.\n\nQuestion:\nWhich of the following options is belonging to speech fusion?\n\nChoices:\n(A) Mr. Lou has lived overseas for many years and seldom uses Chinese, let alone home dialect. I met a fellow-townsman at a dinner party, and the phrase rotten noodles evoked a local accent that had almost been forgotten long ago, and the two chatted all night in their native dialect\n(B) Lao Zhang and his wife have been married for more than ten years, and the eating habits of the family can no longer tell the difference between the north and the south. Even Mr. Zhang's northeast accent has almost lost its original flavor, and his wife's Cantonese has become strange. The daughter often teases them that they are the real husband and wife\n(C) Ms. Zhu's oral Chinese class is very popular with foreign students. She not only has standard pronunciation and soft intonation, but also tells some interesting jokes in class from time to time. In less than half a year, most of the students were able to learn her tone and engage in daily conversation\n(D) After Huang came to work in a seaside town in the south, he watched local dialect TV programs every day to imitate the pronunciation of the announcer. Six months later, her tone, tone and words sounded like a native\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "2220"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::2220"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "Smart people have more developed cerebral cortex than ordinary people",
+        "Human cerebral cortex is more developed than monkey",
+        "The structural similarity between human brain and ape brain is greater than the structural similarity between monkey brain and lemur brain",
+        "The similarity of the brain structure of chimpanzees and gorillas is greater than that of chimpanzees and monkeys"
+      ],
+      "prompt": "Passage:\nResearchers report that the proportion of different functional areas of the animal's brain to the total brain mass is an important feature of the species. They found that in the same species, there may be significant differences in brain capacity between different individuals, but the characteristics of brain structure are basically the same; the structural characteristics of different species are quite different. Based on this, the researchers believe that the structural characteristics of the brain will help distinguish the genetic relationship between different species. They also pointed out that the changes in the brain structure usually mark the creation of a new population by evolution. For example, from the more primitive lemur to the current monkey; from the ape to the human, the main change in the brain is the increase in the proportion of the new cerebral cortex.\n\nQuestion:\nWhich can be derived from this?\n\nChoices:\n(A) Smart people have more developed cerebral cortex than ordinary people\n(B) Human cerebral cortex is more developed than monkey\n(C) The structural similarity between human brain and ape brain is greater than the structural similarity between monkey brain and lemur brain\n(D) The similarity of the brain structure of chimpanzees and gorillas is greater than that of chimpanzees and monkeys\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "365"
+      },
+      "reference_answer": "D",
+      "split": "train",
+      "task_id": "logiqa2::train::365"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "A dream B chase after oneself, after wake up that B wants to kill oneself, go straight to B in the home will B affray",
+        "A and B fought each other, B saw that he was weak and ran away, A was chasing after him, B reluctantly picked up a stick again, and wounded him while he was unsteady on his feet",
+        "Zhang in the school playground practice riding a motorcycle, due to poor technology and fall, Zhang died after rescue",
+        "One night Liu mou just met a gangster to rob a woman's purse, so Liu mou hurriedly picked up a brick to throw past, unfortunately hit the woman's head, resulting in a woman's brain paralysis"
+      ],
+      "prompt": "Passage:\nIf an act of stopping an unlawful infringement is taken in order to protect the state, public interests, the person, property and other legitimate rights of himself or others from ongoing unlawful infringement and causes damage to the unlawful infringer, it belongs to justifiable defense and shall not bear criminal responsibility. If justifiable defense obviously causes major damage beyond the necessary limit, he shall bear criminal responsibility, but shall be mitigated or exempted from punishment.\n\nQuestion:\nAccording to the above definition, Which of the following is typical justifiable defense?\n\nChoices:\n(A) A dream B chase after oneself, after wake up that B wants to kill oneself, go straight to B in the home will B affray\n(B) A and B fought each other, B saw that he was weak and ran away, A was chasing after him, B reluctantly picked up a stick again, and wounded him while he was unsteady on his feet\n(C) Zhang in the school playground practice riding a motorcycle, due to poor technology and fall, Zhang died after rescue\n(D) One night Liu mou just met a gangster to rob a woman's purse, so Liu mou hurriedly picked up a brick to throw past, unfortunately hit the woman's head, resulting in a woman's brain paralysis\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "3872"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::3872"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "In order to subvert our country, a certain country sent a espionage organization of dozens of people to continuously steal our country's confidential information.",
+        "Li, Wang, and Zhong were arrested for multiple thieves.",
+        "After Wang was released from prison, he did not want to repent, and gathered more than 10 local scorpions, continued to bully men and women, and went rampant in the country.",
+        "When examining a corruption case, as many as two hundred people were involved."
+      ],
+      "prompt": "Passage:\nA criminal group refers to a criminal organization established by three or more persons in order to commit a certain type of crime or several types of crimes many times.\n\nQuestion:\nWhich of the following is not a criminal group?\n\nChoices:\n(A) In order to subvert our country, a certain country sent a espionage organization of dozens of people to continuously steal our country's confidential information.\n(B) Li, Wang, and Zhong were arrested for multiple thieves.\n(C) After Wang was released from prison, he did not want to repent, and gathered more than 10 local scorpions, continued to bully men and women, and went rampant in the country.\n(D) When examining a corruption case, as many as two hundred people were involved.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "4340"
+      },
+      "reference_answer": "D",
+      "split": "train",
+      "task_id": "logiqa2::train::4340"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "Party A and Party B are partners of the partnership, and Party A shall bear unlimited liability for the debts of the partnership caused by the fault of Party A. Party B shall be liable to the extent of its share of property in the partnership.",
+        "All partners shall bear unlimited liability for the debts of the partnership.",
+        "The external debt of the enterprise shall be borne by the enterprise with its own capital, which has nothing to do with the personal property of Party A and Party B.",
+        "For a partnership, Party A contributed 20,000 yuan and Party B contributed 200,000 yuan. Party A participated in the daily operation and management of the enterprise, but Party B did not participate in the management. Later, the partnership suffered operating losses and owed more than 1 million foreign debts. For this debt, Party A shall bear unlimited liability, and Party B shall bear liability to the extent of 20."
+      ],
+      "prompt": "Passage:\nLimited partnership refers to a partnership composed of general partners and limited partners. The general partners shall bear unlimited joint and several liability for the debts of the partnership, and the limited partners shall be liable for the debts of the partnership to the extent of their subscribed capital contributions.\n\nQuestion:\nAccording to the above definition, which of the following is a limited partnership?\n\nChoices:\n(A) Party A and Party B are partners of the partnership, and Party A shall bear unlimited liability for the debts of the partnership caused by the fault of Party A. Party B shall be liable to the extent of its share of property in the partnership.\n(B) All partners shall bear unlimited liability for the debts of the partnership.\n(C) The external debt of the enterprise shall be borne by the enterprise with its own capital, which has nothing to do with the personal property of Party A and Party B.\n(D) For a partnership, Party A contributed 20,000 yuan and Party B contributed 200,000 yuan. Party A participated in the daily operation and management of the enterprise, but Party B did not participate in the management. Later, the partnership suffered operating losses and owed more than 1 million foreign debts. For this debt, Party A shall bear unlimited liability, and Party B shall bear liability to the extent of 20.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "4719"
+      },
+      "reference_answer": "D",
+      "split": "train",
+      "task_id": "logiqa2::train::4719"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "People in this age group who cannot support themselves are more willing to live with their peers than their parents",
+        "Some people in this age group, as long as they can live independently, will choose to be independent instead of living with their parents.",
+        "Those who live with their parents in this age group do not share the room expenses",
+        "Compared with 1986, 1980 has a more suitable social environment for young people to start their own businesses"
+      ],
+      "prompt": "Passage:\nIn 1980, people between the ages of 18 and 24, living with their parents accounted for 48% of the population of this age group, and by 1986, this proportion rose to 53%. It can be said that in 1986, this It is more difficult for people of one age group to live independently\n\nQuestion:\nThe conclusion drawn above is based on which of the following assumptions??\n\nChoices:\n(A) People in this age group who cannot support themselves are more willing to live with their peers than their parents\n(B) Some people in this age group, as long as they can live independently, will choose to be independent instead of living with their parents.\n(C) Those who live with their parents in this age group do not share the room expenses\n(D) Compared with 1986, 1980 has a more suitable social environment for young people to start their own businesses\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "4773"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::4773"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "Many empty-nesters like to keep pets",
+        "Large and ferocious animals rarely become pets",
+        "Some families will no longer have pets after having children",
+        "Parents like to keep pets, children also like to keep pets"
+      ],
+      "prompt": "Passage:\nThe infant's early characteristics can arouse the love and nurturing of adults. Many animals have the characteristics of human babies in shape and behavior.Therefore, people are easily attracted to such animals and make them pets.\n\nQuestion:\nWhich of the following options, if correct, best supports the above conclusions?\n\nChoices:\n(A) Many empty-nesters like to keep pets\n(B) Large and ferocious animals rarely become pets\n(C) Some families will no longer have pets after having children\n(D) Parents like to keep pets, children also like to keep pets\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "5536"
+      },
+      "reference_answer": "A",
+      "split": "train",
+      "task_id": "logiqa2::train::5536"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "All those who believe in God will be saved. Ma San doesn't trust God. Therefore, Ma San will not be saved",
+        "Some vegetarians live longer than average age. Wang Wu is a vegetarian. Therefore, Wang Wu will live longer than average age",
+        "Even heroes fall for beauties. Li Si falls for beauties. Therefore, Li Si is a hero",
+        "Some men are smarter than most women. Andrew is a man. Therefore, Andrew is smarter than most women"
+      ],
+      "prompt": "Passage:\nPoets of history can drink. Li Bai can drink. So Li Bai is a poet.\n\nQuestion:\nWhich of the following options' logical errors is most similar to the stem\n\nChoices:\n(A) All those who believe in God will be saved. Ma San doesn't trust God. Therefore, Ma San will not be saved\n(B) Some vegetarians live longer than average age. Wang Wu is a vegetarian. Therefore, Wang Wu will live longer than average age\n(C) Even heroes fall for beauties. Li Si falls for beauties. Therefore, Li Si is a hero\n(D) Some men are smarter than most women. Andrew is a man. Therefore, Andrew is smarter than most women\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "572"
+      },
+      "reference_answer": "C",
+      "split": "train",
+      "task_id": "logiqa2::train::572"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "TV program ratings are influenced by audience levels",
+        "TV program ratings are influenced by the season of broadcast",
+        "TV program ratings are affected by market competition",
+        "TV ratings are affected by broadcast time slot"
+      ],
+      "prompt": "Passage:\nCompetition in the television market varies by time of day, season and time of week. The size of the audience available at different broadcast times is different, so the level of viewership is also very different.\n\nQuestion:\nWhich of the following options can be inferred?\n\nChoices:\n(A) TV program ratings are influenced by audience levels\n(B) TV program ratings are influenced by the season of broadcast\n(C) TV program ratings are affected by market competition\n(D) TV ratings are affected by broadcast time slot\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "6397"
+      },
+      "reference_answer": "C",
+      "split": "train",
+      "task_id": "logiqa2::train::6397"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "Xiaoqiu poured such deep feelings into her song,how could Xiaoli not hear her?",
+        "The development of physics has enabled people to study celestial bodies using methods such as spectroscopy and photometry.",
+        "The reason why Xiao Wu did not achieve great achievements is because he is too proud",
+        "A serious illness forced Lao Zhang to leave his beloved job early"
+      ],
+      "prompt": "Passage:\nExplaining causality: It refers to explaining the causal connection among certain facts.\n\nQuestion:\nWhich of the following is not an explaining causality?\n\nChoices:\n(A) Xiaoqiu poured such deep feelings into her song,how could Xiaoli not hear her?\n(B) The development of physics has enabled people to study celestial bodies using methods such as spectroscopy and photometry.\n(C) The reason why Xiao Wu did not achieve great achievements is because he is too proud\n(D) A serious illness forced Lao Zhang to leave his beloved job early\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "7419"
+      },
+      "reference_answer": "A",
+      "split": "train",
+      "task_id": "logiqa2::train::7419"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "Western fast food occupies an important position in the daily diet of young people",
+        "Many families in big cities choose to go to restaurants for New Year's evening dinner",
+        "Borscht, tonkatsu and other foreign products are finally assimilated into the Shanghainese's own taste",
+        "Sichuan cuisine is loved by locals in many parts of the country"
+      ],
+      "prompt": "Passage:\nChina's diverse geographical environment and climate, sunrise and sunset, people sowing in spring, autumn harvest, summer ploughing, winter storage, four seasons reincarnation, hiding a set of strict calendar, after thousands of years, compared with the farming era, today's people are increasingly alienated from nature, however, following the wisdom of their ancestors and arranging their own diet have been internalized into Chinese-specific genes.\n\nQuestion:\nWhich of the following best supports the above conclusion?\n\nChoices:\n(A) Western fast food occupies an important position in the daily diet of young people\n(B) Many families in big cities choose to go to restaurants for New Year's evening dinner\n(C) Borscht, tonkatsu and other foreign products are finally assimilated into the Shanghainese's own taste\n(D) Sichuan cuisine is loved by locals in many parts of the country\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "7599"
+      },
+      "reference_answer": "B",
+      "split": "train",
+      "task_id": "logiqa2::train::7599"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        " Happiness has nothing to do with people's income",
+        " People with higher incomes are less happy",
+        " People who want to be happy should not have high incomes",
+        " Happiness is not just measured by income"
+      ],
+      "prompt": "Passage:\nRichard Layard, professor at the London School of Economics: There exists paradox in our lives. Most people want to get higher and higher incomes and work hard to achieve this. But despite the increasing abundance of Western society, people do not feel happier and happier. Economic growth does not guarantee to make people happier. To say something good, it is in vain to pursue material wealth, and the more likely result is to make people even unhappier.\n\nQuestion:\nAccording to Richard Layard, which of the following statement is incorrect?\n\nChoices:\n(A)  Happiness has nothing to do with people's income\n(B)  People with higher incomes are less happy\n(C)  People who want to be happy should not have high incomes\n(D)  Happiness is not just measured by income\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "76"
+      },
+      "reference_answer": "D",
+      "split": "train",
+      "task_id": "logiqa2::train::76"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "Farmers need to improve their scientific and cultural quality",
+        "The state will intensify structural adjustment of agriculture and rural economy",
+        "Only by developing science and technology can we improve the competitiveness of our agriculture",
+        "A large number of farmers receive rural practical technology training every year"
+      ],
+      "prompt": "Passage:\nWith the rapid development of agricultural science and technology after China's entry into the World Trade Organization, the competition faced by agriculture is first and foremost scientific and technological competition. Only by improving the cultural quality and scientific consciousness of farmers as soon as possible, can we popularize a large number of advanced and practical agricultural scientific and technological achievements and provide strong scientific and technological support for the development of agriculture and rural economy. China will continue to promote agricultural and rural economic restructuring, vigorously develop competitive agricultural products and industries with local characteristics, and promote 50 varieties of high-quality, high-yield and high-efficiency products and 10 key technologies in major grain-producing areas. The promotion and application of these varieties and technologies need high-quality farmers. To this end, the state has decided to vigorously develop adult education in rural areas and carry out practical technical training in rural areas across the country, which will train more than 100 million farmers every year.\n\nQuestion:\nWhich of the following emphasizes the meaning of the above words?\n\nChoices:\n(A) Farmers need to improve their scientific and cultural quality\n(B) The state will intensify structural adjustment of agriculture and rural economy\n(C) Only by developing science and technology can we improve the competitiveness of our agriculture\n(D) A large number of farmers receive rural practical technology training every year\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "7944"
+      },
+      "reference_answer": "A",
+      "split": "train",
+      "task_id": "logiqa2::train::7944"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "Many people have nostalgia and are not good at giving up",
+        "All money and time investment will be rewarded",
+        "When calculating investment costs, sunk costs should also be added.",
+        "When deciding whether to invest, you must forget your past investments"
+      ],
+      "prompt": "Passage:\nPeople don't like to lose their original turf or lose face. They often fall into a kind of ideological trap, which is what economists call sunk cost, which refers to an investment of time and money. After the sale is successful, it can be recycled smoothly. In English-speaking countries, it is also called drop money in the drain.\n\nQuestion:\nWhich of the following options can be inferred from this text?\n\nChoices:\n(A) Many people have nostalgia and are not good at giving up\n(B) All money and time investment will be rewarded\n(C) When calculating investment costs, sunk costs should also be added.\n(D) When deciding whether to invest, you must forget your past investments\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "7952"
+      },
+      "reference_answer": "A",
+      "split": "train",
+      "task_id": "logiqa2::train::7952"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "Xiao Wang has been spotted sleepwalking several times in the past two months.",
+        "Lao Zhang has only slept three hours a day in recent years.",
+        "Ms. Zhang woke up several times at night almost every night for five weeks, and she was not energetic during the day.",
+        "Every time when Mr. Liu is on business trips, he can't sleep all night."
+      ],
+      "prompt": "Passage:\nInsomnia is the difficulty in falling asleep or staying asleep, tired after waking up, and lack of energy. It appears at least three times a week and lasts for more than one month.\n\nQuestion:\nWhich of the following best fits insomnia?\n\nChoices:\n(A) Xiao Wang has been spotted sleepwalking several times in the past two months.\n(B) Lao Zhang has only slept three hours a day in recent years.\n(C) Ms. Zhang woke up several times at night almost every night for five weeks, and she was not energetic during the day.\n(D) Every time when Mr. Liu is on business trips, he can't sleep all night.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "851"
+      },
+      "reference_answer": "C",
+      "split": "train",
+      "task_id": "logiqa2::train::851"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "It occurs in property insurance.",
+        "The insured has the right to claim compensation for losses to a third party due to an insured accident.",
+        "The insurer has already paid compensation to the insured.",
+        "The subject of insurance exceeds 800,000 yuan."
+      ],
+      "prompt": "Passage:\nSubrogation Right: In property insurance, if a third party's fault causes a loss within the scope of insurance liability for the insured subject, after the insurer has paid the insurance money in accordance with the insurance contract, it may subrogate the insured within the limit of the amount of compensation. The right of a third party to request compensation is the subrogation right.\n\nQuestion:\nWhich of the followings is not a necessary condition for exercising the subrogation right?\n\nChoices:\n(A) It occurs in property insurance.\n(B) The insured has the right to claim compensation for losses to a third party due to an insured accident.\n(C) The insurer has already paid compensation to the insured.\n(D) The subject of insurance exceeds 800,000 yuan.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "879"
+      },
+      "reference_answer": "D",
+      "split": "train",
+      "task_id": "logiqa2::train::879"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "Human-machine collaboration will continue to play an important role on the battlefield",
+        "The learning ability of artificial intelligence needs to be further improved",
+        "The battlefield environment puts forward higher requirements for machine learning",
+        "Artificial intelligence has yet to adapt to complex battlefield requirements"
+      ],
+      "prompt": "Passage:\nOn the battlefield, human-machine collaboration is being replaced by artificial intelligence, at least not anytime soon. Artificial intelligence can solve limited problems, substitution will first occur in some areas, but still inseparable from human-machine collaboration. The main means of artificial intelligence is machine learning, and deep learning is a way to realize machine learning. While deep learning has worked very well in many fields, machines may not be able to handle tasks that require creativity on the battlefield, lack clear definitions and boundaries, and lack digital knowledge and experience. So for some time to come, machines will play more of a supporting role in the field of warfare, and the final decision will still be made by humans.\n\nQuestion:\nWhich of the followings is intended to illustrate?\n\nChoices:\n(A) Human-machine collaboration will continue to play an important role on the battlefield\n(B) The learning ability of artificial intelligence needs to be further improved\n(C) The battlefield environment puts forward higher requirements for machine learning\n(D) Artificial intelligence has yet to adapt to complex battlefield requirements\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "train",
+        "source_task_id": "9354"
+      },
+      "reference_answer": "A",
+      "split": "train",
+      "task_id": "logiqa2::train::9354"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "The gasoline leaking from the truck did not help to cause the truck to explode.",
+        "The investigators believe that the fire was not caused by an explosion of factory equipment.",
+        "The investigators have until now seriously explored only the possibility that the fire resulted from arson.",
+        "The investigators have physical evidence that the wiring in the Shelburne factory was faulty."
+      ],
+      "prompt": "Passage:\nInvestigators of the fire at the Shelburne factory have determined that the traces of gasoline on the property resulted from a leaking truck and were not, as they previously thought, the work of an arsonist. The investigators had originally maintained that the fire could have resulted from arson, faulty wiring, or an explosion of factory equipment. However, in light of all the evidence collected so far, they are currently exploring only the faulty-wiring theory.\n\nQuestion:\nThe statements above provide the most support for which one of the following inferences?\n\nChoices:\n(A) The gasoline leaking from the truck did not help to cause the truck to explode.\n(B) The investigators believe that the fire was not caused by an explosion of factory equipment.\n(C) The investigators have until now seriously explored only the possibility that the fire resulted from arson.\n(D) The investigators have physical evidence that the wiring in the Shelburne factory was faulty.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "13265"
+      },
+      "reference_answer": "B",
+      "split": "validation",
+      "task_id": "logiqa2::dev::13265"
+    },
+    {
+      "answer_index": 1,
+      "domain": "logiqa",
+      "options": [
+        "Children whose parents have allergies have an above-average likelihood of developing allergies themselves.",
+        "Children from small families who entered day care before age one were less likely to develop allergies than children from small families who entered day care later.",
+        "Children in small families generally eat more kinds of very allergenic foods than children in large families do.",
+        "Some allergies are life threatening, while many diseases caused by germs produce only temporary discomfort."
+      ],
+      "prompt": "Passage:\nResearchers have found that children in large families -- particularly the younger siblings -- generally have fewer allergies than children in small families do. They hypothesize that exposure to germs during infancy makes people less likely to develop allergies.\n\nQuestion:\nWhich one of the following, if true, most supports the researchers' hypothesis?\n\nChoices:\n(A) Children whose parents have allergies have an above-average likelihood of developing allergies themselves.\n(B) Children from small families who entered day care before age one were less likely to develop allergies than children from small families who entered day care later.\n(C) Children in small families generally eat more kinds of very allergenic foods than children in large families do.\n(D) Some allergies are life threatening, while many diseases caused by germs produce only temporary discomfort.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "15085"
+      },
+      "reference_answer": "B",
+      "split": "validation",
+      "task_id": "logiqa2::dev::15085"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "A motorcycle factory in a certain country introduced a Japanese company's technology, and the two parties agreed that the factory should pay 30% of the cost first, and then use the motorcycles manufactured in the factory to repay the rest a year later.",
+        "Company A in a certain country purchases a complete set of ketchup equipment and technical services from company B in country S, and the two parties agree that company A will repay all the money with its own bamboo products in three years",
+        "Power plant A in a certain country purchases 50,000 tons of coke from a coal company in another country, and the two parties agree to provide mining equipment to coal company B in one or two years to repay the full amount.",
+        "A company in a certain country purchases consulting services from a foreign company. Due to company A's financial constraints, three months after the end of the project of both parties, company A will pay the full amount of the consulting services."
+      ],
+      "prompt": "Passage:\nCompensation trade refers to a type of trade in which importers purchase foreign technology and equipment and certain raw materials, and agree to repay the goods or labor in installments within a certain period of time.\n\nQuestion:\nAccording to the above definition, which the followings is not classified as compensation trade?\n\nChoices:\n(A) A motorcycle factory in a certain country introduced a Japanese company's technology, and the two parties agreed that the factory should pay 30% of the cost first, and then use the motorcycles manufactured in the factory to repay the rest a year later.\n(B) Company A in a certain country purchases a complete set of ketchup equipment and technical services from company B in country S, and the two parties agree that company A will repay all the money with its own bamboo products in three years\n(C) Power plant A in a certain country purchases 50,000 tons of coke from a coal company in another country, and the two parties agree to provide mining equipment to coal company B in one or two years to repay the full amount.\n(D) A company in a certain country purchases consulting services from a foreign company. Due to company A's financial constraints, three months after the end of the project of both parties, company A will pay the full amount of the consulting services.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "172"
+      },
+      "reference_answer": "D",
+      "split": "validation",
+      "task_id": "logiqa2::dev::172"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "Guo Zhi  is a native of Zhenyuan",
+        "Guo Shu is not from Zhenyuan",
+        "Guo Zhu is from Anxi",
+        "Guo Shu is not from Anxi"
+      ],
+      "prompt": "Passage:\nAll Anxi people are vegetarians, while all Zhenyuan people are ascetics. Ascetics and vegetarians are irreconcilable. And Guo Zhi is an asceticist.\n\nQuestion:\nIt can be seen that which of the following is correct?\n\nChoices:\n(A) Guo Zhi  is a native of Zhenyuan\n(B) Guo Shu is not from Zhenyuan\n(C) Guo Zhu is from Anxi\n(D) Guo Shu is not from Anxi\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "1889"
+      },
+      "reference_answer": "D",
+      "split": "validation",
+      "task_id": "logiqa2::dev::1889"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "The spread of sex selection technology.",
+        "The census was a great success.",
+        "Late Marriage and late childbearing are common.",
+        "More people want to be single."
+      ],
+      "prompt": "Passage:\nMany media said China's male-to-female ratio a serious imbalance. By 2020, there will be 30 million to 40 million more men of marriageable age in China than women, meaning that on average one in five men will be unable to find a spouse and ten million will be without a wife.\n\nQuestion:\nWhich of the following statements best supports the above statement?\n\nChoices:\n(A) The spread of sex selection technology.\n(B) The census was a great success.\n(C) Late Marriage and late childbearing are common.\n(D) More people want to be single.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "3417"
+      },
+      "reference_answer": "C",
+      "split": "validation",
+      "task_id": "logiqa2::dev::3417"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "If there is a coach car with on-board guidance, you can learn to drive on the road",
+        "If you can't find a coach, you can't learn driving skills on the road",
+        "If only a driving school has a coach car, you must first go to the driving school to apply for a driver's license",
+        "If you have already applied for a driver's license, you must have learned driving skills on the road"
+      ],
+      "prompt": "Passage:\nRegarding the question raised by netizens about whether to test a driver's license directly without training in a driving school, the Traffic Administration of the Ministry of Public Security responded that my country's laws and regulations do not require driving school training to apply for a driver's license, but driving skills must be learned on the road. According to the relevant provisions of Article 20 of the Regulations for the Implementation of the Road Traffic Safety Law, learning to drive on the road should follow the route and time specified by the traffic management department of the public security organ. Learning motor vehicle driving skills on the road should use a coach car. The coach is guided by the coach, and those who are not related to teaching are not allowed to ride the Coach car.\n\nQuestion:\nBased on the above information, which of the following can not be obtained?\n\nChoices:\n(A) If there is a coach car with on-board guidance, you can learn to drive on the road\n(B) If you can't find a coach, you can't learn driving skills on the road\n(C) If only a driving school has a coach car, you must first go to the driving school to apply for a driver's license\n(D) If you have already applied for a driver's license, you must have learned driving skills on the road\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "3537"
+      },
+      "reference_answer": "A",
+      "split": "validation",
+      "task_id": "logiqa2::dev::3537"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "Although he was very smart and hard-working, he finally withdrew from the game with great regret because of his poor interpersonal relationship.",
+        "The setting sun generously sprinkled its last afterglow on the silent yard. Yang Yang pushed his father's wheelchair and walked slowly on the deciduous country road; His father was intoxicated in the local atmosphere and radiated the hot light of his life. Yang Yang felt that some last day was coming.",
+        "Ye Wen practises martial arts in his youth, sells martial arts in his youth, teaches martial arts in his middle age, and takes care of his old age. In addition, he also opened a hotel and concurrently engaged in health care and physiotherapy for hands and feet.",
+        "New materials play a more and more important role in the change of a country's economic growth rate, industrial structure layout and people's lifestyle."
+      ],
+      "prompt": "Passage:\nComplex sentence refers to a sentence composed of two or more clauses whose meanings are related and do not contain each other in structure.\n\nQuestion:\nAccording to the above definition, which of the following is not a complex sentence?\n\nChoices:\n(A) Although he was very smart and hard-working, he finally withdrew from the game with great regret because of his poor interpersonal relationship.\n(B) The setting sun generously sprinkled its last afterglow on the silent yard. Yang Yang pushed his father's wheelchair and walked slowly on the deciduous country road; His father was intoxicated in the local atmosphere and radiated the hot light of his life. Yang Yang felt that some last day was coming.\n(C) Ye Wen practises martial arts in his youth, sells martial arts in his youth, teaches martial arts in his middle age, and takes care of his old age. In addition, he also opened a hotel and concurrently engaged in health care and physiotherapy for hands and feet.\n(D) New materials play a more and more important role in the change of a country's economic growth rate, industrial structure layout and people's lifestyle.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "7122"
+      },
+      "reference_answer": "D",
+      "split": "validation",
+      "task_id": "logiqa2::dev::7122"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "Whether the electronic order process is faster and more accurate than the manual order process",
+        "Whether a faster and more accurate ordering process will benefit their financial benefits",
+        "Whether switching to an electronic order process will benefit their financial benefits",
+        "For most customers, whether the electronic order process really seems indifferent and inhumane"
+      ],
+      "prompt": "Passage:\nZhang Qiang: the process of processing orders quickly and accurately is helpful to our transaction. In order to increase profits, we should use electronic procedures instead of manual operation. With electronic procedures, customer orders will directly enter all relevant queues. Li Ming: if we use the electronic order process, our income will be reduced. Many people prefer to call when placing an order. If we switch to an electronic order process, our transactions will look cold and impersonal, and we will attract fewer passers-by.\n\nQuestion:\nWhich of the followings is the difference of opinion between Zhang Qiang and Li Ming:\n\nChoices:\n(A) Whether the electronic order process is faster and more accurate than the manual order process\n(B) Whether a faster and more accurate ordering process will benefit their financial benefits\n(C) Whether switching to an electronic order process will benefit their financial benefits\n(D) For most customers, whether the electronic order process really seems indifferent and inhumane\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "9055"
+      },
+      "reference_answer": "C",
+      "split": "validation",
+      "task_id": "logiqa2::dev::9055"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "Many consumers decide which wine to buy based on advertisements in the mass media.",
+        "People who buy wine regularly have a fixed preference for the brand of wine.",
+        "Consumers often judge the quality of wine according to the price of wine.",
+        "Retailers and producers of wine can temporarily increase the sales of certain wines through discounts on the price."
+      ],
+      "prompt": "Passage:\nGenerally speaking, the increase in the price of a product will lead to a decrease in sales, unless the increase in price is accompanied by an improvement in the quality of the product. In China, foreign brands of wine are an exception. Seven increases in the price of wine from many foreign brands often lead to an increase in sales, although the quality of those brands has not changed.\n\nQuestion:\nWhich of the following options, if true, best explains the above anomaly?\n\nChoices:\n(A) Many consumers decide which wine to buy based on advertisements in the mass media.\n(B) People who buy wine regularly have a fixed preference for the brand of wine.\n(C) Consumers often judge the quality of wine according to the price of wine.\n(D) Retailers and producers of wine can temporarily increase the sales of certain wines through discounts on the price.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "9232"
+      },
+      "reference_answer": "C",
+      "split": "validation",
+      "task_id": "logiqa2::dev::9232"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "The ethnic minorities in the south may have been the northerners who migrated to the south a long time ago.",
+        "Feudal emperors once sealed some of the ethnic minorities with the surnames of emperors.",
+        "The north and south branches with the same surname may not come from the same ancestor.",
+        "In history, there have also been cases in which ethnic minorities moved northward."
+      ],
+      "prompt": "Passage:\nThe Chinese surname has a very big characteristic, that is, it is the same Han surname, but it is likely to have a very big difference in consanguinity. Generally speaking, taking Wuyishan-Nanling as the boundary, the consanguinity of Chinese surnames is obviously divided into two branches: the north and the south.The consanguinity of the Han nationality between the two places is quite different, even greater than that between the Han nationality in the north and south and the local ethnic minorities. This shows that with the expansion of the population, the Han nationality continued to go south and crossed the Yangtze River into Huguang more than 2000 years ago, and finally crossed the strait to Hainan Island. During this process, the Han people who moved south continued to integrate with many ethnic minorities who spoke Dong-Tai, South Asian and Miao languages, thus diluting the consanguinity of the Han nationality in the north.\n\nQuestion:\nWhich of the followings, if true, can best refute the above argument?\n\nChoices:\n(A) The ethnic minorities in the south may have been the northerners who migrated to the south a long time ago.\n(B) Feudal emperors once sealed some of the ethnic minorities with the surnames of emperors.\n(C) The north and south branches with the same surname may not come from the same ancestor.\n(D) In history, there have also been cases in which ethnic minorities moved northward.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "dev",
+        "source_task_id": "9905"
+      },
+      "reference_answer": "C",
+      "split": "validation",
+      "task_id": "logiqa2::dev::9905"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "H was a member of the committee in the first year.",
+        "F was a member of the committee in the second year.",
+        "I was a member of the committee for two years.",
+        "Z was a member of the committee in the second year."
+      ],
+      "prompt": "Passage:\nA committee works for two years and is composed of 4 members each year, 2 of which are from the following 4 judges: F, G, H and I, and the other 2 members are from the following 3 scientists: V, Y and Z. Each year, the committee is chaired by one member. A member who chairs the first year must retire from the committee during the second year. The person who chairs the second year must be a member of the committee during the first year. The committee members must meet the following conditions: G and V cannot be members of the committee in the same year. H and Y cannot be members of this committee in the same year. Each year, only one of I and V is a member of this committee.\n\nQuestion:\nWhich of the followings must be true?\n\nChoices:\n(A) H was a member of the committee in the first year.\n(B) F was a member of the committee in the second year.\n(C) I was a member of the committee for two years.\n(D) Z was a member of the committee in the second year.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "10570"
+      },
+      "reference_answer": "D",
+      "split": "test",
+      "task_id": "logiqa2::test::10570"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "In manufacturing firms where ESI is offered, the average productivity is 2% higher than it is in those firms where workers are not covered by an ESI plan.",
+        "At companies that offer ESI, employees have access to preventative health care such as regular check-ups, routine laboratory tests, and nutrition counseling.",
+        "Results similar to those cited for the manufacturing sector have been found in other sectors of the economy where ESI is offered.",
+        "Many firms in the manufacturing sector have improved workplace safety and decreased the occurrence of on-the-job injuries in the last five years, and most of these companies introduced ESI at the same time."
+      ],
+      "prompt": "Passage:\nCompanies that offer employer sponsored insurance (ESI) pay a portion of employees' health care costs. In the manufacturing sector last year, companies that offered ESI had worker absentee rates 22% lower, on average, than those at companies that did not offer ESI.\n\nQuestion:\nIf, on the basis of the evidence above, it is argued that ESI decreases worker absenteeism, which of the following, if true, would most seriously weaken that argument?\n\nChoices:\n(A) In manufacturing firms where ESI is offered, the average productivity is 2% higher than it is in those firms where workers are not covered by an ESI plan.\n(B) At companies that offer ESI, employees have access to preventative health care such as regular check-ups, routine laboratory tests, and nutrition counseling.\n(C) Results similar to those cited for the manufacturing sector have been found in other sectors of the economy where ESI is offered.\n(D) Many firms in the manufacturing sector have improved workplace safety and decreased the occurrence of on-the-job injuries in the last five years, and most of these companies introduced ESI at the same time.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "11420"
+      },
+      "reference_answer": "D",
+      "split": "test",
+      "task_id": "logiqa2::test::11420"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "The heavier of two cans of fruit or vegetables does not necessarily contain more food than the lighter of the two cans contains.",
+        "Nothing stops unscrupulous canning companies from including more water per can than others include.",
+        "The heavier of two cans of fruits or vegetables may include more water than the lighter of the two cans contains.",
+        "The weight of the water in a can of fruit or vegetables can be more than half the total weight of the can's contents."
+      ],
+      "prompt": "Passage:\nConsumer advocate: Even if one can of fruit or vegetables weighs more than another, the heavier can does not necessarily contain more food. Canned fruits and vegetables are typically packed in water, which can make up more than half the total weight of the can' s contents. And nothing stops unscrupulous canning companies from including more water per can than others include.\n\nQuestion:\nWhich one of the following most accurately expresses the conclusion drawn in the consumer advocate's argument?\n\nChoices:\n(A) The heavier of two cans of fruit or vegetables does not necessarily contain more food than the lighter of the two cans contains.\n(B) Nothing stops unscrupulous canning companies from including more water per can than others include.\n(C) The heavier of two cans of fruits or vegetables may include more water than the lighter of the two cans contains.\n(D) The weight of the water in a can of fruit or vegetables can be more than half the total weight of the can's contents.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "11550"
+      },
+      "reference_answer": "A",
+      "split": "test",
+      "task_id": "logiqa2::test::11550"
+    },
+    {
+      "answer_index": 2,
+      "domain": "logiqa",
+      "options": [
+        "All stars move at exactly the same speed when they are revolving around Earth.",
+        "Earth does not remain motionless while the stars revolve around it.",
+        "Stars do not move at tremendously great speeds.",
+        "If the stars do not revolve around Earth, it is possible for at least some stars to be more than a few million miles from Earth."
+      ],
+      "prompt": "Passage:\nAt one time, many astronomers assumed that Earth remains motionless while the stars revolve around it. They concluded from this that the stars were not more than a few million miles from Earth. They reasoned that if the stars were farther away, they would have to move at tremendously great speeds in order to circle Earth during the day and reappear in roughly the same positions each night.\n\nQuestion:\nWhich one of the following is an assumption required by the reasoning described above?\n\nChoices:\n(A) All stars move at exactly the same speed when they are revolving around Earth.\n(B) Earth does not remain motionless while the stars revolve around it.\n(C) Stars do not move at tremendously great speeds.\n(D) If the stars do not revolve around Earth, it is possible for at least some stars to be more than a few million miles from Earth.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "14388"
+      },
+      "reference_answer": "C",
+      "split": "test",
+      "task_id": "logiqa2::test::14388"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "If there is no effect of weed propagation, the use of cotton nutrition bowl will not encounter grass damage",
+        "The effect of herbicide application after cotton emergence is poor",
+        "Weed damage was effectively prevented when planting cotton, indicating that one of the above two herbicides was selected",
+        "The growth and development of cotton seedlings raised in cotton nutrition bowl is not good, indicating that the problem of grass damage has been encountered"
+      ],
+      "prompt": "Passage:\nNutrition bowl is generally used to grow cotton seedlings in southern China. However, the use of nutrient bowl to raise cotton seedlings often encounters the problem of grass damage, which seriously inhibits the growth and development of cotton seedlings. Grass damage is only caused by one of the following two reasons: first, the newly selected seedling bed is too late to plough, leaving the residual weeds to reproduce; Second, the fertilizer that is not completely decomposed is applied, and the weed seeds are brought into the seedbed to make them reproduce rapidly. Therefore, to apply herbicides after cotton sowing and before emergence, you can choose lasso emulsion or dur emulsion, which can effectively prevent the harm of weeds.\n\nQuestion:\nWhich of the followings can be infered\n\nChoices:\n(A) If there is no effect of weed propagation, the use of cotton nutrition bowl will not encounter grass damage\n(B) The effect of herbicide application after cotton emergence is poor\n(C) Weed damage was effectively prevented when planting cotton, indicating that one of the above two herbicides was selected\n(D) The growth and development of cotton seedlings raised in cotton nutrition bowl is not good, indicating that the problem of grass damage has been encountered\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "3478"
+      },
+      "reference_answer": "A",
+      "split": "test",
+      "task_id": "logiqa2::test::3478"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "In order to improve employee motivation, the person with the best monthly performance can enjoy double salary.",
+        "In order to solve the worries of employees, the enterprise signs lifelong contracts with excellent employees.",
+        "In order to attract excellent talents, the enterprise promises to provide employees with interest free loans for house purchase.",
+        "Combined with its own development blueprint, the enterprise provides career design for employees."
+      ],
+      "prompt": "Passage:\nPsychological contract refers to the implied relationship between the individual and the organization that is not expressly stipulated in the respective responsibilities and expectations of each other.\n\nQuestion:\nAccording to the above definition, which of the followings is a measure to establish a psychological contract?\n\nChoices:\n(A) In order to improve employee motivation, the person with the best monthly performance can enjoy double salary.\n(B) In order to solve the worries of employees, the enterprise signs lifelong contracts with excellent employees.\n(C) In order to attract excellent talents, the enterprise promises to provide employees with interest free loans for house purchase.\n(D) Combined with its own development blueprint, the enterprise provides career design for employees.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "426"
+      },
+      "reference_answer": "D",
+      "split": "test",
+      "task_id": "logiqa2::test::426"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "Platypus can't lay eggs",
+        "Some mammals cannot lay eggs",
+        "Platypus is not a mammal",
+        "Only suckling animals are mammals"
+      ],
+      "prompt": "Passage:\nSomeone wrote in a letter: I saw platypus eggs in Manchester a few years ago, so I ignorantly laughed at the stupid view that mammals lay eggs, and it is finally confirmed.\n\nQuestion:\nFrom the letter, it can be seen that which of the following items was wrongly believed by the writer in the past?\n\nChoices:\n(A) Platypus can't lay eggs\n(B) Some mammals cannot lay eggs\n(C) Platypus is not a mammal\n(D) Only suckling animals are mammals\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "4297"
+      },
+      "reference_answer": "A",
+      "split": "test",
+      "task_id": "logiqa2::test::4297"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "All the four people's occupations can be determined.",
+        "Only three people's occupations can be determined.",
+        "Only two people's occupations can be determined.",
+        "Only one person's occupation can be determined."
+      ],
+      "prompt": "Passage:\nMr. Zhang, Mr. Wang, Mr. Li and Mr. Zhao are driver, professor, doctor and worker. It is known that: (1) Mr. Zhang is taller than the professor; (2) Mr. Li is shorter than Mr. Wang; (3) The worker is taller than the driver; (4) The doctor is shorter than the professor; (5) The worker is either Mr. Zhao or Mr. Li.\n\nQuestion:\nAccording to the above information, which of the followings can be inferred?\n\nChoices:\n(A) All the four people's occupations can be determined.\n(B) Only three people's occupations can be determined.\n(C) Only two people's occupations can be determined.\n(D) Only one person's occupation can be determined.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Categorical Reasoning",
+          "Conjunctive Reasoning",
+          "Disjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "5319"
+      },
+      "reference_answer": "A",
+      "split": "test",
+      "task_id": "logiqa2::test::5319"
+    },
+    {
+      "answer_index": 0,
+      "domain": "logiqa",
+      "options": [
+        "In the past two years, the incidence of bladder cancer among consumers of dairy dairy milk products in the Netherlands has been particularly high.",
+        "Biphenyl residues have been found in the blood and urine of many Dutch dairy cows.",
+        "The incidence of cancer in the region where dairy milk products are produced in the Netherlands was the highest in the country.",
+        "The infertility rate of Dutch dairy cows is higher than the average level of other dairy cows."
+      ],
+      "prompt": "Passage:\nIn recent years, experts have called for a ban on the addition of biphenyl compounds as oxytocin to animal feed because they are harmful to humans. In the past decade, biphenyl residues have been found in the feed of Dutch dairy cows raised by many herdsmen.\n\nQuestion:\nWhich of the following options, if true, most strongly supports the expert's point of view?\n\nChoices:\n(A) In the past two years, the incidence of bladder cancer among consumers of dairy dairy milk products in the Netherlands has been particularly high.\n(B) Biphenyl residues have been found in the blood and urine of many Dutch dairy cows.\n(C) The incidence of cancer in the region where dairy milk products are produced in the Netherlands was the highest in the country.\n(D) The infertility rate of Dutch dairy cows is higher than the average level of other dairy cows.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Necessry Condtional Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "9039"
+      },
+      "reference_answer": "A",
+      "split": "test",
+      "task_id": "logiqa2::test::9039"
+    },
+    {
+      "answer_index": 3,
+      "domain": "logiqa",
+      "options": [
+        "Yin Ling Station is to the west of Hao Yun Station.",
+        "Fu Yi Station is to the west of Jiu Shang Station.",
+        "Hao Yun Station is to the west of Yin Ling Station.",
+        "Jiu Shang Station is to the west of Fu Yi Station."
+      ],
+      "prompt": "Passage:\nFive stations have been set up in a section of the high-speed railway along the river from west to east. It is known that Fu Yi Station is located in the east of Hao Yun Station and west of Hu Yao Station, and adjacent to Hu Yao Station; Jiu Shang Station is adjacent to Yin Ling Station.\n\nQuestion:\nIf Hao Yun Station is adjacent to Yin Ling Station, which of the following options can be inferred?\n\nChoices:\n(A) Yin Ling Station is to the west of Hao Yun Station.\n(B) Fu Yi Station is to the west of Jiu Shang Station.\n(C) Hao Yun Station is to the west of Yin Ling Station.\n(D) Jiu Shang Station is to the west of Fu Yi Station.\n\nReturn only the letter of the correct choice (A-D).",
+      "public_metadata": {
+        "option_count": 4,
+        "reasoning_types": [
+          "Conjunctive Reasoning",
+          "Sufficient Conditional Reasoning"
+        ],
+        "source_dataset": "LogiQA 2.0 English MRC",
+        "source_split": "test",
+        "source_task_id": "9940"
+      },
+      "reference_answer": "D",
+      "split": "test",
+      "task_id": "logiqa2::test::9940"
+    }
+  ]
+}

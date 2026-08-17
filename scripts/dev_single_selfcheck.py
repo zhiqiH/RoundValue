@@ -34,6 +34,7 @@ from single_analysis import (  # noqa: E402
     baseline_table,
     build_single_baseline,
     paired_single_vs_debate,
+    single_quality_by_task,
     summarize_single_baseline,
 )
 from single_runner import SingleAgentRunner  # noqa: E402
@@ -561,7 +562,8 @@ def _check_analysis() -> None:
             f"paired {name} does not reuse Repair/Harm terminology",
         )
 
-    table = baseline_table(summary, replay)
+    single_by_task = single_quality_by_task(records)
+    table = baseline_table(summary, replay, single_by_task)
     check(
         [row["display_name"] for row in table]
         == [
@@ -579,6 +581,44 @@ def _check_analysis() -> None:
     check(
         table[0]["defined"] and table[0]["accuracy"] == 0.25,
         "baseline table carries the Single-Agent accuracy",
+    )
+    # Same-split regression: when the Debate conditions only cover the test
+    # split, the Single-Agent row must report the Single-Agent accuracy over
+    # exactly that task-ID set, never the all-task accuracy.
+    test_only_replay = {
+        "policies": {
+            "roundvalue": {
+                "task_results": [
+                    {"task_id": "dev::analysis::3", "quality": 1.0, "available": True},
+                    {"task_id": "dev::analysis::4", "quality": 0.0, "available": True},
+                ]
+            }
+        },
+        "policy_metrics": {
+            "fixed_1": {"accuracy": 0.5, "n_records": 2},
+            "roundvalue": {"accuracy": 0.5, "n_records": 2},
+        },
+    }
+    test_only_table = baseline_table(summary, test_only_replay, single_by_task)
+    check(
+        test_only_table[0]["accuracy"] == 0.0
+        and test_only_table[0]["n_tasks"] == 2,
+        "baseline table Single-Agent accuracy uses the same task set as Debate",
+    )
+    roundvalue_row = next(
+        row for row in test_only_table if row["condition"] == "roundvalue"
+    )
+    check(
+        roundvalue_row["paired_single_accuracy"] == 0.0
+        and roundvalue_row["n_paired"] == 2,
+        "each Debate row carries Single-Agent accuracy over its own task IDs",
+    )
+    test_only_paired = paired_single_vs_debate(records, test_only_replay)
+    check(
+        test_only_paired["roundvalue"]["single_accuracy"] == 0.0
+        and test_only_paired["roundvalue"]["debate_accuracy"] == 0.5
+        and test_only_paired["roundvalue"]["n_paired"] == 2,
+        "paired Single-vs-Debate accuracies share one task-ID intersection",
     )
 
 

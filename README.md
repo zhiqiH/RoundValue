@@ -23,8 +23,10 @@ roundvalue visualize --run-id <RUN_ID>
 `benchmark-build`，即 `datasets>=3,<5`）。项目要求 Python 3.11+。
 
 每个数据集都是独立的自包含基准文件：`collect` 用 `--benchmark <数据集 json>` 选择，
-run 命名直接带模型/数据集的规范标签，任何 run 都不会混合两个数据集。当前主实验基准是
-MMLU-Pro：可用数据集是 500 题主集 MMLU-Pro-500 与其 50 题验证子集 MMLU-Pro-50。
+run 命名直接带模型/数据集的规范标签，任何 run 都不会混合两个数据集。当前可用基准族
+是 MMLU-Pro（MMLU-Pro-500 / MMLU-Pro-50）、HARP（HARP-500 / HARP-50）与
+LogiQA 2.0 英文 MRC（LogiQA-500 / LogiQA-50）；每族都有 500 题主集与 50 题快速
+验证子集。
 
 ## 配置密钥
 
@@ -121,9 +123,10 @@ token）记录，未观察到的 token 或费用保持未知、不以零填充�
 results 使用完全相同的目录名，时间取达拉斯本地时区（America/Chicago）的创建时刻、
 精确到分钟，`hex` 是 8 位小写十六进制唯一后缀，创建一次后离线分析/可视化/重分析都
 绝不重新生成。拓扑被冻结、单智能体基线在每个 run 内自动收集，因此目录名不再含拓扑。
-数据集使用仓库唯一规范标签（`MMLUPro50`、`MMLUPro500`，smoke 验收题使用
-`SmokeTasks`），模型取实际请求模型的简洁标签（`deepseek-v4-flash`、`gpt-5-nano`、
-`gpt-4o-mini`；完整快照仍记录在 run.json 与 manifest）。例如
+数据集使用仓库唯一规范标签（`MMLUPro50`、`MMLUPro500`、`HARP50`、`HARP500`、
+`LogiQA50`、`LogiQA500`，smoke 验收题使用 `SmokeTasks`），模型取实际请求模型的
+简洁标签（`deepseek-v4-flash`、`gpt-5-nano`、`gpt-4o-mini`；完整快照仍记录在
+run.json 与 manifest）。例如
 `202608161630_deepseek-v4-flash_MMLUPro50_a3f91c2e`。运行身份只在创建 run 时
 由一个共享 helper 生成一次，并传播到轨迹目录、结果目录、run.json、manifest、分析与
 可视化元数据。旧的历史目录（`YYYYMMDDHHMM_<数据集>_<hex>` 或含拓扑/数据集/模型的
@@ -179,10 +182,11 @@ Agent 可见信息按 stage 分层：Stage 1（P1/A1/C1）只能看到 `task_id`
 
 `benchmark/test/` 是仓库独立验收题，只用于检查 API、DAG、JSON 输出、评分与落盘是否正常；它不从论文基准抽样，也不得出现在训练、验证、测试或论文结果中。
 
-论文主实验使用两个**各自独立**的冻结 MMLU-Pro 数据集文件：
-`benchmark/mmlu_pro/MMLU-Pro-500.json` 及其验证子集
-`benchmark/mmlu_pro/MMLU-Pro-50.json`。每个数据集文件自带 `dataset_id`、`domain`、
-划分与内嵌 provenance，彼此不混合。
+论文实验使用四族**各自独立**的冻结多选题数据集文件：MMLU-Pro-500/50、
+HARP-500/50 与 LogiQA-500/50（LogiQA 使用 LogiQA 2.0 英文 MRC，不是 v1 也不是
+NLI 转换版）。每个数据集文件自带 `dataset_id`、`domain`、划分与内嵌 provenance，
+彼此不混合。HARP 与 LogiQA 2.0 的上游来源、钉死 revision、许可证与署名见
+`benchmark/harp/README.md` 与 `benchmark/logiqa2/README.md`。
 
 旧的 MATH-500/MATH-50 数据文件保留在 `benchmark/math/`，仅用于追溯已完成的
 MATH 实验与回归验证，不再是默认/主实验路径；其评分归一化作为独立的
@@ -213,6 +217,26 @@ MMLU-Pro 评分保持客观二值：Writer 输出被保守归一化为唯一的�
 
 策略默认 `λ_cost=μ_latency=0`：值函数 `G` 就是纯质量收益，阈值选择只在质量相同的情况下用更少 token 作为决胜项。质量—token 与质量—延迟的 Pareto、任务级配对置信区间和 Oracle regret 作为独立坐标报告，而不是把价格系数折叠进一个不可解释的标量。
 
+## 正式真实数据基准（HARP）
+
+HARP（Human Annotated Reasoning Problems）只使用官方 MCQ 资产
+`HARP_mcq.jsonl.zip`（4,110 题，全部为 A–E 五选项），不使用短答案或证明类记录。
+HARP-500 按 `level x subject` 用最大余数法分层选取 500 题，再以漂移最小的固定种子
+划分 300/100/100；HARP-50 是 HARP-500 的确定性 30/10/10 子集。人类解答、金标准
+答案与竞赛/年份/题号只保存在离线元数据中，不进入 Agent 可见视图。
+
+## 正式真实数据基准（LogiQA 2.0 English MRC）
+
+LogiQA-500 严格保留官方 train/dev/test 文件边界：300 题取自官方 train、100 题取自
+官方 dev、100 题取自官方 test，映射为 RoundValue 的 train/validation/test，任何
+任务都不跨官方边界。每个官方 split 内部按“正向 reasoning-type 标注的精确集合”分层
+确定性选取；官方标注字符串（含拼写）原样保留为离线审计数据。LogiQA-50 是
+LogiQA-500 的确定性 30/10/10 子集。
+
+三个 MCQ 域（`mmlu_pro`、`harp`、`logiqa`）共用同一套保守的规范选项字母评分：
+只有“预测规范选项 == 金标准规范选项”时 `Q=1`，模糊或缺失输出一律判错，没有文本
+相似度、数值回退、LLM judge 或 reasoning_summary 救援。
+
 运行正式收集：
 
 ```powershell
@@ -239,6 +263,18 @@ roundvalue run --model-id gpt4o_mini \
   --benchmark benchmark/mmlu_pro/MMLU-Pro-50.json \
   --smoke-run-id 202608161658_gpt-4o-mini_SmokeTasks_8f378b9a
 
+# HARP-50 / HARP-500
+roundvalue run --benchmark benchmark/harp/HARP-50.json \
+  --smoke-run-id <SMOKE_RUN_ID>
+roundvalue run --benchmark benchmark/harp/HARP-500.json \
+  --smoke-run-id <SMOKE_RUN_ID>
+
+# LogiQA 2.0 English MRC：LogiQA-50 / LogiQA-500
+roundvalue run --benchmark benchmark/logiqa2/LogiQA-50.json \
+  --smoke-run-id <SMOKE_RUN_ID>
+roundvalue run --benchmark benchmark/logiqa2/LogiQA-500.json \
+  --smoke-run-id <SMOKE_RUN_ID>
+
 # 单智能体基线无需单独命令：每个 run 自动收集，且与 Debate 基线同表同图
 roundvalue visualize --run-id <RUN_ID>
 ```
@@ -247,20 +283,26 @@ roundvalue visualize --run-id <RUN_ID>
 版本、来源 revision/URL 与 SHA-256、原始记录 SHA-256、选取种子与分层方法、划分种子
 与比例、以及该数据集的全部测试 task ID；collect 时整个文件（含 provenance）都会被
 冻结进 run 快照。若需从已固定来源重新构建数据，先
-`python -m pip install -e ".[benchmark-build]"`，再运行
-`python src/build_mmlu_pro.py`、`python src/build_mmlu_pro_50.py` 和
-`python src/verify_real_benchmarks.py`。
+`python -m pip install -e ".[benchmark-build]"`，再运行对应的 builder
+（`src/build_mmlu_pro.py`、`src/build_harp.py`、`src/build_logiqa.py` 及其
+`_50` 子集 builder），最后用 `python src/verify_real_benchmarks.py` 校验全部
+工件（含字节级重建比对）。HARP/LogiQA builder 会从钉死的 commit 自动下载缺失的
+源文件并校验其 SHA-256。
 
 ## 目录与产物
 
 ```text
 RoundValue/
-├── benchmark/{mmlu_pro,math,test}/
+├── benchmark/{mmlu_pro,harp,logiqa2,math,test}/
 ├── configs/{agents.json,model_config.json,topology.json}
 ├── .secret/model_key.json              # 仅本地存在
 ├── pyproject.toml                      # 依赖管理 + roundvalue 控制台命令
 ├── benchmark/mmlu_pro/MMLU-Pro-500.json # 主实验基准（300/100/100），provenance 内嵌
 ├── benchmark/mmlu_pro/MMLU-Pro-50.json  # MMLU-Pro-500 的验证子集（30/10/10）
+├── benchmark/harp/HARP-500.json         # HARP MCQ 主集（300/100/100）
+├── benchmark/harp/HARP-50.json          # HARP-500 的验证子集（30/10/10）
+├── benchmark/logiqa2/LogiQA-500.json    # LogiQA 2.0 英文 MRC（300/100/100）
+├── benchmark/logiqa2/LogiQA-50.json     # LogiQA-500 的验证子集（30/10/10）
 ├── benchmark/math/MATH-500.json        # 旧数学基准（仅保留用于追溯）
 ├── benchmark/math/MATH-50.json
 ├── results/YYYYMMDDHHMM_<模型>_<数据集>_<hex>/

@@ -31,9 +31,12 @@ from typing import Any
 
 from labels import build_labels
 from single_analysis import (
+    _evaluation_task_ids,
+    _intersection_accuracy,
     baseline_table,
     build_single_baseline,
     paired_single_vs_debate,
+    single_quality_by_task,
     single_observation_rows,
     summarize_single_baseline,
 )
@@ -537,6 +540,8 @@ def _build_policy_chart_data(replay: Mapping[str, Any]) -> dict[str, Any]:
 
 def _single_agent_chart_point(
     single_summary: Mapping[str, Any],
+    single_by_task: Mapping[str, float],
+    evaluation_ids: set[str],
 ) -> dict[str, Any]:
     """Reduce the Single-Agent summary to the fields the shared figures need."""
 
@@ -548,17 +553,24 @@ def _single_agent_chart_point(
         stat = resources.get(key)
         return _number(stat.get("mean")) if isinstance(stat, Mapping) else None
 
-    accuracy = single_summary.get("accuracy")
+    if evaluation_ids:
+        accuracy_value, n_tasks = _intersection_accuracy(
+            single_by_task, evaluation_ids
+        )
+    else:
+        accuracy = single_summary.get("accuracy")
+        accuracy_value = _number(
+            accuracy.get("accuracy") if isinstance(accuracy, Mapping) else None
+        )
+        n_tasks = single_summary.get("tasks_complete")
     return {
         "condition": "single_agent",
         "defined": bool(single_summary.get("defined")),
-        "accuracy": _number(
-            accuracy.get("accuracy") if isinstance(accuracy, Mapping) else None
-        ),
+        "accuracy": accuracy_value,
         "mean_total_tokens": mean("total_tokens"),
         "mean_wall_clock_ms": mean("wall_clock_ms"),
         "mean_api_latency_ms": mean("api_latency_ms"),
-        "n_tasks": single_summary.get("tasks_complete"),
+        "n_tasks": n_tasks,
     }
 
 
@@ -1021,9 +1033,11 @@ def build_analysis(
 
     split_counts: Counter[str] = Counter(str(record.get("split")) for record in records)
     single_summary = summarize_single_baseline(records)
+    single_by_task = single_quality_by_task(records)
     policy_charts = _build_policy_chart_data(replay)
+    evaluation_ids = _evaluation_task_ids(replay)
     policy_charts["single_agent_point"] = _single_agent_chart_point(
-        single_summary
+        single_summary, single_by_task, evaluation_ids
     )
     report: dict[str, Any] = {
         "schema_version": "1.0",
@@ -1045,7 +1059,7 @@ def build_analysis(
             for name in ("repair", "neutral", "harm", "recovery", "terminal", "unknown")
         },
         "single_agent": build_single_baseline(manifest, records),
-        "baseline_table": baseline_table(single_summary, replay),
+        "baseline_table": baseline_table(single_summary, replay, single_by_task),
         "paired_single_vs_debate": paired_single_vs_debate(records, replay),
         "policy_table": policy_table,
         "stop_round_matrix": stop_round_matrix,

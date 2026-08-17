@@ -6,8 +6,10 @@
   （自动单智能体基线）、`single_analysis`（基线聚合与配对诊断）、`scorer`、
   `policy`、`pipeline` 等
 - 构建/验证工具：`build_mmlu_pro.py`、`build_mmlu_pro_50.py`、
-  `build_real_benchmarks.py`（旧 MATH）、`build_math50.py`（旧 MATH）、
-  `verify_real_benchmarks.py`
+  `build_harp.py`、`build_harp_50.py`、`build_logiqa.py`、
+  `build_logiqa_50.py`、`build_real_benchmarks.py`（旧 MATH）、
+  `build_math50.py`（旧 MATH）、`benchmark_build_utils.py`（新基准共享的
+  确定性采样/provenance 工具）、`verify_real_benchmarks.py`
 - `roundvalue_cli.py`：`roundvalue` 控制台命令 → 三个 step 入口的转发
 
 普通实验流程不直接运行这里的文件（构建/验证工具除外）。

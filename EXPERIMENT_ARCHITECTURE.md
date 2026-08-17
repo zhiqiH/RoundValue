@@ -43,6 +43,10 @@ Agent 可见的 `task_id` 是原 ID 的确定性匿名哈希；`public_metadata`
 ```text
 benchmark/mmlu_pro/MMLU-Pro-500.json   主实验基准（300/100/100），provenance 内嵌
 benchmark/mmlu_pro/MMLU-Pro-50.json    MMLU-Pro-500 分层验证子集（30/10/10），provenance 内嵌
+benchmark/harp/HARP-500.json           HARP MCQ 主集（300/100/100），provenance 内嵌
+benchmark/harp/HARP-50.json            HARP-500 分层验证子集（30/10/10），provenance 内嵌
+benchmark/logiqa2/LogiQA-500.json      LogiQA 2.0 英文 MRC（300/100/100），provenance 内嵌
+benchmark/logiqa2/LogiQA-50.json       LogiQA-500 验证子集（30/10/10），provenance 内嵌
 benchmark/math/MATH-500.json           旧数学基准，仅保留用于追溯与回归验证
 benchmark/math/MATH-50.json            旧 MATH-500 子集，仅保留用于追溯与回归验证
 benchmark/test/                   独立仓库验收题；不来自主基准且不用于论文结果
@@ -74,11 +78,13 @@ results/YYYYMMDDHHMM_<模型>_<数据集>_<hex>/       聚合指标、置信区�
 Completions、`temperature: 0`、`reasoning.enabled=false`（不发送 `reasoning_effort` 与
 `thinking`）与 `max_completion_tokens: 16384` 宽安全上限。
 
-正式基准是两个 MMLU-Pro 数据集文件，每个文件内部按统一比例 60/20/20、以固定种子
-确定性划分，余数计入 Test：MMLU-Pro-500（500 → 300/100/100）与
-MMLU-Pro-50（50 → 30/10/10）。两者都从钉死的 MMLU-Pro `test` 分片按
-category/src 分层确定性选取，不按任何实验结果筛选；评分只比较保守归一化后的
-规范选项字母与金标准字母，`src/scorer.py` 是唯一的评分来源。
+正式基准是四族多选题数据集文件：MMLU-Pro-500/50、HARP-500/50 与
+LogiQA-500/50（LogiQA 2.0 英文 MRC，不是 v1 也不是 NLI 转换版）。除 LogiQA 严格
+保留官方 train/dev/test 文件边界外，各文件内部按统一比例 60/20/20 确定性划分，
+余数计入 Test（500 → 300/100/100，50 → 30/10/10）。MMLU-Pro 按 category/src、
+HARP 按 level x subject、LogiQA 按 reasoning-type 标注签名分层确定性选取，不按
+任何实验结果筛选；评分只比较保守归一化后的规范选项字母与金标准字母，
+`src/scorer.py` 是唯一的评分来源（`mmlu_pro`、`harp`、`logiqa` 共享同一 MC 评分）。
 每个 run 通过 `--benchmark <数据集 json>` 只选取一个数据集，Train/Validation/Test
 绝不跨数据集混用。每个数据集文件内嵌的 `provenance`
 字段冻结来源 revision、上游校验信息、原始记录 hash、选取与划分种子、比例和全部测试 task ID；
