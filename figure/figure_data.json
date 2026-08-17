@@ -1,0 +1,3880 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-17T15:33:57.770957+00:00",
+  "generated_by": "scripts/step4_paper_figures.py",
+  "reproduction_command": "python scripts/step4_paper_figures.py",
+  "offline": true,
+  "units": {
+    "R1..R5": "accuracy, percent (0-100)",
+    "Ever_repair / Stable_repair / Temporary_repair / Late_repair": "percent of R1-wrong tasks (0-100)",
+    "gold_emergence": "percent of R1-wrong tasks with known gold whose blind Stage-1 candidate matches gold at R2..R5 (0-100)",
+    "mechanism_categories / mechanism_percents": "mutually exclusive partition of R1-wrong tasks; percentages are of n_R1_wrong and counts sum to n_R1_wrong",
+    "Ever_repair_wilson_ci95": "Wilson 95% confidence interval for P(EverRepair | R1 wrong), percent (0-100), denominator = n_R1_wrong",
+    "R1_test / RoundValue_test / Oracle_test": "held-out test accuracy, percent (0-100)",
+    "Oracle_headroom / Captured_gain / Oracle_regret": "percentage points"
+  },
+  "splits": {
+    "all": "all train + validation + test tasks of the run (n = 50)",
+    "test": "held-out test tasks of the run (n = 10)"
+  },
+  "figure_sources": {
+    "fig01_round_accuracy_dynamics.png": {
+      "split": "all",
+      "fields": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ]
+    },
+    "fig02_continuation_opportunity.png": {
+      "split": "test",
+      "fields": [
+        "R1_test",
+        "RoundValue_test",
+        "Oracle_test",
+        "Oracle_headroom",
+        "Captured_gain",
+        "Oracle_regret"
+      ]
+    },
+    "fig03_r1_wrong_trajectories.png": {
+      "split": "all",
+      "fields": [
+        "r1_wrong_patterns",
+        "R1_wrong"
+      ]
+    },
+    "fig03_supp_task_level_heatmap.png": {
+      "split": "all",
+      "fields": [
+        "r1_wrong_tasks.correct_rounds",
+        "r1_wrong_tasks.category"
+      ]
+    },
+    "fig04_repair_mechanism.png": {
+      "split": "all",
+      "fields": [
+        "gold_emergence",
+        "n_gold_emergence",
+        "n_gold_known",
+        "mechanism_categories",
+        "mechanism_percents",
+        "mechanism_partition"
+      ]
+    },
+    "fig05_continuation_landscape.png": {
+      "split": "all",
+      "fields": [
+        "R1",
+        "Ever_repair",
+        "R1_wrong",
+        "Ever_repair_wilson_ci95"
+      ]
+    }
+  },
+  "runs_included": [
+    {
+      "run_id": "202608161012_MMLUPro50_7004379c",
+      "result_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\results\\202608161012_MMLUPro50_7004379c",
+      "trajectory_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\trajectories\\202608161012_MMLUPro50_7004379c",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": null,
+      "domain": "mmlu_pro",
+      "benchmark": "MMLU-Pro",
+      "model_id": "gpt5_nano",
+      "model": "gpt-5-nano",
+      "model_snapshot": "gpt-5-nano",
+      "model_display": "GPT-5-nano",
+      "reasoning": {
+        "effort": "medium",
+        "enabled": true
+      },
+      "temperature": 1.0,
+      "created_at": "2026-08-16T15:12:15.755064+00:00",
+      "config_hash": "5879b34a671decd1d4bf605baa03c3077525587c8de28042f61817af83c847f8",
+      "benchmark_source": "/Users/zhiqi/Documents/RoundValue/benchmark/mmlu_pro/MMLU-Pro-50.json"
+    },
+    {
+      "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+      "result_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\results\\202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+      "trajectory_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\trajectories\\202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": "MMLUPro50",
+      "domain": "mmlu_pro",
+      "benchmark": "MMLU-Pro",
+      "model_id": "gpt4o_mini",
+      "model": "gpt-4o-mini-2024-07-18",
+      "model_snapshot": "gpt-4o-mini-2024-07-18",
+      "model_display": "GPT-4o-mini",
+      "reasoning": {
+        "enabled": false
+      },
+      "temperature": 0,
+      "created_at": "2026-08-16T21:59:09.250110+00:00",
+      "config_hash": "60f1b496162a77b14b47152fc490e8959127f0cbcf6ef68a3f0d378cd7b24b79",
+      "benchmark_source": "/Users/zhiqi/Documents/RoundValue/benchmark/mmlu_pro/MMLU-Pro-50.json"
+    },
+    {
+      "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+      "result_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\results\\202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+      "trajectory_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\trajectories\\202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": "MMLUPro50",
+      "domain": "mmlu_pro",
+      "benchmark": "MMLU-Pro",
+      "model_id": "deepseek_flash",
+      "model": "deepseek-v4-flash",
+      "model_snapshot": "deepseek-v4-flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "reasoning": {
+        "effort": "high",
+        "enabled": false
+      },
+      "temperature": 0.2,
+      "created_at": "2026-08-16T22:58:46.490448+00:00",
+      "config_hash": "a3efe6ebee7022e2313a6d9c2e21625cd068111c665b806b79412a9655fc2c64",
+      "benchmark_source": "/Users/zhiqi/Documents/RoundValue/benchmark/mmlu_pro/MMLU-Pro-50.json"
+    },
+    {
+      "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+      "result_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\results\\202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+      "trajectory_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\trajectories\\202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+      "dataset_id": "HARP-50",
+      "dataset_label": "HARP50",
+      "domain": "harp",
+      "benchmark": "HARP",
+      "model_id": "deepseek_flash",
+      "model": "deepseek-v4-flash",
+      "model_snapshot": "deepseek-v4-flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "reasoning": {
+        "effort": "high",
+        "enabled": false
+      },
+      "temperature": 0.3,
+      "created_at": "2026-08-17T00:37:15.520506+00:00",
+      "config_hash": "e897c89c23615bb1ba018a69c905f2dfca1bf4a71e94fa2b7de6bc25834d2297",
+      "benchmark_source": "/Users/zhiqi/Documents/RoundValue/benchmark/harp/HARP-50.json"
+    },
+    {
+      "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+      "result_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\results\\202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+      "trajectory_dir": "C:\\Users\\zhiqi\\Documents\\RoundValue\\trajectories\\202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+      "dataset_id": "LogiQA-50",
+      "dataset_label": "LogiQA50",
+      "domain": "logiqa",
+      "benchmark": "LogiQA",
+      "model_id": "deepseek_flash",
+      "model": "deepseek-v4-flash",
+      "model_snapshot": "deepseek-v4-flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "reasoning": {
+        "effort": "high",
+        "enabled": false
+      },
+      "temperature": 0.3,
+      "created_at": "2026-08-17T00:40:14.950126+00:00",
+      "config_hash": "e897c89c23615bb1ba018a69c905f2dfca1bf4a71e94fa2b7de6bc25834d2297",
+      "benchmark_source": "/Users/zhiqi/Documents/RoundValue/benchmark/logiqa2/LogiQA-50.json"
+    }
+  ],
+  "run_identities": [
+    {
+      "run_id": "202608161012_MMLUPro50_7004379c",
+      "model_id": "gpt5_nano",
+      "model_snapshot": "gpt-5-nano",
+      "reasoning": {
+        "effort": "medium",
+        "enabled": true
+      },
+      "temperature": 1.0,
+      "benchmark": "MMLU-Pro",
+      "dataset_id": "MMLU-Pro-50",
+      "scores_json_rounds": {
+        "R1": 70.0,
+        "R2": 70.0,
+        "R3": 74.0,
+        "R4": 76.0,
+        "R5": 76.0
+      },
+      "trajectory_recheck": {
+        "R1..R5_accuracy_pct": {
+          "R1": 70.0,
+          "R2": 70.0,
+          "R3": 74.0,
+          "R4": 76.0,
+          "R5": 76.0
+        },
+        "n_R1_wrong": 15,
+        "n_task_files": 50
+      },
+      "analysis_json_rounds": {
+        "R1": 70.0,
+        "R2": 70.0,
+        "R3": 74.0,
+        "R4": 76.0,
+        "R5": 76.0
+      },
+      "n_R1_wrong": 15,
+      "created_at": "2026-08-16T15:12:15.755064+00:00",
+      "config_hash": "5879b34a671decd1d4bf605baa03c3077525587c8de28042f61817af83c847f8"
+    },
+    {
+      "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+      "model_id": "gpt4o_mini",
+      "model_snapshot": "gpt-4o-mini-2024-07-18",
+      "reasoning": {
+        "enabled": false
+      },
+      "temperature": 0,
+      "benchmark": "MMLU-Pro",
+      "dataset_id": "MMLU-Pro-50",
+      "scores_json_rounds": {
+        "R1": 36.0,
+        "R2": 36.0,
+        "R3": 36.0,
+        "R4": 38.0,
+        "R5": 38.0
+      },
+      "trajectory_recheck": {
+        "R1..R5_accuracy_pct": {
+          "R1": 36.0,
+          "R2": 36.0,
+          "R3": 36.0,
+          "R4": 38.0,
+          "R5": 38.0
+        },
+        "n_R1_wrong": 32,
+        "n_task_files": 50
+      },
+      "analysis_json_rounds": {
+        "R1": 36.0,
+        "R2": 36.0,
+        "R3": 36.0,
+        "R4": 38.0,
+        "R5": 38.0
+      },
+      "n_R1_wrong": 32,
+      "created_at": "2026-08-16T21:59:09.250110+00:00",
+      "config_hash": "60f1b496162a77b14b47152fc490e8959127f0cbcf6ef68a3f0d378cd7b24b79"
+    },
+    {
+      "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+      "model_id": "deepseek_flash",
+      "model_snapshot": "deepseek-v4-flash",
+      "reasoning": {
+        "effort": "high",
+        "enabled": false
+      },
+      "temperature": 0.2,
+      "benchmark": "MMLU-Pro",
+      "dataset_id": "MMLU-Pro-50",
+      "scores_json_rounds": {
+        "R1": 76.0,
+        "R2": 76.0,
+        "R3": 78.0,
+        "R4": 80.0,
+        "R5": 78.0
+      },
+      "trajectory_recheck": {
+        "R1..R5_accuracy_pct": {
+          "R1": 76.0,
+          "R2": 76.0,
+          "R3": 78.0,
+          "R4": 80.0,
+          "R5": 78.0
+        },
+        "n_R1_wrong": 12,
+        "n_task_files": 50
+      },
+      "analysis_json_rounds": {
+        "R1": 76.0,
+        "R2": 76.0,
+        "R3": 78.0,
+        "R4": 80.0,
+        "R5": 78.0
+      },
+      "n_R1_wrong": 12,
+      "created_at": "2026-08-16T22:58:46.490448+00:00",
+      "config_hash": "a3efe6ebee7022e2313a6d9c2e21625cd068111c665b806b79412a9655fc2c64"
+    },
+    {
+      "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+      "model_id": "deepseek_flash",
+      "model_snapshot": "deepseek-v4-flash",
+      "reasoning": {
+        "effort": "high",
+        "enabled": false
+      },
+      "temperature": 0.3,
+      "benchmark": "HARP",
+      "dataset_id": "HARP-50",
+      "scores_json_rounds": {
+        "R1": 92.0,
+        "R2": 96.0,
+        "R3": 96.0,
+        "R4": 92.0,
+        "R5": 96.0
+      },
+      "trajectory_recheck": {
+        "R1..R5_accuracy_pct": {
+          "R1": 92.0,
+          "R2": 96.0,
+          "R3": 96.0,
+          "R4": 92.0,
+          "R5": 96.0
+        },
+        "n_R1_wrong": 4,
+        "n_task_files": 50
+      },
+      "analysis_json_rounds": {
+        "R1": 92.0,
+        "R2": 96.0,
+        "R3": 96.0,
+        "R4": 92.0,
+        "R5": 96.0
+      },
+      "n_R1_wrong": 4,
+      "created_at": "2026-08-17T00:37:15.520506+00:00",
+      "config_hash": "e897c89c23615bb1ba018a69c905f2dfca1bf4a71e94fa2b7de6bc25834d2297"
+    },
+    {
+      "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+      "model_id": "deepseek_flash",
+      "model_snapshot": "deepseek-v4-flash",
+      "reasoning": {
+        "effort": "high",
+        "enabled": false
+      },
+      "temperature": 0.3,
+      "benchmark": "LogiQA",
+      "dataset_id": "LogiQA-50",
+      "scores_json_rounds": {
+        "R1": 82.0,
+        "R2": 82.0,
+        "R3": 82.0,
+        "R4": 78.0,
+        "R5": 76.0
+      },
+      "trajectory_recheck": {
+        "R1..R5_accuracy_pct": {
+          "R1": 82.0,
+          "R2": 82.0,
+          "R3": 82.0,
+          "R4": 78.0,
+          "R5": 76.0
+        },
+        "n_R1_wrong": 9,
+        "n_task_files": 50
+      },
+      "analysis_json_rounds": {
+        "R1": 82.0,
+        "R2": 82.0,
+        "R3": 82.0,
+        "R4": 78.0,
+        "R5": 76.0
+      },
+      "n_R1_wrong": 9,
+      "created_at": "2026-08-17T00:40:14.950126+00:00",
+      "config_hash": "e897c89c23615bb1ba018a69c905f2dfca1bf4a71e94fa2b7de6bc25834d2297"
+    }
+  ],
+  "runs_skipped": [],
+  "conditions": [
+    {
+      "run_id": "202608161012_MMLUPro50_7004379c",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": null,
+      "benchmark": "MMLU-Pro",
+      "model": "gpt-5-nano",
+      "model_id": "gpt5_nano",
+      "model_display": "GPT-5-nano",
+      "split": "all",
+      "n": 50,
+      "R1": 70.0,
+      "R2": 70.0,
+      "R3": 74.0,
+      "R4": 76.0,
+      "R5": 76.0,
+      "R1_wrong": 15,
+      "n_ever_repair": 4,
+      "n_stable_repair": 4,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 26.666667,
+      "Stable_repair": 26.666667,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": 3.0,
+        "median": 3.0,
+        "distribution": {
+          "2": 1,
+          "3": 2,
+          "4": 1,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 9,
+      "n_gold_known": 15,
+      "gold_emergence": 60.0,
+      "mechanism_total": 15,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 5,
+        "never_emerged_stable": 1,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 6,
+        "emerged_stable": 3,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 33.333333,
+        "never_emerged_stable": 6.666667,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 40.0,
+        "emerged_stable": 20.0,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 5,
+        "never_emerged_repair": 1,
+        "emerged_no_repair": 6,
+        "emerged_repair": 3
+      },
+      "Ever_repair_wilson_ci95": [
+        10.897453,
+        51.950434
+      ],
+      "Ever_repair_wilson_n": 15,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWWWW",
+          "count": 11
+        },
+        {
+          "pattern": "WWCCC",
+          "count": 2
+        },
+        {
+          "pattern": "WCCCC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWCC",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "mmlupro::test::11478",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::1621",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 3,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::1915",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            3
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 3,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::4826",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5135",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5532",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5632",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            3
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::6386",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::6418",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::6774",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::6910",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 2,
+          "category": "stable_repair",
+          "mechanism_category": "never_emerged_stable",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::7471",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 4,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::9877",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        }
+      ],
+      "R1_test": null,
+      "RoundValue_test": null,
+      "Oracle_test": null,
+      "Oracle_headroom": null,
+      "Captured_gain": null,
+      "Oracle_regret": null,
+      "notes": "policy metrics are only defined on the held-out test split; see the matching test_conditions record"
+    },
+    {
+      "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": "MMLUPro50",
+      "benchmark": "MMLU-Pro",
+      "model": "gpt-4o-mini-2024-07-18",
+      "model_id": "gpt4o_mini",
+      "model_display": "GPT-4o-mini",
+      "split": "all",
+      "n": 50,
+      "R1": 36.0,
+      "R2": 36.0,
+      "R3": 36.0,
+      "R4": 38.0,
+      "R5": 38.0,
+      "R1_wrong": 32,
+      "n_ever_repair": 2,
+      "n_stable_repair": 2,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 6.25,
+      "Stable_repair": 6.25,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": 3.0,
+        "median": 3.0,
+        "distribution": {
+          "2": 1,
+          "3": 0,
+          "4": 1,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 7,
+      "n_gold_known": 32,
+      "gold_emergence": 21.875,
+      "mechanism_total": 32,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 25,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 5,
+        "emerged_stable": 2,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 78.125,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 15.625,
+        "emerged_stable": 6.25,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 25,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 5,
+        "emerged_repair": 2
+      },
+      "Ever_repair_wilson_ci95": [
+        1.731057,
+        20.147123
+      ],
+      "Ever_repair_wilson_n": 32,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWWWW",
+          "count": 30
+        },
+        {
+          "pattern": "WCCCC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWCC",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "mmlupro::test::10162",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::10434",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::11261",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            3,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::11396",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::11564",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::1739",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::1915",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::361",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::370",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::4401",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::4556",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 4,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::4826",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5135",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5383",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::5532",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5632",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::6386",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::6774",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::6910",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::740",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 2,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::7433",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::7471",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::7842",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::7896",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::7961",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::9515",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::9553",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::968",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::9877",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::9986",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        }
+      ],
+      "R1_test": null,
+      "RoundValue_test": null,
+      "Oracle_test": null,
+      "Oracle_headroom": null,
+      "Captured_gain": null,
+      "Oracle_regret": null,
+      "notes": "policy metrics are only defined on the held-out test split; see the matching test_conditions record"
+    },
+    {
+      "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": "MMLUPro50",
+      "benchmark": "MMLU-Pro",
+      "model": "deepseek-v4-flash",
+      "model_id": "deepseek_flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "split": "all",
+      "n": 50,
+      "R1": 76.0,
+      "R2": 76.0,
+      "R3": 78.0,
+      "R4": 80.0,
+      "R5": 78.0,
+      "R1_wrong": 12,
+      "n_ever_repair": 2,
+      "n_stable_repair": 2,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 16.666667,
+      "Stable_repair": 16.666667,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": 3.5,
+        "median": 3.5,
+        "distribution": {
+          "2": 0,
+          "3": 1,
+          "4": 1,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 6,
+      "n_gold_known": 12,
+      "gold_emergence": 50.0,
+      "mechanism_total": 12,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 6,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 4,
+        "emerged_stable": 2,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 50.0,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 33.333333,
+        "emerged_stable": 16.666667,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 6,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 4,
+        "emerged_repair": 2
+      },
+      "Ever_repair_wilson_ci95": [
+        4.696514,
+        44.803086
+      ],
+      "Ever_repair_wilson_n": 12,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWWWW",
+          "count": 10
+        },
+        {
+          "pattern": "WWCCC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWCC",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "mmlupro::test::11564",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 4,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::370",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 3,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::4826",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5135",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5532",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::6386",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::6418",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::6774",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::7471",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::9877",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        }
+      ],
+      "R1_test": null,
+      "RoundValue_test": null,
+      "Oracle_test": null,
+      "Oracle_headroom": null,
+      "Captured_gain": null,
+      "Oracle_regret": null,
+      "notes": "policy metrics are only defined on the held-out test split; see the matching test_conditions record"
+    },
+    {
+      "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+      "dataset_id": "HARP-50",
+      "dataset_label": "HARP50",
+      "benchmark": "HARP",
+      "model": "deepseek-v4-flash",
+      "model_id": "deepseek_flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "split": "all",
+      "n": 50,
+      "R1": 92.0,
+      "R2": 96.0,
+      "R3": 96.0,
+      "R4": 92.0,
+      "R5": 96.0,
+      "R1_wrong": 4,
+      "n_ever_repair": 3,
+      "n_stable_repair": 2,
+      "n_temporary_repair": 0,
+      "n_late_repair": 1,
+      "Ever_repair": 75.0,
+      "Stable_repair": 50.0,
+      "Temporary_repair": 0.0,
+      "Late_repair": 25.0,
+      "First_repair_round": {
+        "mean": 3.0,
+        "median": 2,
+        "distribution": {
+          "2": 2,
+          "3": 0,
+          "4": 0,
+          "5": 1
+        }
+      },
+      "n_gold_emergence": 3,
+      "n_gold_known": 4,
+      "gold_emergence": 75.0,
+      "mechanism_total": 4,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 1,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 0,
+        "emerged_stable": 3,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 25.0,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 0.0,
+        "emerged_stable": 75.0,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 1,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 0,
+        "emerged_repair": 3
+      },
+      "Ever_repair_wilson_ci95": [
+        30.064184,
+        95.441274
+      ],
+      "Ever_repair_wilson_n": 4,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WCCCC",
+          "count": 2
+        },
+        {
+          "pattern": "WWWWC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWWW",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "harp::1990::AJHSME::19",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 5,
+          "category": "late_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "harp::2014::AMC_10A::17",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 2,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "harp::2019::AMC_12A::13",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 2,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "harp::2019::AMC_12B::15",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        }
+      ],
+      "R1_test": null,
+      "RoundValue_test": null,
+      "Oracle_test": null,
+      "Oracle_headroom": null,
+      "Captured_gain": null,
+      "Oracle_regret": null,
+      "notes": "policy metrics are only defined on the held-out test split; see the matching test_conditions record"
+    },
+    {
+      "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+      "dataset_id": "LogiQA-50",
+      "dataset_label": "LogiQA50",
+      "benchmark": "LogiQA",
+      "model": "deepseek-v4-flash",
+      "model_id": "deepseek_flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "split": "all",
+      "n": 50,
+      "R1": 82.0,
+      "R2": 82.0,
+      "R3": 82.0,
+      "R4": 78.0,
+      "R5": 76.0,
+      "R1_wrong": 9,
+      "n_ever_repair": 1,
+      "n_stable_repair": 1,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 11.111111,
+      "Stable_repair": 11.111111,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": 2.0,
+        "median": 2,
+        "distribution": {
+          "2": 1,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 4,
+      "n_gold_known": 9,
+      "gold_emergence": 44.444444,
+      "mechanism_total": 9,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 5,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 3,
+        "emerged_stable": 1,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 55.555556,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 33.333333,
+        "emerged_stable": 11.111111,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 5,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 3,
+        "emerged_repair": 1
+      },
+      "Ever_repair_wilson_ci95": [
+        1.989089,
+        43.499971
+      ],
+      "Ever_repair_wilson_n": 9,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWWWW",
+          "count": 8
+        },
+        {
+          "pattern": "WCCCC",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "logiqa2::dev::3417",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "logiqa2::dev::3537",
+          "split": "validation",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "logiqa2::test::3478",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "logiqa2::test::4297",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "logiqa2::train::365",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "logiqa2::train::5536",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "logiqa2::train::6397",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "logiqa2::train::7599",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "logiqa2::train::76",
+          "split": "train",
+          "correct_rounds": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 2,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        }
+      ],
+      "R1_test": null,
+      "RoundValue_test": null,
+      "Oracle_test": null,
+      "Oracle_headroom": null,
+      "Captured_gain": null,
+      "Oracle_regret": null,
+      "notes": "policy metrics are only defined on the held-out test split; see the matching test_conditions record"
+    }
+  ],
+  "test_conditions": [
+    {
+      "run_id": "202608161012_MMLUPro50_7004379c",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": null,
+      "benchmark": "MMLU-Pro",
+      "model": "gpt-5-nano",
+      "model_id": "gpt5_nano",
+      "model_display": "GPT-5-nano",
+      "split": "test",
+      "n": 10,
+      "R1": 70.0,
+      "R2": 70.0,
+      "R3": 80.0,
+      "R4": 90.0,
+      "R5": 90.0,
+      "R1_wrong": 3,
+      "n_ever_repair": 2,
+      "n_stable_repair": 2,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 66.666667,
+      "Stable_repair": 66.666667,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": 3.5,
+        "median": 3.5,
+        "distribution": {
+          "2": 0,
+          "3": 1,
+          "4": 1,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 3,
+      "n_gold_known": 3,
+      "gold_emergence": 100.0,
+      "mechanism_total": 3,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 0,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 1,
+        "emerged_stable": 2,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 0.0,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 33.333333,
+        "emerged_stable": 66.666667,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 0,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 1,
+        "emerged_repair": 2
+      },
+      "Ever_repair_wilson_ci95": [
+        20.76596,
+        93.850806
+      ],
+      "Ever_repair_wilson_n": 3,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWCCC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWCC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWWW",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "mmlupro::test::4097",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 3,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::6418",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 4,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        }
+      ],
+      "R1_test": 70.0,
+      "RoundValue_test": 70.0,
+      "Oracle_test": 90.0,
+      "Oracle_headroom": 20.0,
+      "Captured_gain": 0.0,
+      "Oracle_regret": 20.0,
+      "test_policy_tasks": [
+        {
+          "task_id": "mmlupro::test::11564",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::2130",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::2895",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 3
+        },
+        {
+          "task_id": "mmlupro::test::5383",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::6418",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::740",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 4
+        },
+        {
+          "task_id": "mmlupro::test::8695",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::968",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 4,
+          "Oracle_selected_round": 1
+        }
+      ],
+      "notes": "policy accuracies and gains are defined on the held-out test split only (n = 10 per run)"
+    },
+    {
+      "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": "MMLUPro50",
+      "benchmark": "MMLU-Pro",
+      "model": "gpt-4o-mini-2024-07-18",
+      "model_id": "gpt4o_mini",
+      "model_display": "GPT-4o-mini",
+      "split": "test",
+      "n": 10,
+      "R1": 40.0,
+      "R2": 50.0,
+      "R3": 50.0,
+      "R4": 50.0,
+      "R5": 50.0,
+      "R1_wrong": 6,
+      "n_ever_repair": 1,
+      "n_stable_repair": 1,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 16.666667,
+      "Stable_repair": 16.666667,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": 2.0,
+        "median": 2,
+        "distribution": {
+          "2": 1,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 2,
+      "n_gold_known": 6,
+      "gold_emergence": 33.333333,
+      "mechanism_total": 6,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 4,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 1,
+        "emerged_stable": 1,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 66.666667,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 16.666667,
+        "emerged_stable": 16.666667,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 4,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 1,
+        "emerged_repair": 1
+      },
+      "Ever_repair_wilson_ci95": [
+        3.005337,
+        56.350282
+      ],
+      "Ever_repair_wilson_n": 6,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWWWW",
+          "count": 5
+        },
+        {
+          "pattern": "WCCCC",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "mmlupro::test::11564",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::5383",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::740",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 2,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        },
+        {
+          "task_id": "mmlupro::test::968",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        }
+      ],
+      "R1_test": 40.0,
+      "RoundValue_test": 40.0,
+      "Oracle_test": 50.0,
+      "Oracle_headroom": 10.0,
+      "Captured_gain": 0.0,
+      "Oracle_regret": 10.0,
+      "test_policy_tasks": [
+        {
+          "task_id": "mmlupro::test::11564",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::2130",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::2895",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::5383",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::6418",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::740",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 2
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::8695",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::968",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        }
+      ],
+      "notes": "policy accuracies and gains are defined on the held-out test split only (n = 10 per run)"
+    },
+    {
+      "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+      "dataset_id": "MMLU-Pro-50",
+      "dataset_label": "MMLUPro50",
+      "benchmark": "MMLU-Pro",
+      "model": "deepseek-v4-flash",
+      "model_id": "deepseek_flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "split": "test",
+      "n": 10,
+      "R1": 60.0,
+      "R2": 60.0,
+      "R3": 60.0,
+      "R4": 70.0,
+      "R5": 70.0,
+      "R1_wrong": 4,
+      "n_ever_repair": 1,
+      "n_stable_repair": 1,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 25.0,
+      "Stable_repair": 25.0,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": 4.0,
+        "median": 4,
+        "distribution": {
+          "2": 0,
+          "3": 0,
+          "4": 1,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 4,
+      "n_gold_known": 4,
+      "gold_emergence": 100.0,
+      "mechanism_total": 4,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 0,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 3,
+        "emerged_stable": 1,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 0.0,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 75.0,
+        "emerged_stable": 25.0,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 0,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 3,
+        "emerged_repair": 1
+      },
+      "Ever_repair_wilson_ci95": [
+        4.558726,
+        69.935816
+      ],
+      "Ever_repair_wilson_n": 4,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWWWW",
+          "count": 3
+        },
+        {
+          "pattern": "WWWCC",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "mmlupro::test::11564",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 4,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::6418",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            4
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        }
+      ],
+      "R1_test": 60.0,
+      "RoundValue_test": 60.0,
+      "Oracle_test": 70.0,
+      "Oracle_headroom": 10.0,
+      "Captured_gain": 0.0,
+      "Oracle_regret": 10.0,
+      "test_policy_tasks": [
+        {
+          "task_id": "mmlupro::test::11564",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 4
+        },
+        {
+          "task_id": "mmlupro::test::2130",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::2895",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::4097",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::5383",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::6418",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::740",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::8526",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::8695",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "mmlupro::test::968",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        }
+      ],
+      "notes": "policy accuracies and gains are defined on the held-out test split only (n = 10 per run)"
+    },
+    {
+      "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+      "dataset_id": "HARP-50",
+      "dataset_label": "HARP50",
+      "benchmark": "HARP",
+      "model": "deepseek-v4-flash",
+      "model_id": "deepseek_flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "split": "test",
+      "n": 10,
+      "R1": 70.0,
+      "R2": 80.0,
+      "R3": 80.0,
+      "R4": 70.0,
+      "R5": 80.0,
+      "R1_wrong": 3,
+      "n_ever_repair": 2,
+      "n_stable_repair": 1,
+      "n_temporary_repair": 0,
+      "n_late_repair": 1,
+      "Ever_repair": 66.666667,
+      "Stable_repair": 33.333333,
+      "Temporary_repair": 0.0,
+      "Late_repair": 33.333333,
+      "First_repair_round": {
+        "mean": 3.5,
+        "median": 3.5,
+        "distribution": {
+          "2": 1,
+          "3": 0,
+          "4": 0,
+          "5": 1
+        }
+      },
+      "n_gold_emergence": 2,
+      "n_gold_known": 3,
+      "gold_emergence": 66.666667,
+      "mechanism_total": 3,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 1,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 0,
+        "emerged_stable": 2,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 33.333333,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 0.0,
+        "emerged_stable": 66.666667,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 1,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 0,
+        "emerged_repair": 2
+      },
+      "Ever_repair_wilson_ci95": [
+        20.76596,
+        93.850806
+      ],
+      "Ever_repair_wilson_n": 3,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WCCCC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWWC",
+          "count": 1
+        },
+        {
+          "pattern": "WWWWW",
+          "count": 1
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "harp::1990::AJHSME::19",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 5,
+          "category": "late_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "harp::2014::AMC_10A::17",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "r1_correct": false,
+          "ever_repaired": true,
+          "first_repair_round": 2,
+          "category": "stable_repair",
+          "mechanism_category": "emerged_stable",
+          "stage1_gold_rounds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "harp::2019::AMC_12B::15",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "never_emerged_no_repair",
+          "stage1_gold_rounds": [],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": false
+        }
+      ],
+      "R1_test": 70.0,
+      "RoundValue_test": 70.0,
+      "Oracle_test": 90.0,
+      "Oracle_headroom": 20.0,
+      "Captured_gain": 0.0,
+      "Oracle_regret": 20.0,
+      "test_policy_tasks": [
+        {
+          "task_id": "harp::1980::AHSME::13",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "harp::1984::AHSME::8",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "harp::1990::AJHSME::19",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 5
+        },
+        {
+          "task_id": "harp::1997::AHSME::6",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "harp::1998::AHSME::28",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "harp::2004::AMC_10A::1",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "harp::2011::AMC_12A::3",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "harp::2014::AMC_10A::17",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 2
+        },
+        {
+          "task_id": "harp::2016::AMC_10B::6",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "harp::2019::AMC_12B::15",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 5,
+          "Oracle_selected_round": 1
+        }
+      ],
+      "notes": "policy accuracies and gains are defined on the held-out test split only (n = 10 per run)"
+    },
+    {
+      "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+      "dataset_id": "LogiQA-50",
+      "dataset_label": "LogiQA50",
+      "benchmark": "LogiQA",
+      "model": "deepseek-v4-flash",
+      "model_id": "deepseek_flash",
+      "model_display": "DeepSeek-V4-Flash",
+      "split": "test",
+      "n": 10,
+      "R1": 80.0,
+      "R2": 70.0,
+      "R3": 70.0,
+      "R4": 70.0,
+      "R5": 60.0,
+      "R1_wrong": 2,
+      "n_ever_repair": 0,
+      "n_stable_repair": 0,
+      "n_temporary_repair": 0,
+      "n_late_repair": 0,
+      "Ever_repair": 0.0,
+      "Stable_repair": 0.0,
+      "Temporary_repair": 0.0,
+      "Late_repair": 0.0,
+      "First_repair_round": {
+        "mean": null,
+        "median": null,
+        "distribution": {
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "n_gold_emergence": 2,
+      "n_gold_known": 2,
+      "gold_emergence": 100.0,
+      "mechanism_total": 2,
+      "mechanism_categories": {
+        "never_emerged_no_repair": 0,
+        "never_emerged_stable": 0,
+        "never_emerged_temporary": 0,
+        "emerged_no_repair": 2,
+        "emerged_stable": 0,
+        "emerged_temporary": 0
+      },
+      "mechanism_percents": {
+        "never_emerged_no_repair": 0.0,
+        "never_emerged_stable": 0.0,
+        "never_emerged_temporary": 0.0,
+        "emerged_no_repair": 100.0,
+        "emerged_stable": 0.0,
+        "emerged_temporary": 0.0
+      },
+      "mechanism_partition": {
+        "never_emerged_no_repair": 0,
+        "never_emerged_repair": 0,
+        "emerged_no_repair": 2,
+        "emerged_repair": 0
+      },
+      "Ever_repair_wilson_ci95": [
+        0.0,
+        65.761977
+      ],
+      "Ever_repair_wilson_n": 2,
+      "r1_wrong_patterns": [
+        {
+          "pattern": "WWWWW",
+          "count": 2
+        }
+      ],
+      "r1_wrong_tasks": [
+        {
+          "task_id": "logiqa2::test::3478",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            3,
+            4,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        },
+        {
+          "task_id": "logiqa2::test::4297",
+          "split": "test",
+          "correct_rounds": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "r1_correct": false,
+          "ever_repaired": false,
+          "first_repair_round": null,
+          "category": "stable_wrong",
+          "mechanism_category": "emerged_no_repair",
+          "stage1_gold_rounds": [
+            2,
+            5
+          ],
+          "stage1_gold_known": true,
+          "stage1_gold_emerged": true
+        }
+      ],
+      "R1_test": 80.0,
+      "RoundValue_test": 80.0,
+      "Oracle_test": 80.0,
+      "Oracle_headroom": 0.0,
+      "Captured_gain": 0.0,
+      "Oracle_regret": 0.0,
+      "test_policy_tasks": [
+        {
+          "task_id": "logiqa2::test::10570",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::11420",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::11550",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::14388",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::3478",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::426",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::4297",
+          "R1_correct": false,
+          "RoundValue_correct": false,
+          "Oracle_correct": false,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::5319",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::9039",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        },
+        {
+          "task_id": "logiqa2::test::9940",
+          "R1_correct": true,
+          "RoundValue_correct": true,
+          "Oracle_correct": true,
+          "RoundValue_stop_round": 1,
+          "Oracle_selected_round": 1
+        }
+      ],
+      "notes": "policy accuracies and gains are defined on the held-out test split only (n = 10 per run)"
+    }
+  ],
+  "validation": {
+    "overall": "PASS",
+    "checks": [
+      {
+        "check": "policy_score_consistency",
+        "run_id": "202608161012_MMLUPro50_7004379c",
+        "r1_scores_pct": 70.0,
+        "r1_policy_pct": 70.0,
+        "max_abs_diff": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "oracle_decomposition",
+        "run_id": "202608161012_MMLUPro50_7004379c",
+        "r1_error_rate": 0.3,
+        "ever_repair_rate": 0.6666666666666666,
+        "product": 0.19999999999999998,
+        "oracle_headroom": 0.20000000000000007,
+        "abs_diff": 8.326672684688674e-17,
+        "tolerance": 1.2000000000000002e-09,
+        "ok": true
+      },
+      {
+        "check": "same_split_task_ids",
+        "run_id": "202608161012_MMLUPro50_7004379c",
+        "n_task_ids": 10,
+        "ok": true,
+        "note": "R1 / RoundValue / Oracle task_id sets verified identical and equal to the test split in scores.json"
+      },
+      {
+        "check": "mechanism_partition_consistency",
+        "run_id": "202608161012_MMLUPro50_7004379c",
+        "n_R1_wrong": 15,
+        "mechanism_sum": 15,
+        "n_gold_emergence": 9,
+        "emerged_total": 9,
+        "partition_sum": 15,
+        "ok": true
+      },
+      {
+        "check": "wilson_ci_denominators",
+        "run_id": "202608161012_MMLUPro50_7004379c",
+        "wilson_n": 15,
+        "n_R1_wrong": 15,
+        "wilson_ci95": [
+          10.897453,
+          51.950434
+        ],
+        "ever_repair_pct": 26.666667,
+        "ok": true
+      },
+      {
+        "check": "trajectory_scores_consistency",
+        "run_id": "202608161012_MMLUPro50_7004379c",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "analysis_scores_consistency",
+        "run_id": "202608161012_MMLUPro50_7004379c",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "policy_score_consistency",
+        "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+        "r1_scores_pct": 40.0,
+        "r1_policy_pct": 40.0,
+        "max_abs_diff": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "oracle_decomposition",
+        "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+        "r1_error_rate": 0.6,
+        "ever_repair_rate": 0.16666666666666666,
+        "product": 0.09999999999999999,
+        "oracle_headroom": 0.09999999999999998,
+        "abs_diff": 1.3877787807814457e-17,
+        "tolerance": 1.1000000000000001e-09,
+        "ok": true
+      },
+      {
+        "check": "same_split_task_ids",
+        "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+        "n_task_ids": 10,
+        "ok": true,
+        "note": "R1 / RoundValue / Oracle task_id sets verified identical and equal to the test split in scores.json"
+      },
+      {
+        "check": "mechanism_partition_consistency",
+        "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+        "n_R1_wrong": 32,
+        "mechanism_sum": 32,
+        "n_gold_emergence": 7,
+        "emerged_total": 7,
+        "partition_sum": 32,
+        "ok": true
+      },
+      {
+        "check": "wilson_ci_denominators",
+        "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+        "wilson_n": 32,
+        "n_R1_wrong": 32,
+        "wilson_ci95": [
+          1.731057,
+          20.147123
+        ],
+        "ever_repair_pct": 6.25,
+        "ok": true
+      },
+      {
+        "check": "trajectory_scores_consistency",
+        "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "analysis_scores_consistency",
+        "run_id": "202608161659_gpt-4o-mini_MMLUPro50_7438e233",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "policy_score_consistency",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "r1_scores_pct": 60.0,
+        "r1_policy_pct": 60.0,
+        "max_abs_diff": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "oracle_decomposition",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "r1_error_rate": 0.4,
+        "ever_repair_rate": 0.25,
+        "product": 0.1,
+        "oracle_headroom": 0.09999999999999998,
+        "abs_diff": 2.7755575615628914e-17,
+        "tolerance": 1.1000000000000001e-09,
+        "ok": true
+      },
+      {
+        "check": "same_split_task_ids",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "n_task_ids": 10,
+        "ok": true,
+        "note": "R1 / RoundValue / Oracle task_id sets verified identical and equal to the test split in scores.json"
+      },
+      {
+        "check": "mechanism_partition_consistency",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "n_R1_wrong": 12,
+        "mechanism_sum": 12,
+        "n_gold_emergence": 6,
+        "emerged_total": 6,
+        "partition_sum": 12,
+        "ok": true
+      },
+      {
+        "check": "wilson_ci_denominators",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "wilson_n": 12,
+        "n_R1_wrong": 12,
+        "wilson_ci95": [
+          4.696514,
+          44.803086
+        ],
+        "ever_repair_pct": 16.666667,
+        "ok": true
+      },
+      {
+        "check": "trajectory_scores_consistency",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "analysis_scores_consistency",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "policy_score_consistency",
+        "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+        "r1_scores_pct": 70.0,
+        "r1_policy_pct": 70.0,
+        "max_abs_diff": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "oracle_decomposition",
+        "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+        "r1_error_rate": 0.3,
+        "ever_repair_rate": 0.6666666666666666,
+        "product": 0.19999999999999998,
+        "oracle_headroom": 0.20000000000000007,
+        "abs_diff": 8.326672684688674e-17,
+        "tolerance": 1.2000000000000002e-09,
+        "ok": true
+      },
+      {
+        "check": "same_split_task_ids",
+        "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+        "n_task_ids": 10,
+        "ok": true,
+        "note": "R1 / RoundValue / Oracle task_id sets verified identical and equal to the test split in scores.json"
+      },
+      {
+        "check": "mechanism_partition_consistency",
+        "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+        "n_R1_wrong": 4,
+        "mechanism_sum": 4,
+        "n_gold_emergence": 3,
+        "emerged_total": 3,
+        "partition_sum": 4,
+        "ok": true
+      },
+      {
+        "check": "wilson_ci_denominators",
+        "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+        "wilson_n": 4,
+        "n_R1_wrong": 4,
+        "wilson_ci95": [
+          30.064184,
+          95.441274
+        ],
+        "ever_repair_pct": 75.0,
+        "ok": true
+      },
+      {
+        "check": "trajectory_scores_consistency",
+        "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "analysis_scores_consistency",
+        "run_id": "202608161937_deepseek-v4-flash_HARP50_e8bbd5fd",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "policy_score_consistency",
+        "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+        "r1_scores_pct": 80.0,
+        "r1_policy_pct": 80.0,
+        "max_abs_diff": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "oracle_decomposition",
+        "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+        "r1_error_rate": 0.2,
+        "ever_repair_rate": 0.0,
+        "product": 0.0,
+        "oracle_headroom": 0.0,
+        "abs_diff": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "same_split_task_ids",
+        "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+        "n_task_ids": 10,
+        "ok": true,
+        "note": "R1 / RoundValue / Oracle task_id sets verified identical and equal to the test split in scores.json"
+      },
+      {
+        "check": "mechanism_partition_consistency",
+        "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+        "n_R1_wrong": 9,
+        "mechanism_sum": 9,
+        "n_gold_emergence": 4,
+        "emerged_total": 4,
+        "partition_sum": 9,
+        "ok": true
+      },
+      {
+        "check": "wilson_ci_denominators",
+        "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+        "wilson_n": 9,
+        "n_R1_wrong": 9,
+        "wilson_ci95": [
+          1.989089,
+          43.499971
+        ],
+        "ever_repair_pct": 11.111111,
+        "ok": true
+      },
+      {
+        "check": "trajectory_scores_consistency",
+        "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "analysis_scores_consistency",
+        "run_id": "202608161940_deepseek-v4-flash_LogiQA50_db682c1c",
+        "max_abs_diff_pp": 0.0,
+        "tolerance": 1e-09,
+        "ok": true
+      },
+      {
+        "check": "deepseek_mmlu_run_identity",
+        "run_id": "202608161758_deepseek-v4-flash_MMLUPro50_5a6c654d",
+        "model_snapshot": "deepseek-v4-flash",
+        "reasoning": {
+          "effort": "high",
+          "enabled": false
+        },
+        "temperature": 0.2,
+        "R1..R5": {
+          "R1": 76.0,
+          "R2": 76.0,
+          "R3": 78.0,
+          "R4": 80.0,
+          "R5": 78.0
+        },
+        "n_R1_wrong": 12,
+        "ok": true
+      }
+    ]
+  }
+}
